@@ -595,7 +595,19 @@ spinBtn.addEventListener('click', () => {
   spinBtn.disabled = true;
   stopBtn.disabled = false;
 });
+wheel.addEventListener('transitionend', () => {
+  if (!wheelIsSpinning) {
+    return;
+  }
 
+  wheelIsSpinning = false;
+  spinBtn.disabled = false;
+  stopBtn.disabled = true;
+
+  if (currentWinnerOption) {
+    winnerDisplay.textContent = `Gewinner: ${currentWinnerOption}`;
+  }
+});
 stopBtn.addEventListener('click', () => {
   if (!wheelIsSpinning) {
     return;
