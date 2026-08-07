@@ -16,3 +16,5 @@ Diese einfache Web-App hilft bei einer Abstimmung mit mehreren Antwortmöglichke
 - Ergebnis anzeigen
 - Glücksrad drehen
 - Gewinner anzeigen
+
+GitHub-Pages-Version
