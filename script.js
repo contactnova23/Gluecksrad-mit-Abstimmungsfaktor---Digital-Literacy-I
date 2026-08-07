@@ -8,10 +8,15 @@ const addAnswerBtn = document.getElementById('add-answer-btn');
 const startBtn = document.getElementById('start-btn');
 const setupError = document.getElementById('setup-error');
 const roomModeToggle = document.getElementById('room-mode-toggle');
+const onlineModeToggle = document.getElementById('online-mode-toggle');
+const joinRoomCodeInput = document.getElementById('join-room-code-input');
+const joinOnlineBtn = document.getElementById('join-online-btn');
+const joinError = document.getElementById('join-error');
 
 const questionDisplay = document.getElementById('question-display');
 const voteInfo = document.getElementById('vote-info');
 const roomStatus = document.getElementById('room-status');
+const onlineStatus = document.getElementById('online-status');
 const voterNameInput = document.getElementById('voter-name');
 const voteSelect = document.getElementById('vote-select');
 const voteBtn = document.getElementById('vote-btn');
@@ -35,8 +40,18 @@ let currentRotation = 0;
 let targetRotation = 0;
 let wheelIsSpinning = false;
 let roomMode = false;
+let onlineMode = false;
 let currentPhase = 'setup';
 let currentQuestion = '';
+let currentPollId = null;
+let currentRoomCode = '';
+let currentVoteCount = 0;
+let isVotingClosed = false;
+let currentBrowserVoteKey = '';
+
+function generateRoomCode() {
+  return Math.random().toString(36).slice(2, 8).toUpperCase();
+}
 
 function createAnswerRow(value = '') {
   const row = document.createElement('div');
@@ -97,6 +112,8 @@ function showVoteScreen(question) {
   voteInfo.textContent = 'Die Ergebnisse bleiben bis zum Ende verborgen.';
   roomStatus.hidden = true;
   roomStatus.textContent = '';
+  onlineStatus.hidden = true;
+  onlineStatus.textContent = '';
   voteBtn.hidden = false;
   nextPersonBtn.hidden = true;
   voterNameInput.value = '';
@@ -105,6 +122,13 @@ function showVoteScreen(question) {
   if (roomMode) {
     roomStatus.hidden = false;
     roomStatus.textContent = `${votes.length} ${votes.length === 1 ? 'Stimme wurde' : 'Stimmen wurden'} bisher abgegeben.`;
+  }
+
+  if (onlineMode) {
+    onlineStatus.hidden = false;
+    onlineStatus.textContent = currentRoomCode
+      ? `Online-Raum: ${currentRoomCode} • ${currentVoteCount} ${currentVoteCount === 1 ? 'Stimme' : 'Stimmen'} bisher abgegeben`
+      : 'Online-Abstimmung ist aktiv.';
   }
 }
 
@@ -179,8 +203,14 @@ function saveState() {
     options,
     votes,
     roomMode,
+    onlineMode,
     currentRotation,
     targetRotation,
+    currentPollId,
+    currentRoomCode,
+    currentVoteCount,
+    isVotingClosed,
+    currentBrowserVoteKey,
   };
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
@@ -196,7 +226,10 @@ function resetApp() {
   createAnswerRow('');
   createAnswerRow('');
   roomModeToggle.checked = false;
+  onlineModeToggle.checked = false;
+  joinRoomCodeInput.value = '';
   setupError.textContent = '';
+  joinError.textContent = '';
   voteConfirmation.textContent = '';
   winnerDisplay.textContent = '';
   setupSection.hidden = false;
@@ -204,6 +237,8 @@ function resetApp() {
   resultsSection.hidden = true;
   roomStatus.hidden = true;
   roomStatus.textContent = '';
+  onlineStatus.hidden = true;
+  onlineStatus.textContent = '';
   voteInfo.textContent = 'Die Ergebnisse bleiben bis zum Ende verborgen.';
   options = [];
   votes = [];
@@ -211,13 +246,63 @@ function resetApp() {
   targetRotation = 0;
   wheelIsSpinning = false;
   roomMode = false;
+  onlineMode = false;
   currentPhase = 'setup';
   currentQuestion = '';
+  currentPollId = null;
+  currentRoomCode = '';
+  currentVoteCount = 0;
+  isVotingClosed = false;
+  currentBrowserVoteKey = '';
   wheel.style.transform = 'rotate(0deg)';
   wheel.style.transition = 'transform 0.8s ease-out';
   spinBtn.disabled = false;
   stopBtn.disabled = true;
   clearSavedState();
+}
+
+async function refreshOnlineState() {
+  if (!onlineMode || !currentPollId) {
+    return;
+  }
+
+  try {
+    const { data: pollData, error: pollError } = await supabase
+      .from('polls')
+      .select('id, question, options, room_code, is_closed')
+      .eq('id', currentPollId)
+      .single();
+
+    if (pollError) {
+      throw pollError;
+    }
+
+    if (pollData) {
+      currentQuestion = pollData.question || currentQuestion;
+      options = pollData.options || options;
+      currentRoomCode = pollData.room_code || currentRoomCode;
+      isVotingClosed = Boolean(pollData.is_closed);
+    }
+
+    const { data: voteData, error: voteError } = await supabase
+      .from('votes')
+      .select('option, voter_name')
+      .eq('poll_id', currentPollId);
+
+    if (voteError) {
+      throw voteError;
+    }
+
+    votes = (voteData || []).map((vote) => ({ name: vote.voter_name, option: vote.option }));
+    currentVoteCount = votes.length;
+    saveState();
+
+    if (currentPhase === 'vote' && onlineMode) {
+      showVoteScreen(currentQuestion);
+    }
+  } catch (error) {
+    console.error('Fehler beim Laden der Online-Stimmen:', error);
+  }
 }
 
 function restoreSavedState() {
@@ -237,9 +322,16 @@ function restoreSavedState() {
     options = parsedState.options || [];
     votes = parsedState.votes || [];
     roomMode = Boolean(parsedState.roomMode);
+    onlineMode = Boolean(parsedState.onlineMode);
     currentRotation = parsedState.currentRotation || 0;
     targetRotation = parsedState.targetRotation || 0;
+    currentPollId = parsedState.currentPollId || null;
+    currentRoomCode = parsedState.currentRoomCode || '';
+    currentVoteCount = parsedState.currentVoteCount || 0;
+    isVotingClosed = Boolean(parsedState.isVotingClosed);
+    currentBrowserVoteKey = parsedState.currentBrowserVoteKey || '';
     roomModeToggle.checked = roomMode;
+    onlineModeToggle.checked = onlineMode;
 
     if (currentPhase === 'vote') {
       fillVoteOptions();
@@ -261,7 +353,7 @@ addAnswerBtn.addEventListener('click', () => {
   createAnswerRow('');
 });
 
-startBtn.addEventListener('click', () => {
+startBtn.addEventListener('click', async () => {
   setupError.textContent = '';
   const question = questionInput.value.trim();
   const answers = Array.from(answersContainer.querySelectorAll('.answer-input'))
@@ -278,9 +370,11 @@ startBtn.addEventListener('click', () => {
     return;
   }
 
+  roomMode = roomModeToggle.checked;
+  onlineMode = onlineModeToggle.checked;
+
   options = answers;
   votes = [];
-  roomMode = roomModeToggle.checked;
   currentRotation = 0;
   targetRotation = 0;
   wheelIsSpinning = false;
@@ -291,11 +385,47 @@ startBtn.addEventListener('click', () => {
   winnerDisplay.textContent = '';
   fillVoteOptions();
   currentPhase = 'vote';
+
+  if (onlineMode) {
+    if (!window.supabase) {
+      setupError.textContent = 'Supabase ist nicht verfügbar. Bitte prüfe die Konfiguration.';
+      return;
+    }
+
+    try {
+      currentRoomCode = generateRoomCode();
+      const { data, error } = await supabase.from('polls').insert({
+        question,
+        options: answers,
+        room_code: currentRoomCode,
+        is_closed: false,
+      }).select().single();
+
+      if (error) {
+        throw error;
+      }
+
+      currentPollId = data.id;
+      currentVoteCount = 0;
+      isVotingClosed = false;
+      currentBrowserVoteKey = `${currentPollId}-${Math.random().toString(36).slice(2, 10)}`;
+      voteConfirmation.textContent = `Online-Abstimmung gestartet. Raumcode: ${currentRoomCode}`;
+      saveState();
+      await refreshOnlineState();
+      showVoteScreen(question);
+      return;
+    } catch (error) {
+      setupError.textContent = 'Fehler beim Starten der Online-Abstimmung.';
+      console.error(error);
+      return;
+    }
+  }
+
   saveState();
   showVoteScreen(question);
 });
 
-voteBtn.addEventListener('click', () => {
+voteBtn.addEventListener('click', async () => {
   const name = voterNameInput.value.trim();
   const selectedOption = voteSelect.value;
 
@@ -307,6 +437,44 @@ voteBtn.addEventListener('click', () => {
   if (!selectedOption) {
     voteConfirmation.textContent = 'Bitte wähle eine Antwort aus.';
     return;
+  }
+
+  if (onlineMode) {
+    if (!currentPollId || isVotingClosed) {
+      voteConfirmation.textContent = 'Diese Online-Abstimmung ist bereits beendet.';
+      return;
+    }
+
+    if (localStorage.getItem(`gluecksrad-vote-${currentPollId}`) === currentBrowserVoteKey) {
+      voteConfirmation.textContent = 'Du hast schon einmal für diesen Raum abgestimmt.';
+      return;
+    }
+
+    try {
+      const { error } = await supabase.from('votes').insert({
+        poll_id: currentPollId,
+        option: selectedOption,
+        voter_name: name,
+        browser_key: currentBrowserVoteKey,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      localStorage.setItem(`gluecksrad-vote-${currentPollId}`, currentBrowserVoteKey);
+      await refreshOnlineState();
+      voteConfirmation.textContent = 'Danke! Deine Stimme wurde in der Online-Abstimmung gespeichert.';
+      saveState();
+      voterNameInput.value = '';
+      voteSelect.selectedIndex = 0;
+      showVoteScreen(currentQuestion);
+      return;
+    } catch (error) {
+      voteConfirmation.textContent = 'Die Stimme konnte nicht gespeichert werden.';
+      console.error(error);
+      return;
+    }
   }
 
   votes.push({ name, option: selectedOption });
@@ -335,12 +503,39 @@ nextPersonBtn.addEventListener('click', () => {
   voterNameInput.focus();
 });
 
-endVotingBtn.addEventListener('click', () => {
-  if (roomMode) {
+endVotingBtn.addEventListener('click', async () => {
+  if (roomMode || onlineMode) {
     const shouldEnd = window.confirm('Möchtest du die Abstimmung wirklich beenden?');
     if (!shouldEnd) {
       return;
     }
+  }
+
+  if (onlineMode && currentPollId) {
+    try {
+      const { error } = await supabase.from('polls').update({ is_closed: true }).eq('id', currentPollId);
+      if (error) {
+        throw error;
+      }
+      isVotingClosed = true;
+      await refreshOnlineState();
+    } catch (error) {
+      console.error(error);
+      voteConfirmation.textContent = 'Die Abstimmung konnte nicht beendet werden.';
+      return;
+    }
+  }
+
+  if (onlineMode) {
+    const summary = computeSummary();
+    buildResultsList(summary);
+    buildWheel(summary);
+    currentPhase = 'results';
+    saveState();
+    showResultsScreen();
+    const winner = getWinner(summary);
+    winnerDisplay.textContent = winner ? `Gewinner: ${winner.option}` : 'Noch keine Stimmen vorhanden.';
+    return;
   }
 
   const summary = computeSummary();
@@ -394,6 +589,57 @@ newVotingBtnVote.addEventListener('click', () => {
 
 newVotingBtnResults.addEventListener('click', () => {
   resetApp();
+});
+
+joinOnlineBtn.addEventListener('click', async () => {
+  joinError.textContent = '';
+  const roomCode = joinRoomCodeInput.value.trim().toUpperCase();
+
+  if (!roomCode) {
+    joinError.textContent = 'Bitte gib einen Raumcode ein.';
+    return;
+  }
+
+  if (!window.supabase) {
+    joinError.textContent = 'Supabase ist nicht verfügbar. Bitte prüfe die Konfiguration.';
+    return;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('polls')
+      .select('*')
+      .eq('room_code', roomCode)
+      .eq('is_closed', false)
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    options = data.options || [];
+    currentPollId = data.id;
+    currentRoomCode = data.room_code;
+    currentQuestion = data.question;
+    currentVoteCount = 0;
+    isVotingClosed = false;
+    onlineMode = true;
+    roomMode = false;
+    currentBrowserVoteKey = `${data.id}-${Math.random().toString(36).slice(2, 10)}`;
+    const storedVoteKey = localStorage.getItem(`gluecksrad-vote-${data.id}`);
+    if (storedVoteKey) {
+      currentBrowserVoteKey = storedVoteKey;
+    }
+    fillVoteOptions();
+    currentPhase = 'vote';
+    saveState();
+    await refreshOnlineState();
+    showVoteScreen(currentQuestion);
+    voteConfirmation.textContent = 'Du bist dem Online-Raum beigetreten. Du kannst jetzt abstimmen.';
+  } catch (error) {
+    joinError.textContent = 'Dieser Raumcode wurde nicht gefunden oder die Abstimmung ist bereits beendet.';
+    console.error(error);
+  }
 });
 
 createAnswerRow('');

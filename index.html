@@ -26,6 +26,10 @@
               <input id="room-mode-toggle" type="checkbox" />
               <span>Raum-Modus aktivieren (mehrere Personen, Ergebnisse erst am Ende sichtbar)</span>
             </label>
+            <label class="mode-toggle">
+              <input id="online-mode-toggle" type="checkbox" />
+              <span>Online-Modus mit Supabase aktivieren</span>
+            </label>
           </label>
 
           <div class="answers-box">
@@ -43,6 +47,16 @@
             <button id="add-answer-btn" type="button">Weitere Antwortmöglichkeit hinzufügen</button>
           </div>
 
+          <div class="answers-box">
+            <h2>Online teilnehmen</h2>
+            <label class="field">
+              <span>Raumcode eingeben</span>
+              <input id="join-room-code-input" type="text" placeholder="Zum Beispiel: AB12" />
+            </label>
+            <button id="join-online-btn" type="button">Online-Abstimmung beitreten</button>
+            <p id="join-error" class="error"></p>
+          </div>
+
           <p id="setup-error" class="error"></p>
           <button id="start-btn" type="button">Abstimmung starten</button>
         </section>
@@ -51,6 +65,7 @@
           <h2 id="question-display"></h2>
           <p class="info" id="vote-info">Die Ergebnisse bleiben bis zum Ende verborgen.</p>
           <p id="room-status" class="room-status" hidden></p>
+          <p id="online-status" class="room-status" hidden></p>
 
           <label class="field">
             <span>Dein Name</span>
@@ -92,6 +107,8 @@
       </section>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
