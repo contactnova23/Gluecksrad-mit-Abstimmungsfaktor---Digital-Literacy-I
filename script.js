@@ -542,7 +542,7 @@ voteBtn.addEventListener('click', async () => {
   roomStatus.hidden = false;
   roomStatus.textContent = `Bisher abgegebene Stimmen: ${votes.length}`;
 
-  voteInfo.textContent = 'Bitte gib das Gerät jetzt an die nächste Person weiter.';
+  voteInfo.textContent = '';
 
   voterNameInput.closest('.field').hidden = true;
   voteSelect.closest('.field').hidden = true;
