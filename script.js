@@ -292,6 +292,14 @@ function resetApp() {
   onlineStatus.hidden = true;
   onlineStatus.textContent = '';
   voteInfo.textContent = 'Die Ergebnisse bleiben bis zum Ende verborgen.';
+  voterNameInput.closest('.field').hidden = false;
+voteSelect.closest('.field').hidden = false;
+
+endVotingBtn.hidden = false;
+endVotingBtn.textContent = 'Abstimmung beenden';
+endVotingBtn.classList.remove('moderator-action');
+
+newVotingBtnVote.hidden = false;
   options = [];
   votes = [];
   currentRotation = 0;
@@ -397,8 +405,7 @@ function restoreSavedState() {
       buildResultsList(summary);
       buildWheel(summary);
       showResultsScreen();
-      const winner = getWinner(summary);
-      winnerDisplay.textContent = winner ? `Gewinner: ${winner.option}` : 'Noch keine Stimmen vorhanden.';
+      winnerDisplay.textContent = 'Glücksrad kann jetzt gedreht werden.';
     }
   } catch (error) {
     console.error('Fehler beim Laden des gespeicherten Zustands:', error);
@@ -531,11 +538,17 @@ voteBtn.addEventListener('click', async () => {
   votes.push({ name: name || 'Anonym', option: selectedOption });
 
   if (roomMode) {
-    voteConfirmation.textContent = 'Deine Stimme wurde gespeichert. Bitte gib das Gerät an die nächste Person weiter.';
-    roomStatus.hidden = false;
-    roomStatus.textContent = `Bisher abgegebene Stimmen: ${votes.length}`;
-    voteBtn.hidden = true;
-    nextPersonBtn.hidden = false;
+      voteConfirmation.textContent = 'Deine Stimme wurde gespeichert. Bitte gib das Gerät an die nächste Person weiter.';
+  roomStatus.hidden = false;
+  roomStatus.textContent = `Bisher abgegebene Stimmen: ${votes.length}`;
+
+  voteInfo.textContent = 'Bitte gib das Gerät jetzt an die nächste Person weiter.';
+
+  voterNameInput.closest('.field').hidden = true;
+  voteSelect.closest('.field').hidden = true;
+
+  voteBtn.hidden = true;
+  nextPersonBtn.hidden = false;
   } else {
     voteConfirmation.textContent = name ? `Vielen Dank, ${name}. Deine Stimme wurde gezählt.` : 'Vielen Dank. Deine Stimme wurde gezählt.';
   }
@@ -547,13 +560,18 @@ voteBtn.addEventListener('click', async () => {
 
 nextPersonBtn.addEventListener('click', () => {
   voteConfirmation.textContent = '';
+
+  voterNameInput.closest('.field').hidden = false;
+  voteSelect.closest('.field').hidden = false;
+
   voteBtn.hidden = false;
   nextPersonBtn.hidden = true;
+
   voterNameInput.value = '';
   voteSelect.selectedIndex = 0;
 
-voteInfo.textContent = `Person ${votes.length + 1} stimmt jetzt ab. Deine Stimme bleibt geheim.`;
-  
+  voteInfo.textContent = `Person ${votes.length + 1} stimmt jetzt ab. Deine Stimme bleibt geheim.`;
+
   voterNameInput.focus();
 });
 
