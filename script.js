@@ -48,6 +48,8 @@ let currentRoomCode = '';
 let currentVoteCount = 0;
 let isVotingClosed = false;
 let currentBrowserVoteKey = '';
+let onlineRefreshTimer = null;
+let currentWinnerOption = '';
 
 function generateRoomCode() {
   return Math.random().toString(36).slice(2, 8).toUpperCase();
@@ -132,6 +134,25 @@ function showVoteScreen(question) {
   }
 }
 
+function startOnlineRefreshLoop() {
+  if (onlineRefreshTimer) {
+    window.clearInterval(onlineRefreshTimer);
+  }
+
+  onlineRefreshTimer = window.setInterval(() => {
+    if (onlineMode && currentPhase === 'vote' && currentPollId) {
+      refreshOnlineState();
+    }
+  }, 3000);
+}
+
+function stopOnlineRefreshLoop() {
+  if (onlineRefreshTimer) {
+    window.clearInterval(onlineRefreshTimer);
+    onlineRefreshTimer = null;
+  }
+}
+
 function showResultsScreen() {
   voteSection.hidden = true;
   resultsSection.hidden = false;
@@ -165,6 +186,27 @@ function buildWheel(summary) {
 function getWinner(summary) {
   const highestVotes = Math.max(...summary.map((item) => item.votes));
   return summary.find((item) => item.votes === highestVotes);
+}
+
+function getWeightedWinner(summary) {
+  const totalVotes = summary.reduce((sum, item) => sum + item.votes, 0);
+
+  if (totalVotes === 0) {
+    const randomIndex = Math.floor(Math.random() * summary.length);
+    return summary[randomIndex] || null;
+  }
+
+  const randomValue = Math.random() * totalVotes;
+  let runningTotal = 0;
+
+  for (const item of summary) {
+    runningTotal += item.votes;
+    if (randomValue <= runningTotal) {
+      return item;
+    }
+  }
+
+  return summary[summary.length - 1] || null;
 }
 
 function computeSummary() {
@@ -221,6 +263,7 @@ function clearSavedState() {
 }
 
 function resetApp() {
+  stopOnlineRefreshLoop();
   questionInput.value = '';
   answersContainer.innerHTML = '';
   createAnswerRow('');
@@ -254,6 +297,7 @@ function resetApp() {
   currentVoteCount = 0;
   isVotingClosed = false;
   currentBrowserVoteKey = '';
+  currentWinnerOption = '';
   wheel.style.transform = 'rotate(0deg)';
   wheel.style.transition = 'transform 0.8s ease-out';
   spinBtn.disabled = false;
@@ -336,6 +380,9 @@ function restoreSavedState() {
     if (currentPhase === 'vote') {
       fillVoteOptions();
       showVoteScreen(currentQuestion);
+      if (onlineMode && currentPollId) {
+        startOnlineRefreshLoop();
+      }
     } else if (currentPhase === 'results') {
       const summary = computeSummary();
       buildResultsList(summary);
@@ -412,6 +459,7 @@ startBtn.addEventListener('click', async () => {
       voteConfirmation.textContent = `Online-Abstimmung gestartet. Raumcode: ${currentRoomCode}`;
       saveState();
       await refreshOnlineState();
+      startOnlineRefreshLoop();
       showVoteScreen(question);
       return;
     } catch (error) {
@@ -429,11 +477,6 @@ voteBtn.addEventListener('click', async () => {
   const name = voterNameInput.value.trim();
   const selectedOption = voteSelect.value;
 
-  if (!name) {
-    voteConfirmation.textContent = 'Bitte gib zuerst deinen Namen ein.';
-    return;
-  }
-
   if (!selectedOption) {
     voteConfirmation.textContent = 'Bitte wähle eine Antwort aus.';
     return;
@@ -445,7 +488,7 @@ voteBtn.addEventListener('click', async () => {
       return;
     }
 
-    if (localStorage.getItem(`gluecksrad-vote-${currentPollId}`) === currentBrowserVoteKey) {
+    if (localStorage.getItem(`gluecksrad-vote-${currentPollId}`)) {
       voteConfirmation.textContent = 'Du hast schon einmal für diesen Raum abgestimmt.';
       return;
     }
@@ -454,7 +497,7 @@ voteBtn.addEventListener('click', async () => {
       const { error } = await supabase.from('votes').insert({
         poll_id: currentPollId,
         option: selectedOption,
-        voter_name: name,
+        voter_name: name || 'Anonym',
         browser_key: currentBrowserVoteKey,
       });
 
@@ -477,7 +520,7 @@ voteBtn.addEventListener('click', async () => {
     }
   }
 
-  votes.push({ name, option: selectedOption });
+  votes.push({ name: name || 'Anonym', option: selectedOption });
 
   if (roomMode) {
     voteConfirmation.textContent = 'Deine Stimme wurde gespeichert. Bitte gib das Gerät an die nächste Person weiter.';
@@ -486,7 +529,7 @@ voteBtn.addEventListener('click', async () => {
     voteBtn.hidden = true;
     nextPersonBtn.hidden = false;
   } else {
-    voteConfirmation.textContent = `Vielen Dank, ${name}. Deine Stimme wurde gezählt.`;
+    voteConfirmation.textContent = name ? `Vielen Dank, ${name}. Deine Stimme wurde gezählt.` : 'Vielen Dank. Deine Stimme wurde gezählt.';
   }
 
   voterNameInput.value = '';
@@ -526,27 +569,14 @@ endVotingBtn.addEventListener('click', async () => {
     }
   }
 
-  if (onlineMode) {
-    const summary = computeSummary();
-    buildResultsList(summary);
-    buildWheel(summary);
-    currentPhase = 'results';
-    saveState();
-    showResultsScreen();
-    const winner = getWinner(summary);
-    winnerDisplay.textContent = winner ? `Gewinner: ${winner.option}` : 'Noch keine Stimmen vorhanden.';
-    return;
-  }
-
   const summary = computeSummary();
   buildResultsList(summary);
   buildWheel(summary);
   currentPhase = 'results';
+  currentWinnerOption = '';
   saveState();
   showResultsScreen();
-
-  const winner = getWinner(summary);
-  winnerDisplay.textContent = winner ? `Gewinner: ${winner.option}` : 'Noch keine Stimmen vorhanden.';
+  winnerDisplay.textContent = 'Glücksrad kann jetzt gedreht werden.';
 });
 
 spinBtn.addEventListener('click', () => {
@@ -555,7 +585,9 @@ spinBtn.addEventListener('click', () => {
   }
 
   const summary = computeSummary();
-  const winnerIndex = summary.findIndex((item) => item.option === getWinner(summary)?.option);
+  const weightedWinner = getWeightedWinner(summary);
+  currentWinnerOption = weightedWinner ? weightedWinner.option : '';
+  const winnerIndex = summary.findIndex((item) => item.option === currentWinnerOption);
   const extraRotation = calculateStopRotation(summary, winnerIndex);
   targetRotation = currentRotation + extraRotation;
 
@@ -579,7 +611,7 @@ stopBtn.addEventListener('click', () => {
   stopBtn.disabled = true;
 
   const summary = computeSummary();
-  const winner = getWinner(summary);
+  const winner = currentWinnerOption ? { option: currentWinnerOption } : getWinner(summary);
   winnerDisplay.textContent = winner ? `Gewinner: ${winner.option}` : 'Noch keine Stimmen vorhanden.';
 });
 
@@ -634,6 +666,7 @@ joinOnlineBtn.addEventListener('click', async () => {
     currentPhase = 'vote';
     saveState();
     await refreshOnlineState();
+    startOnlineRefreshLoop();
     showVoteScreen(currentQuestion);
     voteConfirmation.textContent = 'Du bist dem Online-Raum beigetreten. Du kannst jetzt abstimmen.';
   } catch (error) {
