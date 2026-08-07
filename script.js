@@ -502,6 +502,8 @@ startBtn.addEventListener('click', async () => {
 });
 
 voteBtn.addEventListener('click', async () => {
+  voteBtn.textContent = 'Stimme abgeben';
+  
   const name = voterNameInput.value.trim();
   const selectedOption = voteSelect.value;
 
@@ -576,13 +578,16 @@ nextPersonBtn.addEventListener('click', () => {
   voterNameInput.closest('.field').hidden = false;
   voteSelect.closest('.field').hidden = false;
 
-  voteBtn.hidden = false;
-  nextPersonBtn.hidden = true;
-
   voterNameInput.value = '';
   voteSelect.selectedIndex = 0;
 
+  voteBtn.hidden = false;
+  voteBtn.textContent = 'Stimme abgeben';
+
+  nextPersonBtn.hidden = true;
+
   voteInfo.textContent = `Person ${votes.length + 1} stimmt jetzt ab. Deine Stimme bleibt geheim.`;
+  roomStatus.textContent = `Bisher abgegebene Stimmen: ${votes.length}`;
 
   voterNameInput.focus();
 });
