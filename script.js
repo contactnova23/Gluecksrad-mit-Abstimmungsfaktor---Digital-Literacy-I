@@ -311,7 +311,7 @@ async function refreshOnlineState() {
   }
 
   try {
-    const { data: pollData, error: pollError } = await supabase
+    const { data: pollData, error: pollError } = await supabaseClient
       .from('polls')
       .select('id, question, options, room_code, is_closed')
       .eq('id', currentPollId)
@@ -328,7 +328,7 @@ async function refreshOnlineState() {
       isVotingClosed = Boolean(pollData.is_closed);
     }
 
-    const { data: voteData, error: voteError } = await supabase
+    const { data: voteData, error: voteError } = await supabaseClient
       .from('votes')
       .select('option, voter_name')
       .eq('poll_id', currentPollId);
@@ -441,7 +441,7 @@ startBtn.addEventListener('click', async () => {
 
     try {
       currentRoomCode = generateRoomCode();
-      const { data, error } = await supabase.from('polls').insert({
+      const { data, error } = await supabaseClient.from('polls').insert({
         question,
         options: answers,
         room_code: currentRoomCode,
@@ -494,7 +494,7 @@ voteBtn.addEventListener('click', async () => {
     }
 
     try {
-      const { error } = await supabase.from('votes').insert({
+      const { error } = await supabaseClient.from('votes').insert({
         poll_id: currentPollId,
         option: selectedOption,
         voter_name: name || 'Anonym',
@@ -556,7 +556,7 @@ endVotingBtn.addEventListener('click', async () => {
 
   if (onlineMode && currentPollId) {
     try {
-      const { error } = await supabase.from('polls').update({ is_closed: true }).eq('id', currentPollId);
+      const { error } = await supabaseClient.from('polls').update({ is_closed: true }).eq('id', currentPollId);
       if (error) {
         throw error;
       }
@@ -638,7 +638,7 @@ joinOnlineBtn.addEventListener('click', async () => {
   }
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('polls')
       .select('*')
       .eq('room_code', roomCode)
