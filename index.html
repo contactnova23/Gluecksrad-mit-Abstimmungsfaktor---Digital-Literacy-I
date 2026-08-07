@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Glücksrad-Abstimmung</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="app">
+      <section class="card">
+        <h1>Glücksrad-Abstimmung</h1>
+        <p class="intro">
+          Erstelle eine einfache Abstimmung, sammle Stimmen und lasse das Glücksrad entscheiden.
+        </p>
+
+        <section id="setup-section">
+          <label class="field">
+            <span>Abstimmungsfrage</span>
+            <input id="question-input" type="text" placeholder="Zum Beispiel: Was soll wir heute essen?" />
+          </label>
+
+          <div class="answers-box">
+            <h2>Antwortmöglichkeiten</h2>
+            <div id="answers-container">
+              <div class="answer-row">
+                <input class="answer-input" type="text" placeholder="Antwort 1" />
+                <button class="remove-answer-btn" type="button">Entfernen</button>
+              </div>
+              <div class="answer-row">
+                <input class="answer-input" type="text" placeholder="Antwort 2" />
+                <button class="remove-answer-btn" type="button">Entfernen</button>
+              </div>
+            </div>
+            <button id="add-answer-btn" type="button">Weitere Antwortmöglichkeit hinzufügen</button>
+          </div>
+
+          <p id="setup-error" class="error"></p>
+          <button id="start-btn" type="button">Abstimmung starten</button>
+        </section>
+
+        <section id="vote-section" hidden>
+          <h2 id="question-display"></h2>
+          <p class="info">Die Ergebnisse bleiben bis zum Ende verborgen.</p>
+
+          <label class="field">
+            <span>Dein Name</span>
+            <input id="voter-name" type="text" placeholder="Zum Beispiel: Mia" />
+          </label>
+
+          <label class="field">
+            <span>Wähle eine Antwort</span>
+            <select id="vote-select"></select>
+          </label>
+
+          <button id="vote-btn" type="button">Stimme abgeben</button>
+          <p id="vote-confirmation" class="confirm"></p>
+          <button id="end-voting-btn" type="button">Abstimmung beenden</button>
+        </section>
+
+        <section id="results-section" hidden>
+          <h2>Ergebnis der Abstimmung</h2>
+          <ul id="results-list" class="results-list"></ul>
+
+          <div class="wheel-area">
+            <div class="wheel-pointer"></div>
+            <div id="wheel" class="wheel"></div>
+          </div>
+
+          <div class="wheel-controls">
+            <button id="spin-btn" type="button">Glücksrad drehen</button>
+            <button id="stop-btn" type="button">Glücksrad stoppen</button>
+          </div>
+
+          <p id="winner-display" class="winner"></p>
+          <button id="new-voting-btn" type="button">Neue Abstimmung</button>
+        </section>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
