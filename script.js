@@ -120,8 +120,19 @@ function showVoteScreen(question) {
   nextPersonBtn.hidden = true;
 
   if (roomMode) {
-    roomStatus.hidden = false;
-    roomStatus.textContent = `${votes.length} ${votes.length === 1 ? 'Stimme wurde' : 'Stimmen wurden'} bisher abgegeben.`;
+      roomStatus.hidden = false;
+  roomStatus.textContent = `Bisher abgegebene Stimmen: ${votes.length}`;
+  voteInfo.textContent = `Person ${votes.length + 1} stimmt jetzt ab. Deine Stimme bleibt geheim.`;
+
+  endVotingBtn.textContent = 'Moderator: Abstimmung beenden';
+  endVotingBtn.classList.add('moderator-action');
+
+  newVotingBtnVote.hidden = true;
+} else {
+  endVotingBtn.textContent = 'Abstimmung beenden';
+  endVotingBtn.classList.remove('moderator-action');
+
+  newVotingBtnVote.hidden = false;
   }
 
   if (onlineMode) {
@@ -522,7 +533,7 @@ voteBtn.addEventListener('click', async () => {
   if (roomMode) {
     voteConfirmation.textContent = 'Deine Stimme wurde gespeichert. Bitte gib das Gerät an die nächste Person weiter.';
     roomStatus.hidden = false;
-    roomStatus.textContent = `${votes.length} ${votes.length === 1 ? 'Stimme wurde' : 'Stimmen wurden'} bisher abgegeben.`;
+    roomStatus.textContent = `Bisher abgegebene Stimmen: ${votes.length}`;
     voteBtn.hidden = true;
     nextPersonBtn.hidden = false;
   } else {
@@ -540,6 +551,9 @@ nextPersonBtn.addEventListener('click', () => {
   nextPersonBtn.hidden = true;
   voterNameInput.value = '';
   voteSelect.selectedIndex = 0;
+
+voteInfo.textContent = `Person ${votes.length + 1} stimmt jetzt ab. Deine Stimme bleibt geheim.`;
+  
   voterNameInput.focus();
 });
 
