@@ -416,6 +416,18 @@ addAnswerBtn.addEventListener('click', () => {
   createAnswerRow('');
 });
 
+roomModeToggle.addEventListener('change', () => {
+  if (roomModeToggle.checked) {
+    onlineModeToggle.checked = false;
+  }
+});
+
+onlineModeToggle.addEventListener('change', () => {
+  if (onlineModeToggle.checked) {
+    roomModeToggle.checked = false;
+  }
+});
+
 startBtn.addEventListener('click', async () => {
   setupError.textContent = '';
   const question = questionInput.value.trim();
