@@ -508,7 +508,6 @@ voteBtn.addEventListener('click', async () => {
       await refreshOnlineState();
       voteConfirmation.textContent = 'Danke! Deine Stimme wurde in der Online-Abstimmung gespeichert.';
       saveState();
-      voterNameInput.value = '';
       voteSelect.selectedIndex = 0;
       showVoteScreen(currentQuestion);
       return;
