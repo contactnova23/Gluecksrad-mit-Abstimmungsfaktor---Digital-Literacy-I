@@ -118,7 +118,6 @@ function showVoteScreen(question) {
   onlineStatus.textContent = '';
   voteBtn.hidden = false;
   nextPersonBtn.hidden = true;
-  voterNameInput.value = '';
   voteSelect.selectedIndex = 0;
 
   if (roomMode) {
