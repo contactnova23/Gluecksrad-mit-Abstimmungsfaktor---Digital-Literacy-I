@@ -7,11 +7,15 @@ const answersContainer = document.getElementById('answers-container');
 const addAnswerBtn = document.getElementById('add-answer-btn');
 const startBtn = document.getElementById('start-btn');
 const setupError = document.getElementById('setup-error');
+const roomModeToggle = document.getElementById('room-mode-toggle');
 
 const questionDisplay = document.getElementById('question-display');
+const voteInfo = document.getElementById('vote-info');
+const roomStatus = document.getElementById('room-status');
 const voterNameInput = document.getElementById('voter-name');
 const voteSelect = document.getElementById('vote-select');
 const voteBtn = document.getElementById('vote-btn');
+const nextPersonBtn = document.getElementById('next-person-btn');
 const voteConfirmation = document.getElementById('vote-confirmation');
 const endVotingBtn = document.getElementById('end-voting-btn');
 
@@ -20,13 +24,19 @@ const wheel = document.getElementById('wheel');
 const spinBtn = document.getElementById('spin-btn');
 const stopBtn = document.getElementById('stop-btn');
 const winnerDisplay = document.getElementById('winner-display');
-const newVotingBtn = document.getElementById('new-voting-btn');
+const newVotingBtnVote = document.getElementById('new-voting-btn-vote');
+const newVotingBtnResults = document.getElementById('new-voting-btn-results');
+
+const STORAGE_KEY = 'gluecksrad-room-voting-state';
 
 let options = [];
 let votes = [];
 let currentRotation = 0;
 let targetRotation = 0;
 let wheelIsSpinning = false;
+let roomMode = false;
+let currentPhase = 'setup';
+let currentQuestion = '';
 
 function createAnswerRow(value = '') {
   const row = document.createElement('div');
@@ -78,11 +88,24 @@ function fillVoteOptions() {
 }
 
 function showVoteScreen(question) {
+  currentQuestion = question;
   setupSection.hidden = true;
   voteSection.hidden = false;
   resultsSection.hidden = true;
   questionDisplay.textContent = question;
   voteConfirmation.textContent = '';
+  voteInfo.textContent = 'Die Ergebnisse bleiben bis zum Ende verborgen.';
+  roomStatus.hidden = true;
+  roomStatus.textContent = '';
+  voteBtn.hidden = false;
+  nextPersonBtn.hidden = true;
+  voterNameInput.value = '';
+  voteSelect.selectedIndex = 0;
+
+  if (roomMode) {
+    roomStatus.hidden = false;
+    roomStatus.textContent = `${votes.length} ${votes.length === 1 ? 'Stimme wurde' : 'Stimmen wurden'} bisher abgegeben.`;
+  }
 }
 
 function showResultsScreen() {
@@ -149,6 +172,91 @@ function calculateStopRotation(summary, winnerIndex) {
   return 360 * 6;
 }
 
+function saveState() {
+  const payload = {
+    phase: currentPhase,
+    question: currentQuestion,
+    options,
+    votes,
+    roomMode,
+    currentRotation,
+    targetRotation,
+  };
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+}
+
+function clearSavedState() {
+  localStorage.removeItem(STORAGE_KEY);
+}
+
+function resetApp() {
+  questionInput.value = '';
+  answersContainer.innerHTML = '';
+  createAnswerRow('');
+  createAnswerRow('');
+  roomModeToggle.checked = false;
+  setupError.textContent = '';
+  voteConfirmation.textContent = '';
+  winnerDisplay.textContent = '';
+  setupSection.hidden = false;
+  voteSection.hidden = true;
+  resultsSection.hidden = true;
+  roomStatus.hidden = true;
+  roomStatus.textContent = '';
+  voteInfo.textContent = 'Die Ergebnisse bleiben bis zum Ende verborgen.';
+  options = [];
+  votes = [];
+  currentRotation = 0;
+  targetRotation = 0;
+  wheelIsSpinning = false;
+  roomMode = false;
+  currentPhase = 'setup';
+  currentQuestion = '';
+  wheel.style.transform = 'rotate(0deg)';
+  wheel.style.transition = 'transform 0.8s ease-out';
+  spinBtn.disabled = false;
+  stopBtn.disabled = true;
+  clearSavedState();
+}
+
+function restoreSavedState() {
+  const savedState = localStorage.getItem(STORAGE_KEY);
+  if (!savedState) {
+    return;
+  }
+
+  try {
+    const parsedState = JSON.parse(savedState);
+    if (!parsedState) {
+      return;
+    }
+
+    currentPhase = parsedState.phase || 'setup';
+    currentQuestion = parsedState.question || '';
+    options = parsedState.options || [];
+    votes = parsedState.votes || [];
+    roomMode = Boolean(parsedState.roomMode);
+    currentRotation = parsedState.currentRotation || 0;
+    targetRotation = parsedState.targetRotation || 0;
+    roomModeToggle.checked = roomMode;
+
+    if (currentPhase === 'vote') {
+      fillVoteOptions();
+      showVoteScreen(currentQuestion);
+    } else if (currentPhase === 'results') {
+      const summary = computeSummary();
+      buildResultsList(summary);
+      buildWheel(summary);
+      showResultsScreen();
+      const winner = getWinner(summary);
+      winnerDisplay.textContent = winner ? `Gewinner: ${winner.option}` : 'Noch keine Stimmen vorhanden.';
+    }
+  } catch (error) {
+    console.error('Fehler beim Laden des gespeicherten Zustands:', error);
+  }
+}
+
 addAnswerBtn.addEventListener('click', () => {
   createAnswerRow('');
 });
@@ -172,6 +280,7 @@ startBtn.addEventListener('click', () => {
 
   options = answers;
   votes = [];
+  roomMode = roomModeToggle.checked;
   currentRotation = 0;
   targetRotation = 0;
   wheelIsSpinning = false;
@@ -181,6 +290,8 @@ startBtn.addEventListener('click', () => {
   stopBtn.disabled = true;
   winnerDisplay.textContent = '';
   fillVoteOptions();
+  currentPhase = 'vote';
+  saveState();
   showVoteScreen(question);
 });
 
@@ -199,15 +310,44 @@ voteBtn.addEventListener('click', () => {
   }
 
   votes.push({ name, option: selectedOption });
-  voteConfirmation.textContent = `Vielen Dank, ${name}. Deine Stimme wurde gezählt.`;
+
+  if (roomMode) {
+    voteConfirmation.textContent = 'Deine Stimme wurde gespeichert. Bitte gib das Gerät an die nächste Person weiter.';
+    roomStatus.hidden = false;
+    roomStatus.textContent = `${votes.length} ${votes.length === 1 ? 'Stimme wurde' : 'Stimmen wurden'} bisher abgegeben.`;
+    voteBtn.hidden = true;
+    nextPersonBtn.hidden = false;
+  } else {
+    voteConfirmation.textContent = `Vielen Dank, ${name}. Deine Stimme wurde gezählt.`;
+  }
+
   voterNameInput.value = '';
   voteSelect.selectedIndex = 0;
+  saveState();
+});
+
+nextPersonBtn.addEventListener('click', () => {
+  voteConfirmation.textContent = '';
+  voteBtn.hidden = false;
+  nextPersonBtn.hidden = true;
+  voterNameInput.value = '';
+  voteSelect.selectedIndex = 0;
+  voterNameInput.focus();
 });
 
 endVotingBtn.addEventListener('click', () => {
+  if (roomMode) {
+    const shouldEnd = window.confirm('Möchtest du die Abstimmung wirklich beenden?');
+    if (!shouldEnd) {
+      return;
+    }
+  }
+
   const summary = computeSummary();
   buildResultsList(summary);
   buildWheel(summary);
+  currentPhase = 'results';
+  saveState();
   showResultsScreen();
 
   const winner = getWinner(summary);
@@ -248,19 +388,15 @@ stopBtn.addEventListener('click', () => {
   winnerDisplay.textContent = winner ? `Gewinner: ${winner.option}` : 'Noch keine Stimmen vorhanden.';
 });
 
-newVotingBtn.addEventListener('click', () => {
-  questionInput.value = '';
-  answersContainer.innerHTML = '';
-  createAnswerRow('');
-  createAnswerRow('');
-  setupError.textContent = '';
-  voteConfirmation.textContent = '';
-  winnerDisplay.textContent = '';
-  setupSection.hidden = false;
-  voteSection.hidden = true;
-  resultsSection.hidden = true;
+newVotingBtnVote.addEventListener('click', () => {
+  resetApp();
+});
+
+newVotingBtnResults.addEventListener('click', () => {
+  resetApp();
 });
 
 createAnswerRow('');
 createAnswerRow('');
 updateRemoveButtons();
+restoreSavedState();

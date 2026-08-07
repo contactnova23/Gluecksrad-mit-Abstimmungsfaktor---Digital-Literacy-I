@@ -20,6 +20,14 @@
             <input id="question-input" type="text" placeholder="Zum Beispiel: Was soll wir heute essen?" />
           </label>
 
+          <label class="field">
+            <span>Abstimmungsmodus</span>
+            <label class="mode-toggle">
+              <input id="room-mode-toggle" type="checkbox" />
+              <span>Raum-Modus aktivieren (mehrere Personen, Ergebnisse erst am Ende sichtbar)</span>
+            </label>
+          </label>
+
           <div class="answers-box">
             <h2>Antwortmöglichkeiten</h2>
             <div id="answers-container">
@@ -41,7 +49,8 @@
 
         <section id="vote-section" hidden>
           <h2 id="question-display"></h2>
-          <p class="info">Die Ergebnisse bleiben bis zum Ende verborgen.</p>
+          <p class="info" id="vote-info">Die Ergebnisse bleiben bis zum Ende verborgen.</p>
+          <p id="room-status" class="room-status" hidden></p>
 
           <label class="field">
             <span>Dein Name</span>
@@ -53,9 +62,14 @@
             <select id="vote-select"></select>
           </label>
 
-          <button id="vote-btn" type="button">Stimme abgeben</button>
+          <div class="action-row">
+            <button id="vote-btn" type="button">Stimme abgeben</button>
+            <button id="next-person-btn" type="button" hidden>Nächste Person</button>
+            <button id="end-voting-btn" type="button">Abstimmung beenden</button>
+          </div>
+
           <p id="vote-confirmation" class="confirm"></p>
-          <button id="end-voting-btn" type="button">Abstimmung beenden</button>
+          <button id="new-voting-btn-vote" type="button" class="secondary-btn">Neue Abstimmung</button>
         </section>
 
         <section id="results-section" hidden>
@@ -73,7 +87,7 @@
           </div>
 
           <p id="winner-display" class="winner"></p>
-          <button id="new-voting-btn" type="button">Neue Abstimmung</button>
+          <button id="new-voting-btn-results" type="button" class="secondary-btn">Neue Abstimmung</button>
         </section>
       </section>
     </main>
