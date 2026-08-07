@@ -168,7 +168,7 @@ function buildResultsList(summary) {
 function buildWheel(summary) {
   const totalVotes = summary.reduce((sum, item) => sum + item.votes, 0);
   const gradientParts = [];
-  let startAngle = -90;
+  let startAngle = 0;
 
   summary.forEach((item, index) => {
     const size = totalVotes > 0 ? (item.votes / totalVotes) * 360 : 360 / summary.length;
@@ -178,7 +178,7 @@ function buildWheel(summary) {
     startAngle = endAngle;
   });
 
-  wheel.style.background = `conic-gradient(from -90deg, ${gradientParts.join(', ')})`;
+  wheel.style.background = `conic-gradient(${gradientParts.join(', ')})`;
 }
 
 function getWinner(summary) {
@@ -221,7 +221,7 @@ function computeSummary() {
 }
 
 function calculateStopRotation(summary, winnerIndex) {
-  let angle = -90;
+  let angle = 0;
   const totalVotes = summary.reduce((sum, item) => sum + item.votes, 0);
 
   for (let index = 0; index < summary.length; index += 1) {
