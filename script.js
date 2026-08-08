@@ -142,9 +142,9 @@ function showVoteScreen(question) {
   nextPersonBtn.hidden = true;
 
   if (roomMode) {
-      roomStatus.hidden = false;
-  roomStatus.textContent = `Bisher abgegebene Stimmen: ${votes.length}`;
-  voteInfo.textContent = `Person ${votes.length + 1} stimmt jetzt ab. Deine Stimme bleibt geheim.`;
+  roomStatus.hidden = true;
+  roomStatus.textContent = '';
+  voteInfo.textContent = 'Die abstimmende Person kann jetzt ihre Auswahl treffen. Die Stimme bleibt geheim.';
 
   endVotingBtn.textContent = 'Moderator: Abstimmung beenden';
   endVotingBtn.classList.add('moderator-action');
@@ -625,10 +625,10 @@ return;
   if (roomMode) {
     voteConfirmation.textContent = 'Stimme gespeichert. Die nächste Person kann jetzt abstimmen.';
 
-    roomStatus.hidden = false;
-    roomStatus.textContent = `Bisher abgegebene Stimmen: ${votes.length}`;
+    roomStatus.hidden = true;
+    roomStatus.textContent = '';
 
-    voteInfo.textContent = `Person ${votes.length + 1} stimmt jetzt ab. Deine Stimme bleibt geheim.`;
+    voteInfo.textContent = 'Die nächste Person kann jetzt abstimmen. Die Stimme bleibt geheim.';
 
     voterNameInput.closest('.field').hidden = false;
     voteSelect.closest('.field').hidden = false;
@@ -660,8 +660,9 @@ nextPersonBtn.addEventListener('click', () => {
 
   nextPersonBtn.hidden = true;
 
-  voteInfo.textContent = `Person ${votes.length + 1} stimmt jetzt ab. Deine Stimme bleibt geheim.`;
-  roomStatus.textContent = `Bisher abgegebene Stimmen: ${votes.length}`;
+  voteInfo.textContent = 'Die nächste Person kann jetzt abstimmen. Die Stimme bleibt geheim.';
+  roomStatus.hidden = true;
+  roomStatus.textContent = '';
 
   voterNameInput.focus();
 });
@@ -819,7 +820,11 @@ joinOnlineBtn.addEventListener('click', async () => {
   }
 
   try {
-    await ensureAnonymousUser();
+    try {
+      await ensureAnonymousUser();
+    } catch (authError) {
+      console.warn('Anonyme Anmeldung beim Beitritt war nicht möglich. Es wird trotzdem versucht, den Raum zu laden.', authError);
+    }
 
     const { data, error } = await supabaseClient
       .from('polls')
@@ -854,8 +859,8 @@ joinOnlineBtn.addEventListener('click', async () => {
     showVoteScreen(currentQuestion);
     voteConfirmation.textContent = 'Du bist dem Online-Raum beigetreten. Du kannst jetzt abstimmen.';
   } catch (error) {
-    joinError.textContent = 'Dieser Raumcode wurde nicht gefunden oder die Abstimmung ist bereits beendet.';
-    console.error(error);
+    joinError.textContent = 'Beitritt nicht möglich. Bitte prüfe den Raumcode und versuche es erneut.';
+    console.error('Fehler beim Beitritt zur Online-Abstimmung:', error);
   }
 });
 
