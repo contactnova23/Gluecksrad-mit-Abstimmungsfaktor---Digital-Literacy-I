@@ -48,9 +48,7 @@ let currentRoomCode = '';
 let currentVoteCount = 0;
 let isVotingClosed = false;
 let currentBrowserVoteKey = '';
-let onlineRefreshTimer = null;
-let currentWinnerOption = '';
-let isOnlineModerator = false;
+let currentBrowserVoteKey = '';
 let onlineRefreshTimer = null;
 let currentWinnerOption = '';
 let isOnlineModerator = false;
@@ -156,6 +154,7 @@ function showVoteScreen(question) {
   }
 }
 
+}  
 function startOnlineRefreshLoop() {
   if (onlineRefreshTimer) {
     window.clearInterval(onlineRefreshTimer);
