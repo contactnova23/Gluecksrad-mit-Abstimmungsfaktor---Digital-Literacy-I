@@ -1,91 +1,36 @@
 (() => {
   const root = document.documentElement;
-  const particleLayer = document.getElementById('vr-particles');
+  const card = document.querySelector('.card');
 
-  if (!particleLayer) return;
+  if (!card) return;
 
-  // Separate visual-only particle field.
-  const colors = ['#f5c874', '#b9d98a', '#d6c6ff', '#fff4d7', '#ffc0cb'];
-  const particleCount = window.matchMedia('(max-width: 700px)').matches ? 20 : 36;
-
-  for (let i = 0; i < particleCount; i += 1) {
-    const particle = document.createElement('span');
-    particle.className = 'vr-particle';
-
-    const size = 2 + Math.random() * 4;
-    const left = 6 + Math.random() * 88;
-    const top = 48 + Math.random() * 46;
-    const duration = 7 + Math.random() * 8;
-    const delay = -(Math.random() * duration);
-    const drift = -45 + Math.random() * 90;
-    const color = colors[i % colors.length];
-
-    particle.style.left = `${left}%`;
-    particle.style.top = `${top}%`;
-    particle.style.setProperty('--size', `${size}px`);
-    particle.style.setProperty('--duration', `${duration}s`);
-    particle.style.setProperty('--delay', `${delay}s`);
-    particle.style.setProperty('--drift', `${drift}px`);
-    particle.style.setProperty('--particle-color', color);
-
-    particleLayer.appendChild(particle);
-  }
-
-  // Smooth mouse/touch parallax. This only updates CSS custom properties.
-  let targetX = 0;
-  let targetY = 0;
-  let currentX = 0;
-  let currentY = 0;
-
-
-  const panel = document.querySelector('.card');
-
-
-  const setTarget = (clientX, clientY) => {
-    const x = (clientX / window.innerWidth - 0.5) * 2;
-    const y = (clientY / window.innerHeight - 0.5) * 2;
-
-    targetX = Math.max(-1, Math.min(1, x)) * 24;
-    targetY = Math.max(-1, Math.min(1, y)) * 16;
-  };
+  let tx = 0;
+  let ty = 0;
+  let cx = 0;
+  let cy = 0;
 
   window.addEventListener('pointermove', (event) => {
-    setTarget(event.clientX, event.clientY);
+    const nx = event.clientX / window.innerWidth - 0.5;
+    const ny = event.clientY / window.innerHeight - 0.5;
+    tx = nx * 1.2;
+    ty = ny * -0.9;
   }, { passive: true });
 
   window.addEventListener('pointerleave', () => {
-    targetX = 0;
-    targetY = 0;
+    tx = 0;
+    ty = 0;
   });
 
-  // Mobile tilt if the browser provides orientation events without asking permission.
-  window.addEventListener('deviceorientation', (event) => {
-    if (typeof event.gamma !== 'number' || typeof event.beta !== 'number') return;
+  function tick(time) {
+    cx += (tx - cx) * 0.045;
+    cy += (ty - cy) * 0.045;
 
-    const gamma = Math.max(-25, Math.min(25, event.gamma)) / 25;
-    const beta = Math.max(-25, Math.min(25, event.beta - 35)) / 25;
+    root.style.setProperty('--ui-tilt-y', `${cx.toFixed(2)}deg`);
+    root.style.setProperty('--ui-tilt-x', `${cy.toFixed(2)}deg`);
+    root.style.setProperty('--ui-float-y', `${(Math.sin(time * 0.00055) * 1.5).toFixed(2)}px`);
 
-    targetX = gamma * 13;
-    targetY = beta * 8;
-  }, { passive: true });
+    requestAnimationFrame(tick);
+  }
 
-  const animate = () => {
-    currentX += (targetX - currentX) * 0.055;
-    currentY += (targetY - currentY) * 0.055;
-
-    root.style.setProperty('--vr-look-x', `${currentX.toFixed(2)}px`);
-    root.style.setProperty('--vr-look-y', `${currentY.toFixed(2)}px`);
-    root.style.setProperty('--vr-look-x-soft', `${(currentX * 0.62).toFixed(2)}px`);
-    root.style.setProperty('--vr-look-y-soft', `${(currentY * 0.62).toFixed(2)}px`);
-
-    if (panel) {
-      const rotateY = (currentX / 24) * 1.6;
-      const rotateX = (-currentY / 16) * 1.4;
-      panel.style.transform = `translateY(-2px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg)`;
-    }
-
-    requestAnimationFrame(animate);
-  };
-
-  animate();
+  requestAnimationFrame(tick);
 })();

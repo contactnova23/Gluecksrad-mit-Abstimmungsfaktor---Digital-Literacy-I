@@ -3359,3 +3359,223 @@ button:hover {
     animation: none !important;
   }
 }
+
+
+/* =========================================================
+   CINEMATIC FAIRYTALE VR v10
+   Echte WebGL-3D-Szene via vr-scene.js.
+   Die CSS-Fairytale-Welt bleibt nur als Fallback.
+   ========================================================= */
+
+body {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #d8e9ff 0%, #fff6e7 100%) !important;
+}
+
+#vr-world-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: transparent;
+}
+
+/* Fallback falls WebGL/Three.js nicht geladen werden kann. */
+.fairytale-vr {
+  z-index: 0 !important;
+  opacity: 0.34;
+  filter: saturate(0.92) brightness(1.08);
+}
+
+.app {
+  position: relative !important;
+  z-index: 10 !important;
+  width: min(100%, 850px);
+  margin-top: min(4vh, 42px) !important;
+  perspective: 1200px;
+}
+
+.card {
+  background:
+    linear-gradient(180deg, rgba(255, 253, 248, 0.82), rgba(250, 246, 237, 0.76)) !important;
+  border: 1px solid rgba(150, 124, 80, 0.18) !important;
+  box-shadow:
+    0 32px 78px rgba(94, 73, 38, 0.16),
+    0 12px 28px rgba(87, 71, 43, 0.08),
+    inset 0 1px 0 rgba(255,255,255,0.70) !important;
+  backdrop-filter: blur(18px) saturate(1.05);
+  -webkit-backdrop-filter: blur(18px) saturate(1.05);
+  transform:
+    translateY(var(--ui-float-y, 0px))
+    rotateX(var(--ui-tilt-x, 0deg))
+    rotateY(var(--ui-tilt-y, 0deg));
+  transform-style: preserve-3d;
+  transition:
+    box-shadow 0.35s ease,
+    background 0.35s ease;
+}
+
+.card::before {
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(238, 198, 118, 0.58),
+      rgba(137, 184, 119, 0.46),
+      transparent
+    ) !important;
+}
+
+.card::after {
+  background:
+    radial-gradient(circle at 14% 0%, rgba(255,240,205,0.28), transparent 24%),
+    radial-gradient(circle at 92% 8%, rgba(188,221,161,0.18), transparent 26%) !important;
+}
+
+h1, h2, h3,
+.field > span,
+.step-label,
+.mode-fieldset legend,
+.mode-copy strong,
+.setup-block h3 {
+  color: #253429 !important;
+}
+
+.intro {
+  color: #506357 !important;
+}
+
+.info,
+.mode-copy small,
+.online-help {
+  color: #6d7b72 !important;
+}
+
+input,
+select {
+  color: #26372b !important;
+  background: rgba(255,255,255,0.64) !important;
+  border-color: rgba(151,127,90,0.20) !important;
+}
+
+input:focus,
+select:focus {
+  background: rgba(255,255,255,0.88) !important;
+  border-color: rgba(118,162,101,0.72) !important;
+  box-shadow:
+    0 0 0 3px rgba(118,162,101,0.12),
+    0 8px 24px rgba(119,93,52,0.10) !important;
+}
+
+button {
+  color: #263628 !important;
+  background: linear-gradient(135deg, #cde99d, #88bc79) !important;
+  border-color: rgba(118,162,101,0.24) !important;
+  box-shadow: 0 9px 22px rgba(92,140,80,0.16) !important;
+}
+
+button:hover {
+  box-shadow:
+    0 12px 28px rgba(92,140,80,0.22),
+    0 0 0 1px rgba(255,255,255,0.34) inset !important;
+}
+
+.secondary-choice-btn,
+.secondary-btn {
+  color: #4a4435 !important;
+  background: linear-gradient(135deg, #f8eccf, #e8cc8a) !important;
+  border-color: rgba(196,156,77,0.22) !important;
+}
+
+.back-btn {
+  color: #526257 !important;
+  background: rgba(255,255,255,0.50) !important;
+}
+
+.answers-box,
+.setup-block,
+.mode-option,
+.results-list li,
+.room-status {
+  background: rgba(255,255,255,0.38) !important;
+  border-color: rgba(151,127,90,0.14) !important;
+}
+
+.mode-option.is-selected {
+  background:
+    linear-gradient(135deg, rgba(225,240,206,0.88), rgba(250,235,199,0.86)) !important;
+  border-color: rgba(118,162,101,0.36) !important;
+}
+
+.progress-step {
+  color: #657268 !important;
+  background: rgba(255,255,255,0.54) !important;
+  border-color: rgba(151,127,90,0.13) !important;
+}
+
+.progress-step.is-active {
+  color: #304437 !important;
+  background: rgba(224,240,208,0.88) !important;
+  border-color: rgba(118,162,101,0.36) !important;
+}
+
+.progress-step.is-done {
+  color: #6d5d3e !important;
+  background: rgba(249,235,202,0.90) !important;
+  border-color: rgba(222,183,100,0.28) !important;
+}
+
+.results-list li {
+  color: #4c5e52 !important;
+}
+
+.confirm {
+  color: #4f7e4d !important;
+}
+
+.error {
+  color: #a85d65 !important;
+}
+
+.winner {
+  color: #8a622c !important;
+}
+
+/* Bei einem Kameraschritt bekommt das Panel ganz kurz mehr Tiefe. */
+body.vr-walking .card {
+  box-shadow:
+    0 38px 92px rgba(94, 73, 38, 0.20),
+    0 16px 34px rgba(87, 71, 43, 0.10),
+    inset 0 1px 0 rgba(255,255,255,0.76) !important;
+}
+
+/* Kleine optische Raumkante unter dem Interface */
+.card {
+  position: relative;
+}
+.card > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 700px) {
+  .app {
+    margin-top: 14px !important;
+  }
+
+  .card {
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transform: none !important;
+  }
+}
