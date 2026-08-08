@@ -1155,728 +1155,374 @@ select:focus {
 
 
 /* =========================================================
-   SPATIAL 3D ROOM
-   Rein dekorativ: kein Einfluss auf Abstimmungs-/Radlogik.
-   ========================================================= */
-
-body {
-  background: #050b13;
-  overflow-x: hidden;
-}
-
-/* Das bisherige flache Hintergrundraster wird zu einer Vignette,
-   damit der Raum nicht wieder wie eine 2D-Fläche wirkt. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 50% 38%, transparent 0 34%, rgba(2, 6, 12, 0.14) 62%, rgba(2, 5, 10, 0.52) 100%),
-    linear-gradient(to bottom, rgba(255,255,255,0.015), transparent 18%, transparent 78%, rgba(0,0,0,0.22));
-  mask-image: none;
-}
-
-.spatial-room {
-  position: fixed;
-  inset: 0;
-  z-index: -4;
-  overflow: hidden;
-  pointer-events: none;
-  perspective: 1050px;
-  perspective-origin: 50% 42%;
-  background:
-    radial-gradient(circle at 50% 42%, rgba(32, 83, 117, 0.19), transparent 30%),
-    linear-gradient(180deg, #07111d 0%, #050b13 70%, #03070c 100%);
-}
-
-/* Rückwand - bewusst weit hinten, damit Tiefe entsteht */
-.room-back-wall {
-  position: absolute;
-  left: 23vw;
-  right: 23vw;
-  top: 9vh;
-  height: 57vh;
-  transform: translateZ(-230px) scale(1.23);
-  transform-origin: center center;
-  border: 1px solid rgba(125, 211, 252, 0.09);
-  border-radius: 10px;
-  background:
-    linear-gradient(rgba(125, 211, 252, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(125, 211, 252, 0.035) 1px, transparent 1px),
-    radial-gradient(circle at 50% 42%, rgba(56, 189, 248, 0.07), transparent 48%),
-    linear-gradient(180deg, rgba(13, 28, 45, 0.86), rgba(6, 16, 28, 0.94));
-  background-size: 68px 68px, 68px 68px, auto, auto;
-  box-shadow:
-    inset 0 0 70px rgba(0, 0, 0, 0.34),
-    0 0 60px rgba(56, 189, 248, 0.035);
-}
-
-/* Horizontlinie, wie Lichtkante in einem virtuellen Raum */
-.room-horizon {
-  position: absolute;
-  left: 12vw;
-  right: 12vw;
-  top: 63vh;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(125, 211, 252, 0.18) 18%,
-    rgba(167, 139, 250, 0.24) 50%,
-    rgba(125, 211, 252, 0.18) 82%,
-    transparent
-  );
-  box-shadow:
-    0 0 18px rgba(125, 211, 252, 0.10),
-    0 0 42px rgba(167, 139, 250, 0.05);
-}
-
-/* Boden: perspektivisches Raster, das nach hinten zusammenläuft */
-.room-floor {
-  position: absolute;
-  left: -34vw;
-  right: -34vw;
-  top: 62vh;
-  height: 88vh;
-  transform-origin: 50% 0%;
-  transform: rotateX(69deg) translateZ(-10px);
-  background:
-    linear-gradient(rgba(125, 211, 252, 0.11) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(125, 211, 252, 0.11) 1px, transparent 1px),
-    linear-gradient(180deg, rgba(14, 34, 53, 0.42), rgba(2, 7, 12, 0.95));
-  background-size: 58px 58px, 58px 58px, auto;
-  border-top: 1px solid rgba(125, 211, 252, 0.17);
-  box-shadow:
-    0 -18px 52px rgba(56, 189, 248, 0.035),
-    inset 0 36px 70px rgba(56, 189, 248, 0.025);
-  opacity: 0.72;
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.96), rgba(0,0,0,0.55) 48%, transparent 100%);
-}
-
-/* Decke: nur feine perspektivische Struktur */
-.room-ceiling {
-  position: absolute;
-  left: -24vw;
-  right: -24vw;
-  bottom: 73vh;
-  height: 58vh;
-  transform-origin: 50% 100%;
-  transform: rotateX(-71deg) translateZ(-34px);
-  background:
-    linear-gradient(rgba(167, 139, 250, 0.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(125, 211, 252, 0.045) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(12, 25, 41, 0.66), rgba(3, 9, 16, 0.94));
-  background-size: 72px 72px, 72px 72px, auto;
-  opacity: 0.45;
-  mask-image: linear-gradient(to top, rgba(0,0,0,0.82), transparent 94%);
-}
-
-/* Seitenwände als perspektivische Flächen */
-.room-left-wall,
-.room-right-wall {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 34vw;
-  opacity: 0.62;
-}
-
-.room-left-wall {
-  left: 0;
-  clip-path: polygon(0 0, 100% 11%, 100% 73%, 0 100%);
-  background:
-    linear-gradient(90deg, rgba(3, 9, 16, 0.96), rgba(13, 34, 54, 0.54)),
-    repeating-linear-gradient(
-      180deg,
-      transparent 0 92px,
-      rgba(125, 211, 252, 0.055) 93px 94px
-    );
-  border-right: 1px solid rgba(125, 211, 252, 0.07);
-}
-
-.room-right-wall {
-  right: 0;
-  clip-path: polygon(0 11%, 100% 0, 100% 100%, 0 73%);
-  background:
-    linear-gradient(270deg, rgba(3, 9, 16, 0.96), rgba(28, 28, 60, 0.46)),
-    repeating-linear-gradient(
-      180deg,
-      transparent 0 92px,
-      rgba(167, 139, 250, 0.05) 93px 94px
-    );
-  border-left: 1px solid rgba(167, 139, 250, 0.07);
-}
-
-/* Große indirekte Lichtquellen, wie in einer virtuellen Architektur */
-.room-ambient {
-  position: absolute;
-  width: 30vw;
-  height: 58vh;
-  top: 16vh;
-  border-radius: 50%;
-  filter: blur(70px);
-  opacity: 0.12;
-  animation: ambient-room-light 10s ease-in-out infinite alternate;
-}
-
-.room-ambient-left {
-  left: -9vw;
-  background: rgba(56, 189, 248, 0.78);
-}
-
-.room-ambient-right {
-  right: -9vw;
-  background: rgba(167, 139, 250, 0.72);
-  animation-delay: -4s;
-}
-
-@keyframes ambient-room-light {
-  from {
-    transform: translateY(-1.5vh) scale(0.96);
-    opacity: 0.09;
-  }
-  to {
-    transform: translateY(1.5vh) scale(1.05);
-    opacity: 0.15;
-  }
-}
-
-/* Die App wirkt nun wie ein schwebendes Interface im Raum */
-.app {
-  position: relative;
-  z-index: 1;
-}
-
-.card {
-  box-shadow:
-    0 34px 90px rgba(0, 0, 0, 0.52),
-    0 14px 38px rgba(0, 0, 0, 0.26),
-    0 0 0 1px rgba(125, 211, 252, 0.025) inset,
-    0 0 44px rgba(56, 189, 248, 0.055);
-}
-
-/* Auf großen Monitoren etwas mehr "Raum" um das Interface */
-@media (min-width: 1100px) {
-  body {
-    padding-top: 6vh;
-    padding-bottom: 7vh;
-  }
-
-  .spatial-room {
-    perspective: 1250px;
-  }
-
-  .room-back-wall {
-    left: 27vw;
-    right: 27vw;
-  }
-}
-
-@media (max-width: 700px) {
-  .spatial-room {
-    perspective-origin: 50% 38%;
-  }
-
-  .room-back-wall {
-    left: 10vw;
-    right: 10vw;
-    top: 8vh;
-    height: 55vh;
-  }
-
-  .room-left-wall,
-  .room-right-wall {
-    width: 26vw;
-    opacity: 0.44;
-  }
-
-  .room-floor {
-    left: -70vw;
-    right: -70vw;
-    top: 64vh;
-    background-size: 46px 46px, 46px 46px, auto;
-  }
-
-  .room-ceiling {
-    left: -60vw;
-    right: -60vw;
-    opacity: 0.30;
-  }
-
-  .room-horizon {
-    left: 4vw;
-    right: 4vw;
-    top: 64vh;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .room-ambient {
-    animation: none !important;
-  }
-}
-
-
-/* =========================================================
-   ENCHANTED FANTASY VR WORLD
-   Original märchenhafte 3D-Welt - rein dekorativ.
-   Keine Abstimmungs-/Supabase-/Radlogik verändert.
+   FANTASY VR WORLD v6
+   Sichtbarer räumlicher Hintergrund.
+   Rein dekorativ - keine Programmlogik wird verändert.
    ========================================================= */
 
 :root {
-  --forest-bg-1: #06100d;
-  --forest-bg-2: #081615;
-  --forest-bg-3: #0f211a;
-  --forest-mist: rgba(201, 255, 224, 0.08);
-  --forest-gold: #f7d58c;
-  --forest-lime: #b9f29c;
-  --forest-teal: #81f3d0;
-  --forest-leaf: #274338;
-  --forest-leaf-soft: #355749;
-  --forest-bark: #1a261f;
-  --forest-night: #dffaf3;
-  --forest-violet: #a78bfa;
-  --forest-blue: #8fd7ff;
+  --fantasy-night: #07100c;
+  --fantasy-deep: #030806;
+  --fantasy-forest: #10261a;
+  --fantasy-forest-2: #173925;
+  --fantasy-moss: #5f8d61;
+  --fantasy-mint: #8ef0c0;
+  --fantasy-gold: #ffd58a;
+  --fantasy-lilac: #bda5ff;
 }
 
-/* Grundstimmung weg vom Tech-Schwarz hin zu märchenhaftem Raum */
+/* WICHTIGER FIX:
+   Die Welt liegt nun ÜBER dem Body-Hintergrund und UNTER der App.
+   Kein negativer z-index mehr. */
 body {
-  background:
-    radial-gradient(circle at 50% 12%, rgba(168, 112, 245, 0.11), transparent 24%),
-    radial-gradient(circle at 50% 34%, rgba(129, 243, 208, 0.12), transparent 22%),
-    linear-gradient(180deg, #07100e 0%, #0b1714 34%, #08110d 100%);
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  background: #06100c !important;
+  overflow-x: hidden;
 }
 
-/* Bisherige 2D-Vignette schwächer, damit die neue Welt sichtbar wird */
 body::before {
-  background:
-    radial-gradient(circle at 50% 30%, transparent 0 18%, rgba(3, 7, 6, 0.10) 54%, rgba(1, 3, 3, 0.34) 100%),
-    linear-gradient(to bottom, rgba(255,255,255,0.02), transparent 16%, transparent 82%, rgba(0,0,0,0.10));
-  z-index: -2;
-}
-
-.spatial-room {
   display: none !important;
 }
 
-/* Gesamte Szene */
-.fantasy-world {
+.fantasy-vr {
   position: fixed;
   inset: 0;
-  z-index: -5;
+  z-index: 0;
   overflow: hidden;
   pointer-events: none;
-  perspective: 1200px;
+  perspective: 1100px;
   perspective-origin: 50% 42%;
+  transform-style: preserve-3d;
   background:
-    radial-gradient(circle at 50% 28%, rgba(171, 255, 221, 0.05), transparent 26%),
-    linear-gradient(180deg, #07110d 0%, #091511 34%, #06100d 100%);
+    radial-gradient(circle at 50% 24%, rgba(255, 213, 138, 0.10), transparent 20%),
+    radial-gradient(circle at 20% 35%, rgba(142, 240, 192, 0.07), transparent 25%),
+    radial-gradient(circle at 82% 28%, rgba(189, 165, 255, 0.07), transparent 24%),
+    linear-gradient(180deg, #08150f 0%, #07110d 42%, #030806 100%);
 }
 
-/* Himmel / Raumtiefe */
-.fantasy-sky {
+/* Die App schwebt klar vor der Welt */
+.app {
+  position: relative !important;
+  z-index: 5 !important;
+}
+
+/* Himmel mit sichtbarer Tiefe */
+.vr-sky {
   position: absolute;
   inset: 0;
+  z-index: 0;
   background:
-    radial-gradient(circle at 50% 10%, rgba(247, 213, 140, 0.08), transparent 14%),
-    radial-gradient(circle at 22% 18%, rgba(143, 215, 255, 0.08), transparent 16%),
-    radial-gradient(circle at 78% 16%, rgba(167, 139, 250, 0.08), transparent 16%),
-    linear-gradient(180deg, rgba(6, 16, 13, 0.0) 0%, rgba(6, 16, 13, 0.02) 100%);
+    radial-gradient(circle at 14% 13%, rgba(255,255,255,0.62) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 28% 9%, rgba(255,240,204,0.55) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 43% 17%, rgba(226,255,242,0.58) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 63% 11%, rgba(255,255,255,0.52) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 78% 16%, rgba(225,218,255,0.60) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 90% 8%, rgba(255,242,211,0.50) 0 1px, transparent 1.5px),
+    linear-gradient(180deg, rgba(11, 27, 20, 0.20), rgba(2, 7, 5, 0.02));
+  opacity: 0.95;
 }
 
-.fantasy-stars {
+/* Mond-/Portallicht in der Ferne */
+.vr-moon-glow {
   position: absolute;
-  inset: 0;
-  opacity: 0.45;
-  background-image:
-    radial-gradient(circle at 12% 18%, rgba(255,255,255,0.85) 0 1.2px, transparent 1.4px),
-    radial-gradient(circle at 26% 11%, rgba(255,245,218,0.8) 0 1.1px, transparent 1.3px),
-    radial-gradient(circle at 41% 16%, rgba(217,255,245,0.76) 0 1.2px, transparent 1.4px),
-    radial-gradient(circle at 60% 9%, rgba(255,255,255,0.75) 0 1.1px, transparent 1.3px),
-    radial-gradient(circle at 72% 15%, rgba(255,243,211,0.8) 0 1.2px, transparent 1.4px),
-    radial-gradient(circle at 84% 12%, rgba(232,250,255,0.72) 0 1.1px, transparent 1.3px),
-    radial-gradient(circle at 33% 22%, rgba(255,255,255,0.62) 0 0.9px, transparent 1.1px),
-    radial-gradient(circle at 67% 21%, rgba(240,255,248,0.62) 0 0.9px, transparent 1.1px);
-  animation: star-pulse 8s ease-in-out infinite alternate;
-}
-
-@keyframes star-pulse {
-  from { opacity: 0.35; }
-  to { opacity: 0.56; }
-}
-
-/* Ferne Lichtquelle hinter dem Schloss */
-.fantasy-back-glow {
-  position: absolute;
+  z-index: 1;
+  top: 11vh;
   left: 50%;
-  top: 18vh;
-  width: min(44vw, 480px);
-  height: min(44vw, 480px);
-  transform: translateX(-50%);
+  width: min(38vw, 430px);
+  aspect-ratio: 1;
+  transform: translateX(-50%) translateZ(-260px);
   border-radius: 50%;
-  filter: blur(40px);
   background:
-    radial-gradient(circle, rgba(247, 213, 140, 0.22) 0%, rgba(129,243,208,0.10) 34%, transparent 68%);
-  opacity: 0.9;
+    radial-gradient(circle,
+      rgba(255, 230, 171, 0.24) 0%,
+      rgba(142, 240, 192, 0.11) 38%,
+      transparent 70%);
+  filter: blur(12px);
 }
 
-/* Märchenschloss in der Ferne */
-.fantasy-castle {
+/* Schloss-Silhouette deutlich sichtbar im Fernraum */
+.vr-distant-castle {
   position: absolute;
+  z-index: 2;
   left: 50%;
-  top: 20vh;
-  width: min(32vw, 300px);
-  height: 32vh;
-  transform: translateX(-50%) translateZ(-180px) scale(1.1);
-  opacity: 0.62;
+  top: 22vh;
+  width: min(28vw, 310px);
+  height: 28vh;
+  transform: translateX(-50%) translateZ(-180px) scale(1.15);
+  transform-origin: center bottom;
   background:
-    linear-gradient(180deg, rgba(9,16,18,0.05), rgba(9,16,18,0.0)),
-    linear-gradient(180deg, rgba(14, 26, 22, 0.0) 0%, rgba(8, 14, 13, 0.86) 66%, rgba(6, 10, 10, 0.96) 100%);
+    linear-gradient(180deg, rgba(30, 49, 35, 0.94), rgba(7, 13, 10, 0.99));
   clip-path: polygon(
-    0 100%, 0 78%, 8% 78%, 8% 56%, 12% 56%, 12% 38%, 18% 38%, 18% 55%, 24% 55%, 24% 72%, 32% 72%,
-    32% 48%, 38% 48%, 38% 28%, 46% 28%, 46% 48%, 52% 48%, 52% 16%, 60% 16%, 60% 46%, 66% 46%, 66% 34%,
-    74% 34%, 74% 54%, 80% 54%, 80% 72%, 88% 72%, 88% 58%, 92% 58%, 92% 78%, 100% 78%, 100% 100%
+    0 100%, 0 78%, 8% 78%, 8% 55%, 14% 55%, 14% 38%, 20% 38%, 20% 56%,
+    28% 56%, 28% 73%, 35% 73%, 35% 45%, 42% 45%, 42% 25%, 48% 25%, 48% 48%,
+    53% 48%, 53% 13%, 60% 13%, 60% 47%, 66% 47%, 66% 31%, 73% 31%, 73% 54%,
+    81% 54%, 81% 73%, 89% 73%, 89% 55%, 94% 55%, 94% 78%, 100% 78%, 100% 100%
   );
-  box-shadow:
-    0 0 28px rgba(247, 213, 140, 0.05),
-    inset 0 -20px 50px rgba(0, 0, 0, 0.35);
+  filter: drop-shadow(0 0 20px rgba(255, 213, 138, 0.13));
+  opacity: 0.86;
 }
 
-/* Horizont / Lichtkante */
-.fantasy-horizon {
-  position: absolute;
-  left: 10vw;
-  right: 10vw;
-  top: 59vh;
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(129, 243, 208, 0.15) 20%,
-    rgba(247, 213, 140, 0.24) 50%,
-    rgba(129, 243, 208, 0.15) 80%,
-    transparent
-  );
-  box-shadow:
-    0 0 12px rgba(247, 213, 140, 0.10),
-    0 0 28px rgba(129, 243, 208, 0.08);
-  opacity: 0.8;
-}
-
-/* Weg / Boden mit Perspektive */
-.fantasy-path {
-  position: absolute;
-  left: 50%;
-  top: 58vh;
-  width: 120vw;
-  height: 88vh;
-  transform-origin: 50% 0%;
-  transform: translateX(-50%) rotateX(72deg);
-  background:
-    radial-gradient(circle at 50% 12%, rgba(247, 213, 140, 0.10), transparent 18%),
-    repeating-linear-gradient(
-      90deg,
-      rgba(255,255,255,0.00) 0 7.4%,
-      rgba(129,243,208,0.035) 7.5% 7.6%
-    ),
-    repeating-linear-gradient(
-      180deg,
-      rgba(255,255,255,0.00) 0 8.4%,
-      rgba(247,213,140,0.04) 8.5% 8.6%
-    ),
-    linear-gradient(180deg, rgba(36, 54, 45, 0.88) 0%, rgba(10, 18, 15, 0.98) 100%);
-  border-top: 1px solid rgba(181, 247, 213, 0.12);
-  box-shadow:
-    inset 0 20px 70px rgba(247, 213, 140, 0.05),
-    0 -16px 34px rgba(181, 247, 213, 0.03);
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.95), rgba(0,0,0,0.72) 42%, transparent 100%);
-  opacity: 0.85;
-}
-
-.fantasy-floor-glow {
-  position: absolute;
-  left: 50%;
-  top: 61vh;
-  width: 72vw;
-  height: 16vh;
-  transform: translateX(-50%);
-  filter: blur(38px);
-  background:
-    radial-gradient(ellipse, rgba(247, 213, 140, 0.08) 0%, rgba(129,243,208,0.03) 48%, transparent 72%);
-}
-
-/* Bäume im Vordergrund für mehr Raumgefühl */
-.fantasy-tree {
-  position: absolute;
-  bottom: 0;
-  width: 23vw;
-  max-width: 300px;
-  min-width: 160px;
-  height: 70vh;
-  opacity: 0.74;
-  filter: drop-shadow(0 12px 26px rgba(0,0,0,0.36));
-}
-
-.left-tree {
-  left: -1vw;
-}
-
-.right-tree {
-  right: -1vw;
-  transform: scaleX(-1);
-}
-
-.fantasy-tree::before {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 42%;
-  width: 16%;
-  height: 56%;
-  background:
-    linear-gradient(180deg, #253228 0%, #141d16 100%);
-  border-radius: 38% 38% 20% 20% / 12% 12% 8% 8%;
-  box-shadow: inset -5px 0 10px rgba(255,255,255,0.02);
-}
-
-.fantasy-tree::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 4%;
-  bottom: 18%;
-  background:
-    radial-gradient(circle at 34% 38%, rgba(68, 101, 82, 0.96) 0 16%, transparent 17%),
-    radial-gradient(circle at 62% 30%, rgba(51, 82, 65, 0.96) 0 17%, transparent 18%),
-    radial-gradient(circle at 24% 57%, rgba(39, 67, 56, 0.96) 0 15%, transparent 16%),
-    radial-gradient(circle at 70% 60%, rgba(53, 87, 73, 0.96) 0 16%, transparent 17%),
-    radial-gradient(circle at 48% 48%, rgba(38, 68, 55, 0.98) 0 24%, transparent 25%);
-  filter: blur(0.2px);
-}
-
-/* Hängende Ranken / organische Seiten */
-.fantasy-vines {
-  position: absolute;
-  top: -4vh;
-  width: 16vw;
-  min-width: 120px;
-  height: 56vh;
-  opacity: 0.58;
-}
-
-.left-vines {
-  left: 0;
-}
-
-.right-vines {
-  right: 0;
-  transform: scaleX(-1);
-}
-
-.fantasy-vines::before,
-.fantasy-vines::after {
+.vr-distant-castle::after {
   content: "";
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 22% 14%, rgba(55, 87, 73, 0.92) 0 4%, transparent 4.5%),
-    radial-gradient(circle at 48% 26%, rgba(70, 109, 89, 0.92) 0 4.6%, transparent 5.1%),
-    radial-gradient(circle at 30% 40%, rgba(55, 87, 73, 0.88) 0 5.2%, transparent 5.7%),
-    radial-gradient(circle at 64% 54%, rgba(70, 109, 89, 0.88) 0 4.8%, transparent 5.3%),
-    linear-gradient(90deg, transparent 23%, rgba(49, 73, 61, 0.84) 24% 25%, transparent 26%),
-    linear-gradient(90deg, transparent 52%, rgba(49, 73, 61, 0.78) 53% 54%, transparent 55%);
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.96), rgba(0,0,0,0.6) 76%, transparent 100%);
+    radial-gradient(circle at 56% 48%, rgba(255, 213, 138, 0.80) 0 2px, transparent 3px),
+    radial-gradient(circle at 44% 58%, rgba(255, 213, 138, 0.55) 0 2px, transparent 3px),
+    radial-gradient(circle at 71% 62%, rgba(255, 213, 138, 0.45) 0 2px, transparent 3px);
 }
 
-.fantasy-vines::after {
-  transform: translateX(22px) scale(0.88);
-  opacity: 0.62;
-}
-
-/* Nebel */
-.fantasy-mist {
+/* Hügel hinter dem Boden */
+.vr-back-hills {
   position: absolute;
+  z-index: 2;
+  left: -5vw;
+  right: -5vw;
+  top: 47vh;
+  height: 23vh;
+  transform: translateZ(-120px) scale(1.08);
+  background:
+    radial-gradient(ellipse at 12% 100%, #153420 0 30%, transparent 31%),
+    radial-gradient(ellipse at 34% 100%, #102a1a 0 34%, transparent 35%),
+    radial-gradient(ellipse at 62% 100%, #173a23 0 33%, transparent 34%),
+    radial-gradient(ellipse at 88% 100%, #102a1a 0 31%, transparent 32%);
+  opacity: 0.94;
+}
+
+/* Echter perspektivischer Boden */
+.vr-floor {
+  position: absolute;
+  z-index: 3;
+  left: -45vw;
+  right: -45vw;
+  top: 58vh;
+  height: 92vh;
+  transform-origin: 50% 0%;
+  transform: rotateX(69deg) translateZ(10px);
+  background:
+    linear-gradient(rgba(142, 240, 192, 0.11) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 213, 138, 0.08) 1px, transparent 1px),
+    radial-gradient(ellipse at 50% 0%, rgba(255, 213, 138, 0.11), transparent 30%),
+    linear-gradient(180deg, #203c25 0%, #0a150e 55%, #030806 100%);
+  background-size: 68px 68px, 68px 68px, auto, auto;
+  border-top: 1px solid rgba(255, 213, 138, 0.20);
+  box-shadow:
+    0 -18px 50px rgba(142, 240, 192, 0.05),
+    inset 0 24px 70px rgba(255, 213, 138, 0.04);
+  opacity: 0.86;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0.78) 48%, transparent 100%);
+}
+
+/* Linke Wand: echtes rotateY */
+.vr-left-wall {
+  position: absolute;
+  z-index: 4;
+  left: -12vw;
+  top: 7vh;
+  width: 42vw;
+  height: 78vh;
+  transform-origin: left center;
+  transform: rotateY(54deg) translateZ(20px);
+  background:
+    radial-gradient(circle at 62% 23%, rgba(95, 141, 97, 0.34), transparent 22%),
+    radial-gradient(circle at 50% 48%, rgba(59, 95, 63, 0.34), transparent 24%),
+    linear-gradient(90deg, #050b07 0%, #17311f 72%, rgba(23,49,31,0.12) 100%);
+  border-right: 1px solid rgba(142, 240, 192, 0.12);
+  box-shadow: inset -18px 0 60px rgba(0,0,0,0.26);
+  opacity: 0.92;
+}
+
+.vr-left-wall::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 52% 18%, #2e5134 0 8%, transparent 9%),
+    radial-gradient(circle at 66% 32%, #355e3d 0 10%, transparent 11%),
+    radial-gradient(circle at 47% 50%, #29472f 0 11%, transparent 12%),
+    radial-gradient(circle at 70% 66%, #315438 0 10%, transparent 11%);
+  opacity: 0.68;
+}
+
+/* Rechte Wand: echtes rotateY */
+.vr-right-wall {
+  position: absolute;
+  z-index: 4;
+  right: -12vw;
+  top: 7vh;
+  width: 42vw;
+  height: 78vh;
+  transform-origin: right center;
+  transform: rotateY(-54deg) translateZ(20px);
+  background:
+    radial-gradient(circle at 38% 23%, rgba(95, 141, 97, 0.30), transparent 22%),
+    radial-gradient(circle at 50% 48%, rgba(78, 67, 116, 0.20), transparent 24%),
+    linear-gradient(270deg, #050b07 0%, #18301f 72%, rgba(24,48,31,0.12) 100%);
+  border-left: 1px solid rgba(189, 165, 255, 0.11);
+  box-shadow: inset 18px 0 60px rgba(0,0,0,0.26);
+  opacity: 0.92;
+}
+
+.vr-right-wall::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 48% 18%, #2d4e34 0 8%, transparent 9%),
+    radial-gradient(circle at 34% 34%, #3b5d42 0 10%, transparent 11%),
+    radial-gradient(circle at 53% 53%, #29472f 0 11%, transparent 12%),
+    radial-gradient(circle at 30% 70%, #35553b 0 10%, transparent 11%);
+  opacity: 0.66;
+}
+
+/* Baumkronen/Decke */
+.vr-canopy {
+  position: absolute;
+  z-index: 5;
   left: -10vw;
   right: -10vw;
-  bottom: 0;
-  height: 28vh;
+  top: -8vh;
+  height: 34vh;
+  transform: translateZ(70px);
   background:
-    radial-gradient(circle at 20% 60%, rgba(201,255,224,0.08), transparent 22%),
-    radial-gradient(circle at 50% 58%, rgba(201,255,224,0.10), transparent 26%),
-    radial-gradient(circle at 78% 62%, rgba(201,255,224,0.08), transparent 22%);
-  filter: blur(22px);
-  opacity: 0.7;
-  animation: mist-float 12s ease-in-out infinite alternate;
+    radial-gradient(circle at 10% 62%, #1d3c27 0 13%, transparent 14%),
+    radial-gradient(circle at 22% 35%, #294c31 0 14%, transparent 15%),
+    radial-gradient(circle at 37% 48%, #183821 0 16%, transparent 17%),
+    radial-gradient(circle at 57% 38%, #23462c 0 15%, transparent 16%),
+    radial-gradient(circle at 75% 46%, #2b5034 0 15%, transparent 16%),
+    radial-gradient(circle at 90% 58%, #1c3925 0 14%, transparent 15%);
+  filter: drop-shadow(0 18px 26px rgba(0,0,0,0.35));
+  opacity: 0.96;
 }
 
-@keyframes mist-float {
-  from { transform: translateY(0); }
-  to { transform: translateY(-8px); }
+/* Nebel in zwei Tiefenebenen */
+.vr-fog {
+  position: absolute;
+  z-index: 3;
+  left: -10vw;
+  right: -10vw;
+  height: 23vh;
+  filter: blur(24px);
+  background:
+    radial-gradient(ellipse at 18% 50%, rgba(221,255,237,0.10), transparent 28%),
+    radial-gradient(ellipse at 50% 55%, rgba(221,255,237,0.12), transparent 34%),
+    radial-gradient(ellipse at 82% 45%, rgba(221,255,237,0.09), transparent 28%);
+}
+
+.fog-one {
+  top: 50vh;
+  opacity: 0.62;
+  animation: fog-drift-one 12s ease-in-out infinite alternate;
+}
+
+.fog-two {
+  top: 69vh;
+  opacity: 0.36;
+  transform: scale(1.2);
+  animation: fog-drift-two 16s ease-in-out infinite alternate;
+}
+
+@keyframes fog-drift-one {
+  from { transform: translateX(-1.5vw); }
+  to { transform: translateX(1.5vw); }
+}
+
+@keyframes fog-drift-two {
+  from { transform: translateX(1vw) scale(1.2); }
+  to { transform: translateX(-1vw) scale(1.22); }
 }
 
 /* Schwebende magische Lichter */
-.fantasy-orbs {
+.vr-firefly {
   position: absolute;
-  width: 14px;
-  height: 14px;
+  z-index: 6;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  filter: blur(0.2px);
-  opacity: 0.88;
+  background: var(--fantasy-gold);
   box-shadow:
-    0 0 12px currentColor,
-    0 0 26px currentColor;
+    0 0 8px var(--fantasy-gold),
+    0 0 20px rgba(255, 213, 138, 0.72);
+  opacity: 0.90;
 }
 
-.fantasy-orbs::before {
-  content: "";
-  position: absolute;
-  inset: -24px;
-  border-radius: 50%;
-  background: radial-gradient(circle, currentColor 0%, transparent 62%);
-  opacity: 0.14;
-}
+.firefly-1 { left: 15vw; top: 31vh; animation: fly1 6s ease-in-out infinite; }
+.firefly-2 { right: 17vw; top: 35vh; background: var(--fantasy-mint); box-shadow: 0 0 8px var(--fantasy-mint), 0 0 20px rgba(142,240,192,.65); animation: fly2 7s ease-in-out infinite; }
+.firefly-3 { left: 31vw; top: 22vh; width: 6px; height: 6px; animation: fly3 8s ease-in-out infinite; }
+.firefly-4 { right: 31vw; top: 20vh; width: 7px; height: 7px; background: var(--fantasy-lilac); box-shadow: 0 0 8px var(--fantasy-lilac), 0 0 18px rgba(189,165,255,.55); animation: fly4 7.5s ease-in-out infinite; }
+.firefly-5 { left: 50vw; top: 43vh; width: 5px; height: 5px; animation: fly5 9s ease-in-out infinite; }
 
-.orb-a {
-  left: 18vw;
-  top: 34vh;
-  color: #9ef8d8;
-  animation: orb-float-a 8s ease-in-out infinite;
-}
+@keyframes fly1 { 50% { transform: translate(18px,-22px); } }
+@keyframes fly2 { 50% { transform: translate(-20px,-18px); } }
+@keyframes fly3 { 50% { transform: translate(13px,-25px); } }
+@keyframes fly4 { 50% { transform: translate(-14px,-20px); } }
+@keyframes fly5 { 50% { transform: translate(10px,-16px); } }
 
-.orb-b {
-  right: 16vw;
-  top: 28vh;
-  color: #ffd78f;
-  width: 16px;
-  height: 16px;
-  animation: orb-float-b 9s ease-in-out infinite;
-}
-
-.orb-c {
-  left: 62vw;
-  top: 46vh;
-  color: #b7a3ff;
-  width: 12px;
-  height: 12px;
-  animation: orb-float-c 7.5s ease-in-out infinite;
-}
-
-@keyframes orb-float-a {
-  0%, 100% { transform: translate3d(0, 0, 0); }
-  50% { transform: translate3d(14px, -18px, 0); }
-}
-
-@keyframes orb-float-b {
-  0%, 100% { transform: translate3d(0, 0, 0); }
-  50% { transform: translate3d(-18px, -14px, 0); }
-}
-
-@keyframes orb-float-c {
-  0%, 100% { transform: translate3d(0, 0, 0); }
-  50% { transform: translate3d(10px, -16px, 0); }
-}
-
-/* Interface schwebt wie magisches Panel im Raum */
-.app {
-  position: relative;
-  z-index: 1;
-  margin-top: min(7vh, 72px);
-}
-
+/* Panel farblich in die Fantasywelt integrieren */
 .card {
   background:
-    linear-gradient(180deg, rgba(15, 28, 25, 0.88), rgba(9, 18, 18, 0.90));
-  border: 1px solid rgba(181, 247, 213, 0.18);
+    linear-gradient(180deg, rgba(12, 27, 22, 0.90), rgba(7, 17, 14, 0.92)) !important;
+  border-color: rgba(178, 240, 204, 0.19) !important;
   box-shadow:
-    0 34px 90px rgba(0, 0, 0, 0.56),
-    0 18px 44px rgba(0, 0, 0, 0.22),
-    0 0 0 1px rgba(181, 247, 213, 0.03) inset,
-    0 0 54px rgba(129, 243, 208, 0.06);
+    0 36px 95px rgba(0,0,0,0.56),
+    0 18px 45px rgba(0,0,0,0.24),
+    0 0 0 1px rgba(178,240,204,0.025) inset,
+    0 0 55px rgba(142,240,192,0.055) !important;
 }
 
-.card::before {
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(181, 247, 213, 0.52),
-    rgba(247, 213, 140, 0.34),
-    transparent
-  );
-}
-
-.card::after {
-  background:
-    radial-gradient(circle at 10% 0%, rgba(129,243,208,0.05), transparent 24%),
-    radial-gradient(circle at 92% 10%, rgba(247,213,140,0.05), transparent 26%);
-}
-
-h1 {
-  color: #f7fff9;
+/* Alle Texte sichtbar */
+h1, h2, h3,
+.field > span,
+.step-label,
+.mode-fieldset legend,
+.mode-copy strong,
+.setup-block h3 {
+  color: #f3fff7 !important;
 }
 
 .intro {
-  color: #d6e9df;
+  color: #d6e9df !important;
 }
 
 .info,
 .mode-copy small,
 .online-help {
-  color: #acc2b8;
+  color: #afc5ba !important;
 }
 
-.field > span,
-.step-label,
-.mode-fieldset legend,
-.mode-copy strong,
-.panel-header h2,
-.setup-block h3,
-h2, h3 {
-  color: #f0f9f4;
-}
-
+/* Controls an die Welt anpassen */
 input,
 select {
-  background: rgba(6, 16, 15, 0.74);
-  border-color: rgba(181, 247, 213, 0.18);
+  background: rgba(5, 15, 12, 0.78) !important;
+  border-color: rgba(178, 240, 204, 0.18) !important;
+  color: #f1fff7 !important;
 }
 
 input:focus,
 select:focus {
-  border-color: rgba(129, 243, 208, 0.72);
+  border-color: rgba(142,240,192,0.66) !important;
   box-shadow:
-    0 0 0 3px rgba(129, 243, 208, 0.10),
-    0 8px 26px rgba(0,0,0,0.16),
-    0 0 24px rgba(129, 243, 208, 0.08);
+    0 0 0 3px rgba(142,240,192,0.10),
+    0 0 24px rgba(142,240,192,0.08) !important;
 }
 
 button {
-  color: #07120f;
-  background: linear-gradient(135deg, #c7f4a0, #81f3d0);
-  border-color: rgba(247, 213, 140, 0.22);
-  box-shadow: 0 10px 24px rgba(129, 243, 208, 0.14);
-}
-
-button:hover {
-  box-shadow: 0 12px 28px rgba(129, 243, 208, 0.20);
+  background: linear-gradient(135deg, #d6f7a8, #8ef0c0) !important;
+  color: #08140e !important;
+  border-color: rgba(255,213,138,0.20) !important;
 }
 
 .secondary-choice-btn,
 .secondary-btn {
-  color: #f2fff9;
-  background: rgba(65, 86, 61, 0.72);
-  border-color: rgba(181, 247, 213, 0.16);
-}
-
-.secondary-choice-btn:hover,
-.secondary-btn:hover {
-  background: rgba(84, 111, 78, 0.84);
+  color: #f5fff9 !important;
+  background: rgba(63, 90, 60, 0.76) !important;
 }
 
 .back-btn {
-  color: #dcece5;
+  color: #e2f2e9 !important;
+  background: rgba(5,15,12,0.50) !important;
 }
 
 .answers-box,
@@ -1884,136 +1530,69 @@ button:hover {
 .mode-option,
 .results-list li,
 .room-status {
-  border-color: rgba(181, 247, 213, 0.14);
-  background: rgba(8, 19, 17, 0.54);
-}
-
-.mode-option:hover {
-  background: rgba(15, 30, 24, 0.78);
+  background: rgba(6, 18, 14, 0.62) !important;
+  border-color: rgba(178, 240, 204, 0.14) !important;
 }
 
 .mode-option.is-selected {
-  border-color: rgba(181, 247, 213, 0.38);
   background:
-    linear-gradient(135deg, rgba(33, 63, 48, 0.66), rgba(61, 52, 31, 0.28));
-}
-
-.mode-option::after {
-  background: linear-gradient(to bottom, #81f3d0, #f7d58c);
-  box-shadow: 0 0 16px rgba(129, 243, 208, 0.25);
+    linear-gradient(135deg, rgba(39, 73, 52, 0.72), rgba(77, 61, 32, 0.34)) !important;
+  border-color: rgba(142,240,192,0.46) !important;
 }
 
 .progress-step {
-  background: rgba(6, 16, 15, 0.62);
-  border-color: rgba(181, 247, 213, 0.13);
-  color: #a6bdb2;
-}
-
-.progress-number {
-  background: rgba(136, 168, 155, 0.20);
-  color: #e9f8f1;
+  background: rgba(5,15,12,0.66) !important;
+  border-color: rgba(178,240,204,0.13) !important;
 }
 
 .progress-step.is-active {
-  background: rgba(31, 64, 52, 0.52);
-  border-color: rgba(129, 243, 208, 0.42);
-}
-
-.progress-step.is-active .progress-number {
-  background: #81f3d0;
-  color: #09221c;
+  background: rgba(31,69,49,0.60) !important;
+  border-color: rgba(142,240,192,0.42) !important;
 }
 
 .progress-step.is-done {
-  background: rgba(84, 72, 36, 0.34);
-  border-color: rgba(247, 213, 140, 0.30);
-  color: #fff5de;
-}
-
-.progress-step.is-done .progress-number {
-  background: #f7d58c;
-  color: #2c2310;
-}
-
-.progress-line {
-  background: rgba(181, 247, 213, 0.14);
-}
-
-.confirm {
-  color: #baf8df;
-}
-
-.error {
-  color: #ffc5cf;
-}
-
-.results-list li {
-  color: #d9e8e0;
-}
-
-.wheel-area::before {
-  border-color: rgba(181, 247, 213, 0.16);
-  box-shadow:
-    0 0 0 12px rgba(181, 247, 213, 0.015),
-    0 0 58px rgba(247, 213, 140, 0.06);
-}
-
-.wheel-area::after {
-  background:
-    conic-gradient(
-      from 0deg,
-      rgba(129,243,208,0.00),
-      rgba(129,243,208,0.14),
-      rgba(247,213,140,0.08),
-      rgba(183,163,255,0.10),
-      rgba(129,243,208,0.00)
-    );
+  background: rgba(83,68,31,0.38) !important;
+  border-color: rgba(255,213,138,0.32) !important;
 }
 
 .winner {
-  color: #fff3d8;
-  text-shadow:
-    0 0 14px rgba(247, 213, 140, 0.26),
-    0 0 24px rgba(129, 243, 208, 0.10);
+  color: #fff2d4 !important;
 }
 
+/* Mobile: Raum bleibt sichtbar */
 @media (max-width: 700px) {
-  .fantasy-castle {
-    width: 44vw;
-    top: 22vh;
-    height: 24vh;
+  .fantasy-vr {
+    perspective: 850px;
+    perspective-origin: 50% 38%;
   }
 
-  .fantasy-tree {
-    width: 28vw;
-    min-width: 120px;
-    height: 56vh;
-    opacity: 0.54;
+  .vr-distant-castle {
+    top: 20vh;
+    width: 42vw;
+    height: 23vh;
   }
 
-  .fantasy-vines {
-    width: 18vw;
-    opacity: 0.42;
+  .vr-left-wall,
+  .vr-right-wall {
+    width: 34vw;
+    opacity: 0.76;
   }
 
-  .fantasy-orbs {
-    opacity: 0.72;
-  }
-
-  .fantasy-path {
+  .vr-floor {
+    left: -90vw;
+    right: -90vw;
     top: 61vh;
+    background-size: 54px 54px, 54px 54px, auto, auto;
   }
 
-  .app {
-    margin-top: 24px;
+  .vr-canopy {
+    height: 27vh;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .fantasy-stars,
-  .fantasy-mist,
-  .fantasy-orbs,
-  .room-ambient {
+  .vr-fog,
+  .vr-firefly {
     animation: none !important;
   }
 }
