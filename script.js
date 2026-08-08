@@ -574,18 +574,20 @@ return;
   votes.push({ name: name || 'Anonym', option: selectedOption });
 
   if (roomMode) {
-    voteConfirmation.textContent = 'Stimme gespeichert. Übergib das Gerät jetzt an die nächste Person.';
+    voteConfirmation.textContent = 'Stimme gespeichert. Die nächste Person kann jetzt abstimmen.';
 
     roomStatus.hidden = false;
     roomStatus.textContent = `Bisher abgegebene Stimmen: ${votes.length}`;
 
-    voteInfo.textContent = 'Die Stimme wurde gespeichert und bleibt geheim.';
+    voteInfo.textContent = `Person ${votes.length + 1} stimmt jetzt ab. Deine Stimme bleibt geheim.`;
 
-    voterNameInput.closest('.field').hidden = true;
-    voteSelect.closest('.field').hidden = true;
+    voterNameInput.closest('.field').hidden = false;
+    voteSelect.closest('.field').hidden = false;
 
-    voteBtn.hidden = true;
-    nextPersonBtn.hidden = false;
+    voteBtn.hidden = false;
+    voteBtn.textContent = 'Stimme abgeben';
+
+    nextPersonBtn.hidden = true;
   } else {
     voteConfirmation.textContent = name ? `Vielen Dank, ${name}. Deine Stimme wurde gezählt.` : 'Vielen Dank. Deine Stimme wurde gezählt.';
   }
