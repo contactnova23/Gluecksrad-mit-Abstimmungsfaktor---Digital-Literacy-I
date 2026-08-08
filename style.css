@@ -1417,3 +1417,603 @@ body::before {
     animation: none !important;
   }
 }
+
+
+/* =========================================================
+   ENCHANTED FANTASY VR WORLD
+   Original märchenhafte 3D-Welt - rein dekorativ.
+   Keine Abstimmungs-/Supabase-/Radlogik verändert.
+   ========================================================= */
+
+:root {
+  --forest-bg-1: #06100d;
+  --forest-bg-2: #081615;
+  --forest-bg-3: #0f211a;
+  --forest-mist: rgba(201, 255, 224, 0.08);
+  --forest-gold: #f7d58c;
+  --forest-lime: #b9f29c;
+  --forest-teal: #81f3d0;
+  --forest-leaf: #274338;
+  --forest-leaf-soft: #355749;
+  --forest-bark: #1a261f;
+  --forest-night: #dffaf3;
+  --forest-violet: #a78bfa;
+  --forest-blue: #8fd7ff;
+}
+
+/* Grundstimmung weg vom Tech-Schwarz hin zu märchenhaftem Raum */
+body {
+  background:
+    radial-gradient(circle at 50% 12%, rgba(168, 112, 245, 0.11), transparent 24%),
+    radial-gradient(circle at 50% 34%, rgba(129, 243, 208, 0.12), transparent 22%),
+    linear-gradient(180deg, #07100e 0%, #0b1714 34%, #08110d 100%);
+}
+
+/* Bisherige 2D-Vignette schwächer, damit die neue Welt sichtbar wird */
+body::before {
+  background:
+    radial-gradient(circle at 50% 30%, transparent 0 18%, rgba(3, 7, 6, 0.10) 54%, rgba(1, 3, 3, 0.34) 100%),
+    linear-gradient(to bottom, rgba(255,255,255,0.02), transparent 16%, transparent 82%, rgba(0,0,0,0.10));
+  z-index: -2;
+}
+
+.spatial-room {
+  display: none !important;
+}
+
+/* Gesamte Szene */
+.fantasy-world {
+  position: fixed;
+  inset: 0;
+  z-index: -5;
+  overflow: hidden;
+  pointer-events: none;
+  perspective: 1200px;
+  perspective-origin: 50% 42%;
+  background:
+    radial-gradient(circle at 50% 28%, rgba(171, 255, 221, 0.05), transparent 26%),
+    linear-gradient(180deg, #07110d 0%, #091511 34%, #06100d 100%);
+}
+
+/* Himmel / Raumtiefe */
+.fantasy-sky {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 10%, rgba(247, 213, 140, 0.08), transparent 14%),
+    radial-gradient(circle at 22% 18%, rgba(143, 215, 255, 0.08), transparent 16%),
+    radial-gradient(circle at 78% 16%, rgba(167, 139, 250, 0.08), transparent 16%),
+    linear-gradient(180deg, rgba(6, 16, 13, 0.0) 0%, rgba(6, 16, 13, 0.02) 100%);
+}
+
+.fantasy-stars {
+  position: absolute;
+  inset: 0;
+  opacity: 0.45;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(255,255,255,0.85) 0 1.2px, transparent 1.4px),
+    radial-gradient(circle at 26% 11%, rgba(255,245,218,0.8) 0 1.1px, transparent 1.3px),
+    radial-gradient(circle at 41% 16%, rgba(217,255,245,0.76) 0 1.2px, transparent 1.4px),
+    radial-gradient(circle at 60% 9%, rgba(255,255,255,0.75) 0 1.1px, transparent 1.3px),
+    radial-gradient(circle at 72% 15%, rgba(255,243,211,0.8) 0 1.2px, transparent 1.4px),
+    radial-gradient(circle at 84% 12%, rgba(232,250,255,0.72) 0 1.1px, transparent 1.3px),
+    radial-gradient(circle at 33% 22%, rgba(255,255,255,0.62) 0 0.9px, transparent 1.1px),
+    radial-gradient(circle at 67% 21%, rgba(240,255,248,0.62) 0 0.9px, transparent 1.1px);
+  animation: star-pulse 8s ease-in-out infinite alternate;
+}
+
+@keyframes star-pulse {
+  from { opacity: 0.35; }
+  to { opacity: 0.56; }
+}
+
+/* Ferne Lichtquelle hinter dem Schloss */
+.fantasy-back-glow {
+  position: absolute;
+  left: 50%;
+  top: 18vh;
+  width: min(44vw, 480px);
+  height: min(44vw, 480px);
+  transform: translateX(-50%);
+  border-radius: 50%;
+  filter: blur(40px);
+  background:
+    radial-gradient(circle, rgba(247, 213, 140, 0.22) 0%, rgba(129,243,208,0.10) 34%, transparent 68%);
+  opacity: 0.9;
+}
+
+/* Märchenschloss in der Ferne */
+.fantasy-castle {
+  position: absolute;
+  left: 50%;
+  top: 20vh;
+  width: min(32vw, 300px);
+  height: 32vh;
+  transform: translateX(-50%) translateZ(-180px) scale(1.1);
+  opacity: 0.62;
+  background:
+    linear-gradient(180deg, rgba(9,16,18,0.05), rgba(9,16,18,0.0)),
+    linear-gradient(180deg, rgba(14, 26, 22, 0.0) 0%, rgba(8, 14, 13, 0.86) 66%, rgba(6, 10, 10, 0.96) 100%);
+  clip-path: polygon(
+    0 100%, 0 78%, 8% 78%, 8% 56%, 12% 56%, 12% 38%, 18% 38%, 18% 55%, 24% 55%, 24% 72%, 32% 72%,
+    32% 48%, 38% 48%, 38% 28%, 46% 28%, 46% 48%, 52% 48%, 52% 16%, 60% 16%, 60% 46%, 66% 46%, 66% 34%,
+    74% 34%, 74% 54%, 80% 54%, 80% 72%, 88% 72%, 88% 58%, 92% 58%, 92% 78%, 100% 78%, 100% 100%
+  );
+  box-shadow:
+    0 0 28px rgba(247, 213, 140, 0.05),
+    inset 0 -20px 50px rgba(0, 0, 0, 0.35);
+}
+
+/* Horizont / Lichtkante */
+.fantasy-horizon {
+  position: absolute;
+  left: 10vw;
+  right: 10vw;
+  top: 59vh;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(129, 243, 208, 0.15) 20%,
+    rgba(247, 213, 140, 0.24) 50%,
+    rgba(129, 243, 208, 0.15) 80%,
+    transparent
+  );
+  box-shadow:
+    0 0 12px rgba(247, 213, 140, 0.10),
+    0 0 28px rgba(129, 243, 208, 0.08);
+  opacity: 0.8;
+}
+
+/* Weg / Boden mit Perspektive */
+.fantasy-path {
+  position: absolute;
+  left: 50%;
+  top: 58vh;
+  width: 120vw;
+  height: 88vh;
+  transform-origin: 50% 0%;
+  transform: translateX(-50%) rotateX(72deg);
+  background:
+    radial-gradient(circle at 50% 12%, rgba(247, 213, 140, 0.10), transparent 18%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255,255,255,0.00) 0 7.4%,
+      rgba(129,243,208,0.035) 7.5% 7.6%
+    ),
+    repeating-linear-gradient(
+      180deg,
+      rgba(255,255,255,0.00) 0 8.4%,
+      rgba(247,213,140,0.04) 8.5% 8.6%
+    ),
+    linear-gradient(180deg, rgba(36, 54, 45, 0.88) 0%, rgba(10, 18, 15, 0.98) 100%);
+  border-top: 1px solid rgba(181, 247, 213, 0.12);
+  box-shadow:
+    inset 0 20px 70px rgba(247, 213, 140, 0.05),
+    0 -16px 34px rgba(181, 247, 213, 0.03);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.95), rgba(0,0,0,0.72) 42%, transparent 100%);
+  opacity: 0.85;
+}
+
+.fantasy-floor-glow {
+  position: absolute;
+  left: 50%;
+  top: 61vh;
+  width: 72vw;
+  height: 16vh;
+  transform: translateX(-50%);
+  filter: blur(38px);
+  background:
+    radial-gradient(ellipse, rgba(247, 213, 140, 0.08) 0%, rgba(129,243,208,0.03) 48%, transparent 72%);
+}
+
+/* Bäume im Vordergrund für mehr Raumgefühl */
+.fantasy-tree {
+  position: absolute;
+  bottom: 0;
+  width: 23vw;
+  max-width: 300px;
+  min-width: 160px;
+  height: 70vh;
+  opacity: 0.74;
+  filter: drop-shadow(0 12px 26px rgba(0,0,0,0.36));
+}
+
+.left-tree {
+  left: -1vw;
+}
+
+.right-tree {
+  right: -1vw;
+  transform: scaleX(-1);
+}
+
+.fantasy-tree::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 42%;
+  width: 16%;
+  height: 56%;
+  background:
+    linear-gradient(180deg, #253228 0%, #141d16 100%);
+  border-radius: 38% 38% 20% 20% / 12% 12% 8% 8%;
+  box-shadow: inset -5px 0 10px rgba(255,255,255,0.02);
+}
+
+.fantasy-tree::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 4%;
+  bottom: 18%;
+  background:
+    radial-gradient(circle at 34% 38%, rgba(68, 101, 82, 0.96) 0 16%, transparent 17%),
+    radial-gradient(circle at 62% 30%, rgba(51, 82, 65, 0.96) 0 17%, transparent 18%),
+    radial-gradient(circle at 24% 57%, rgba(39, 67, 56, 0.96) 0 15%, transparent 16%),
+    radial-gradient(circle at 70% 60%, rgba(53, 87, 73, 0.96) 0 16%, transparent 17%),
+    radial-gradient(circle at 48% 48%, rgba(38, 68, 55, 0.98) 0 24%, transparent 25%);
+  filter: blur(0.2px);
+}
+
+/* Hängende Ranken / organische Seiten */
+.fantasy-vines {
+  position: absolute;
+  top: -4vh;
+  width: 16vw;
+  min-width: 120px;
+  height: 56vh;
+  opacity: 0.58;
+}
+
+.left-vines {
+  left: 0;
+}
+
+.right-vines {
+  right: 0;
+  transform: scaleX(-1);
+}
+
+.fantasy-vines::before,
+.fantasy-vines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 22% 14%, rgba(55, 87, 73, 0.92) 0 4%, transparent 4.5%),
+    radial-gradient(circle at 48% 26%, rgba(70, 109, 89, 0.92) 0 4.6%, transparent 5.1%),
+    radial-gradient(circle at 30% 40%, rgba(55, 87, 73, 0.88) 0 5.2%, transparent 5.7%),
+    radial-gradient(circle at 64% 54%, rgba(70, 109, 89, 0.88) 0 4.8%, transparent 5.3%),
+    linear-gradient(90deg, transparent 23%, rgba(49, 73, 61, 0.84) 24% 25%, transparent 26%),
+    linear-gradient(90deg, transparent 52%, rgba(49, 73, 61, 0.78) 53% 54%, transparent 55%);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.96), rgba(0,0,0,0.6) 76%, transparent 100%);
+}
+
+.fantasy-vines::after {
+  transform: translateX(22px) scale(0.88);
+  opacity: 0.62;
+}
+
+/* Nebel */
+.fantasy-mist {
+  position: absolute;
+  left: -10vw;
+  right: -10vw;
+  bottom: 0;
+  height: 28vh;
+  background:
+    radial-gradient(circle at 20% 60%, rgba(201,255,224,0.08), transparent 22%),
+    radial-gradient(circle at 50% 58%, rgba(201,255,224,0.10), transparent 26%),
+    radial-gradient(circle at 78% 62%, rgba(201,255,224,0.08), transparent 22%);
+  filter: blur(22px);
+  opacity: 0.7;
+  animation: mist-float 12s ease-in-out infinite alternate;
+}
+
+@keyframes mist-float {
+  from { transform: translateY(0); }
+  to { transform: translateY(-8px); }
+}
+
+/* Schwebende magische Lichter */
+.fantasy-orbs {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  filter: blur(0.2px);
+  opacity: 0.88;
+  box-shadow:
+    0 0 12px currentColor,
+    0 0 26px currentColor;
+}
+
+.fantasy-orbs::before {
+  content: "";
+  position: absolute;
+  inset: -24px;
+  border-radius: 50%;
+  background: radial-gradient(circle, currentColor 0%, transparent 62%);
+  opacity: 0.14;
+}
+
+.orb-a {
+  left: 18vw;
+  top: 34vh;
+  color: #9ef8d8;
+  animation: orb-float-a 8s ease-in-out infinite;
+}
+
+.orb-b {
+  right: 16vw;
+  top: 28vh;
+  color: #ffd78f;
+  width: 16px;
+  height: 16px;
+  animation: orb-float-b 9s ease-in-out infinite;
+}
+
+.orb-c {
+  left: 62vw;
+  top: 46vh;
+  color: #b7a3ff;
+  width: 12px;
+  height: 12px;
+  animation: orb-float-c 7.5s ease-in-out infinite;
+}
+
+@keyframes orb-float-a {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(14px, -18px, 0); }
+}
+
+@keyframes orb-float-b {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(-18px, -14px, 0); }
+}
+
+@keyframes orb-float-c {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(10px, -16px, 0); }
+}
+
+/* Interface schwebt wie magisches Panel im Raum */
+.app {
+  position: relative;
+  z-index: 1;
+  margin-top: min(7vh, 72px);
+}
+
+.card {
+  background:
+    linear-gradient(180deg, rgba(15, 28, 25, 0.88), rgba(9, 18, 18, 0.90));
+  border: 1px solid rgba(181, 247, 213, 0.18);
+  box-shadow:
+    0 34px 90px rgba(0, 0, 0, 0.56),
+    0 18px 44px rgba(0, 0, 0, 0.22),
+    0 0 0 1px rgba(181, 247, 213, 0.03) inset,
+    0 0 54px rgba(129, 243, 208, 0.06);
+}
+
+.card::before {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(181, 247, 213, 0.52),
+    rgba(247, 213, 140, 0.34),
+    transparent
+  );
+}
+
+.card::after {
+  background:
+    radial-gradient(circle at 10% 0%, rgba(129,243,208,0.05), transparent 24%),
+    radial-gradient(circle at 92% 10%, rgba(247,213,140,0.05), transparent 26%);
+}
+
+h1 {
+  color: #f7fff9;
+}
+
+.intro {
+  color: #d6e9df;
+}
+
+.info,
+.mode-copy small,
+.online-help {
+  color: #acc2b8;
+}
+
+.field > span,
+.step-label,
+.mode-fieldset legend,
+.mode-copy strong,
+.panel-header h2,
+.setup-block h3,
+h2, h3 {
+  color: #f0f9f4;
+}
+
+input,
+select {
+  background: rgba(6, 16, 15, 0.74);
+  border-color: rgba(181, 247, 213, 0.18);
+}
+
+input:focus,
+select:focus {
+  border-color: rgba(129, 243, 208, 0.72);
+  box-shadow:
+    0 0 0 3px rgba(129, 243, 208, 0.10),
+    0 8px 26px rgba(0,0,0,0.16),
+    0 0 24px rgba(129, 243, 208, 0.08);
+}
+
+button {
+  color: #07120f;
+  background: linear-gradient(135deg, #c7f4a0, #81f3d0);
+  border-color: rgba(247, 213, 140, 0.22);
+  box-shadow: 0 10px 24px rgba(129, 243, 208, 0.14);
+}
+
+button:hover {
+  box-shadow: 0 12px 28px rgba(129, 243, 208, 0.20);
+}
+
+.secondary-choice-btn,
+.secondary-btn {
+  color: #f2fff9;
+  background: rgba(65, 86, 61, 0.72);
+  border-color: rgba(181, 247, 213, 0.16);
+}
+
+.secondary-choice-btn:hover,
+.secondary-btn:hover {
+  background: rgba(84, 111, 78, 0.84);
+}
+
+.back-btn {
+  color: #dcece5;
+}
+
+.answers-box,
+.setup-block,
+.mode-option,
+.results-list li,
+.room-status {
+  border-color: rgba(181, 247, 213, 0.14);
+  background: rgba(8, 19, 17, 0.54);
+}
+
+.mode-option:hover {
+  background: rgba(15, 30, 24, 0.78);
+}
+
+.mode-option.is-selected {
+  border-color: rgba(181, 247, 213, 0.38);
+  background:
+    linear-gradient(135deg, rgba(33, 63, 48, 0.66), rgba(61, 52, 31, 0.28));
+}
+
+.mode-option::after {
+  background: linear-gradient(to bottom, #81f3d0, #f7d58c);
+  box-shadow: 0 0 16px rgba(129, 243, 208, 0.25);
+}
+
+.progress-step {
+  background: rgba(6, 16, 15, 0.62);
+  border-color: rgba(181, 247, 213, 0.13);
+  color: #a6bdb2;
+}
+
+.progress-number {
+  background: rgba(136, 168, 155, 0.20);
+  color: #e9f8f1;
+}
+
+.progress-step.is-active {
+  background: rgba(31, 64, 52, 0.52);
+  border-color: rgba(129, 243, 208, 0.42);
+}
+
+.progress-step.is-active .progress-number {
+  background: #81f3d0;
+  color: #09221c;
+}
+
+.progress-step.is-done {
+  background: rgba(84, 72, 36, 0.34);
+  border-color: rgba(247, 213, 140, 0.30);
+  color: #fff5de;
+}
+
+.progress-step.is-done .progress-number {
+  background: #f7d58c;
+  color: #2c2310;
+}
+
+.progress-line {
+  background: rgba(181, 247, 213, 0.14);
+}
+
+.confirm {
+  color: #baf8df;
+}
+
+.error {
+  color: #ffc5cf;
+}
+
+.results-list li {
+  color: #d9e8e0;
+}
+
+.wheel-area::before {
+  border-color: rgba(181, 247, 213, 0.16);
+  box-shadow:
+    0 0 0 12px rgba(181, 247, 213, 0.015),
+    0 0 58px rgba(247, 213, 140, 0.06);
+}
+
+.wheel-area::after {
+  background:
+    conic-gradient(
+      from 0deg,
+      rgba(129,243,208,0.00),
+      rgba(129,243,208,0.14),
+      rgba(247,213,140,0.08),
+      rgba(183,163,255,0.10),
+      rgba(129,243,208,0.00)
+    );
+}
+
+.winner {
+  color: #fff3d8;
+  text-shadow:
+    0 0 14px rgba(247, 213, 140, 0.26),
+    0 0 24px rgba(129, 243, 208, 0.10);
+}
+
+@media (max-width: 700px) {
+  .fantasy-castle {
+    width: 44vw;
+    top: 22vh;
+    height: 24vh;
+  }
+
+  .fantasy-tree {
+    width: 28vw;
+    min-width: 120px;
+    height: 56vh;
+    opacity: 0.54;
+  }
+
+  .fantasy-vines {
+    width: 18vw;
+    opacity: 0.42;
+  }
+
+  .fantasy-orbs {
+    opacity: 0.72;
+  }
+
+  .fantasy-path {
+    top: 61vh;
+  }
+
+  .app {
+    margin-top: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fantasy-stars,
+  .fantasy-mist,
+  .fantasy-orbs,
+  .room-ambient {
+    animation: none !important;
+  }
+}
