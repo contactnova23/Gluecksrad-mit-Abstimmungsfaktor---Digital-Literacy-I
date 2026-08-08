@@ -546,6 +546,11 @@ voteConfirmation.textContent = `Danke! Deine Stimme für „${selectedOption}“
 
 saveState();
 return;
+
+    } catch (error) {
+      voteConfirmation.textContent = 'Die Stimme konnte nicht gespeichert werden.';
+      console.error(error);
+      return;
     }
   }
 
