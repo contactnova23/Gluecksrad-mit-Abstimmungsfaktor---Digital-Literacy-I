@@ -22,6 +22,11 @@ const showJoinBtn = document.getElementById('show-join-btn');
 const backFromCreateBtn = document.getElementById('back-from-create-btn');
 const backFromJoinBtn = document.getElementById('back-from-join-btn');
 
+const progressStep1 = document.getElementById('progress-step-1');
+const progressStep2 = document.getElementById('progress-step-2');
+const progressStep3 = document.getElementById('progress-step-3');
+
+
 const questionDisplay = document.getElementById('question-display');
 const voteInfo = document.getElementById('vote-info');
 const roomStatus = document.getElementById('room-status');
@@ -62,6 +67,93 @@ let currentWinnerOption = '';
 let isOnlineModerator = false;
 let wheelSpinAnimation = null;
 
+function updateSetupProgress() {
+  const hasQuestion = questionInput.value.trim().length > 0;
+  const answerValues = Array.from(answersContainer.querySelectorAll('.answer-input'))
+    .map((input) => input.value.trim())
+    .filter(Boolean);
+  const hasAnswers = answerValues.length >= 2;
+  const hasMode = simpleModeToggle.checked || roomModeToggle.checked || onlineModeToggle.checked;
+
+  const steps = [progressStep1, progressStep2, progressStep3];
+  steps.forEach((step) => {
+    step.classList.remove('is-active', 'is-done');
+  });
+
+  if (hasQuestion) {
+    progressStep1.classList.add('is-done');
+  } else {
+    progressStep1.classList.add('is-active');
+    return;
+  }
+
+  if (hasAnswers) {
+    progressStep2.classList.add('is-done');
+  } else {
+    progressStep2.classList.add('is-active');
+    return;
+  }
+
+  if (hasMode) {
+    progressStep3.classList.add('is-done', 'is-active');
+  } else {
+    progressStep3.classList.add('is-active');
+  }
+}
+
+function updateModeCards() {
+  document.querySelectorAll('.mode-option').forEach((label) => {
+    const input = label.querySelector('input[type="radio"]');
+    label.classList.toggle('is-selected', Boolean(input?.checked));
+  });
+}
+
+function animateFeedback(element) {
+  element.classList.remove('feedback-pop');
+  void element.offsetWidth;
+  element.classList.add('feedback-pop');
+
+  window.setTimeout(() => {
+    element.classList.remove('feedback-pop');
+  }, 650);
+}
+
+function celebrateWinner() {
+  winnerDisplay.classList.remove('winner-pop');
+  void winnerDisplay.offsetWidth;
+  winnerDisplay.classList.add('winner-pop');
+
+  const oldLayer = document.querySelector('.confetti-layer');
+  if (oldLayer) {
+    oldLayer.remove();
+  }
+
+  const layer = document.createElement('div');
+  layer.className = 'confetti-layer';
+  layer.setAttribute('aria-hidden', 'true');
+
+  const colors = ['#2563eb', '#7c3aed', '#0f766e', '#f59e0b', '#ef4444'];
+
+  for (let index = 0; index < 28; index += 1) {
+    const piece = document.createElement('span');
+    piece.className = 'confetti-piece';
+    piece.style.left = `${8 + Math.random() * 84}%`;
+    piece.style.backgroundColor = colors[index % colors.length];
+    piece.style.setProperty('--delay', `${Math.random() * 0.25}s`);
+    piece.style.setProperty('--duration', `${0.95 + Math.random() * 0.45}s`);
+    piece.style.setProperty('--drift', `${-70 + Math.random() * 140}px`);
+    piece.style.setProperty('--turn', `${180 + Math.random() * 540}deg`);
+    layer.appendChild(piece);
+  }
+
+  document.body.appendChild(layer);
+
+  window.setTimeout(() => {
+    layer.remove();
+    winnerDisplay.classList.remove('winner-pop');
+  }, 1700);
+}
+
 function showSetupHome() {
   entryChoice.hidden = false;
   createPanel.hidden = true;
@@ -75,6 +167,8 @@ function showCreatePanel() {
   createPanel.hidden = false;
   joinPanel.hidden = true;
   setupError.textContent = '';
+  updateSetupProgress();
+  updateModeCards();
   questionInput.focus();
 }
 
@@ -130,6 +224,7 @@ function createAnswerRow(value = '') {
     if (rows.length > 2) {
       row.remove();
       updateRemoveButtons();
+      updateSetupProgress();
     } else {
       setupError.textContent = 'Mindestens zwei Antwortmöglichkeiten sind nötig.';
     }
@@ -139,6 +234,7 @@ function createAnswerRow(value = '') {
   row.appendChild(removeButton);
   answersContainer.appendChild(row);
   updateRemoveButtons();
+  updateSetupProgress();
 }
 
 function updateRemoveButtons() {
@@ -508,6 +604,9 @@ showJoinBtn.addEventListener('click', showJoinPanel);
 backFromCreateBtn.addEventListener('click', showSetupHome);
 backFromJoinBtn.addEventListener('click', showSetupHome);
 
+questionInput.addEventListener('input', updateSetupProgress);
+answersContainer.addEventListener('input', updateSetupProgress);
+
 addAnswerBtn.addEventListener('click', () => {
   createAnswerRow('');
 });
@@ -517,18 +616,24 @@ simpleModeToggle.addEventListener('change', () => {
     roomModeToggle.checked = false;
     onlineModeToggle.checked = false;
   }
+  updateModeCards();
+  updateSetupProgress();
 });
 
 roomModeToggle.addEventListener('change', () => {
   if (roomModeToggle.checked) {
     onlineModeToggle.checked = false;
   }
+  updateModeCards();
+  updateSetupProgress();
 });
 
 onlineModeToggle.addEventListener('change', () => {
   if (onlineModeToggle.checked) {
     roomModeToggle.checked = false;
   }
+  updateModeCards();
+  updateSetupProgress();
 });
 
 startBtn.addEventListener('click', async () => {
@@ -656,7 +761,8 @@ voteBtn.addEventListener('click', async () => {
 
 await refreshOnlineState();
 
-voteConfirmation.textContent = `Danke! Deine Stimme für „${selectedOption}“ wurde gespeichert.`;
+voteConfirmation.textContent = `✓ Stimme gespeichert! Deine Auswahl „${selectedOption}“ wurde gezählt.`;
+animateFeedback(voteConfirmation);
 
 saveState();
 return;
@@ -671,7 +777,7 @@ return;
   votes.push({ name: name || 'Anonym', option: selectedOption });
 
   if (roomMode) {
-    voteConfirmation.textContent = 'Stimme gespeichert. Die nächste Person kann jetzt abstimmen.';
+    voteConfirmation.textContent = '✓ Stimme gespeichert! Die nächste Person kann jetzt abstimmen.';
 
     roomStatus.hidden = true;
     roomStatus.textContent = '';
@@ -686,8 +792,12 @@ return;
 
     nextPersonBtn.hidden = true;
   } else {
-    voteConfirmation.textContent = name ? `Vielen Dank, ${name}. Deine Stimme wurde gezählt.` : 'Vielen Dank. Deine Stimme wurde gezählt.';
+    voteConfirmation.textContent = name
+      ? `✓ Stimme gespeichert! Vielen Dank, ${name}.`
+      : '✓ Stimme gespeichert! Vielen Dank.';
   }
+
+  animateFeedback(voteConfirmation);
 
   voterNameInput.value = '';
   voteSelect.selectedIndex = 0;
@@ -775,7 +885,7 @@ spinBtn.addEventListener('click', () => {
     return;
   }
 
-  winnerDisplay.textContent = 'Das Rad dreht sich. Klicke auf „Glücksrad stoppen“.';
+  winnerDisplay.textContent = '🎡 Das Rad dreht sich. Klicke auf „Glücksrad stoppen“.';
 
   wheelSpinAnimation = wheel.animate(
     [
@@ -827,6 +937,8 @@ stopBtn.addEventListener('click', () => {
   const delta = (desiredAngle - visibleAngle + 360) % 360;
   targetRotation = visibleAngle + 360 * 3 + delta;
 
+  winnerDisplay.textContent = '✨ Das Glücksrad entscheidet …';
+
   wheel.style.transition = 'transform 2.5s ease-out';
   wheel.style.transform = `rotate(${targetRotation}deg)`;
   currentRotation = targetRotation;
@@ -841,7 +953,8 @@ wheel.addEventListener('transitionend', () => {
   wheelIsSpinning = false;
   spinBtn.disabled = false;
   stopBtn.disabled = true;
-  winnerDisplay.textContent = `Gewinner: ${currentWinnerOption}`;
+  winnerDisplay.textContent = `🎉 Gewinner: ${currentWinnerOption}`;
+  celebrateWinner();
   saveState();
 });
 
@@ -915,4 +1028,6 @@ joinOnlineBtn.addEventListener('click', async () => {
 createAnswerRow('');
 createAnswerRow('');
 updateRemoveButtons();
+updateModeCards();
+updateSetupProgress();
 restoreSavedState();

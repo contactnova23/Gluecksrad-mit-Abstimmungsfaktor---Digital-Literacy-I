@@ -24,6 +24,18 @@ Die meistgewählte Antwort gewinnt jedoch nicht automatisch – das Ergebnis ble
 - Glücksrad starten und manuell stoppen
 - Gewinner anzeigen
 
+
+## Dezente Gamification
+
+Die App nutzt bewusst nur wenige spielerische Elemente, damit die Abstimmung einfach und verständlich bleibt:
+
+- eine 3-Schritt-Fortschrittsanzeige beim Erstellen einer Abstimmung
+- direktes visuelles Feedback nach einer abgegebenen Stimme
+- eine deutlich hervorgehobene Auswahl des Abstimmungsmodus
+- eine kurze Gewinner-Animation mit dezentem Konfetti
+
+Auf Punkte, Badges, Streaks oder Leaderboards wird bewusst verzichtet. Die geheime Abstimmung und die eigentliche Entscheidung durch das gewichtete Glücksrad bleiben im Mittelpunkt.
+
 ## Abstimmungsarten
 
 ### Einfacher Modus

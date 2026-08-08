@@ -33,6 +33,24 @@
               <button id="back-from-create-btn" type="button" class="back-btn">Zurück</button>
             </div>
 
+
+            <div class="setup-progress" aria-label="Fortschritt beim Erstellen der Abstimmung">
+              <div id="progress-step-1" class="progress-step is-active">
+                <span class="progress-number">1</span>
+                <span>Frage</span>
+              </div>
+              <div class="progress-line"></div>
+              <div id="progress-step-2" class="progress-step">
+                <span class="progress-number">2</span>
+                <span>Antworten</span>
+              </div>
+              <div class="progress-line"></div>
+              <div id="progress-step-3" class="progress-step">
+                <span class="progress-number">3</span>
+                <span>Modus</span>
+              </div>
+            </div>
+
             <label class="field">
               <span class="step-label">1. Abstimmungsfrage</span>
               <input id="question-input" type="text" placeholder="Zum Beispiel: Was sollen wir heute essen?" />
@@ -125,7 +143,7 @@
             <button id="end-voting-btn" type="button">Abstimmung beenden</button>
           </div>
 
-          <p id="vote-confirmation" class="confirm"></p>
+          <p id="vote-confirmation" class="confirm" aria-live="polite"></p>
           <button id="new-voting-btn-vote" type="button" class="secondary-btn">Neue Abstimmung</button>
         </section>
 
@@ -143,7 +161,7 @@
             <button id="stop-btn" type="button">Glücksrad stoppen</button>
           </div>
 
-          <p id="winner-display" class="winner"></p>
+          <p id="winner-display" class="winner" aria-live="polite"></p>
           <button id="new-voting-btn-results" type="button" class="secondary-btn">Neue Abstimmung</button>
         </section>
       </section>
@@ -151,6 +169,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
-    <script src="script.js?v=17"></script>
+    <script src="script.js?v=18"></script>
   </body>
 </html>
