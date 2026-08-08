@@ -142,8 +142,6 @@ function showVoteScreen(question) {
     ? `Online-Raum: ${currentRoomCode} • ${currentVoteCount} ${currentVoteCount === 1 ? 'Stimme' : 'Stimmen'} bisher abgegeben`
     : 'Online-Abstimmung ist aktiv.';
 
-  newVotingBtnVote.hidden = true;
-
   if (isOnlineModerator) {
     endVotingBtn.hidden = false;
     endVotingBtn.textContent = 'Moderator: Abstimmung beenden';
