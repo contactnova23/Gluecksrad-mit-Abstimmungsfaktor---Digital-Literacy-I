@@ -50,6 +50,10 @@ let isVotingClosed = false;
 let currentBrowserVoteKey = '';
 let onlineRefreshTimer = null;
 let currentWinnerOption = '';
+let isOnlineModerator = false;
+let onlineRefreshTimer = null;
+let currentWinnerOption = '';
+let isOnlineModerator = false;
 
 function generateRoomCode() {
   return Math.random().toString(36).slice(2, 8).toUpperCase();
@@ -255,6 +259,7 @@ function saveState() {
     votes,
     roomMode,
     onlineMode,
+    isOnlineModerator,
     currentRotation,
     targetRotation,
     currentPollId,
@@ -307,6 +312,7 @@ newVotingBtnVote.hidden = false;
   wheelIsSpinning = false;
   roomMode = false;
   onlineMode = false;
+  isOnlineModerator = false;
   currentPhase = 'setup';
   currentQuestion = '';
   currentPollId = null;
