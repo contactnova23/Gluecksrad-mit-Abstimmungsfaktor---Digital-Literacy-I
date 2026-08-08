@@ -465,6 +465,13 @@ startBtn.addEventListener('click', async () => {
     return;
   }
 
+  const normalizedAnswers = answers.map((answer) => answer.toLowerCase());
+
+if (new Set(normalizedAnswers).size !== normalizedAnswers.length) {
+  setupError.textContent = 'Bitte verwende jede Antwortmöglichkeit nur einmal.';
+  return;
+}
+
   roomMode = roomModeToggle.checked;
   onlineMode = onlineModeToggle.checked;
 
