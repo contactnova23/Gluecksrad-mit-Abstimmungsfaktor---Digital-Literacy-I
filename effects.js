@@ -5,7 +5,7 @@
   if (!particleLayer) return;
 
   // Separate visual-only particle field.
-  const colors = ['#ffd58a', '#8ef0c0', '#bda5ff', '#dffaf3'];
+  const colors = ['#f5c874', '#b9d98a', '#d6c6ff', '#fff4d7', '#ffc0cb'];
   const particleCount = window.matchMedia('(max-width: 700px)').matches ? 18 : 30;
 
   for (let i = 0; i < particleCount; i += 1) {
