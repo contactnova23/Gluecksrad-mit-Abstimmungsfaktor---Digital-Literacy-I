@@ -57,6 +57,26 @@ function generateRoomCode() {
   return Math.random().toString(36).slice(2, 8).toUpperCase();
 }
 
+async function ensureAnonymousUser() {
+  const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+
+  if (sessionError) {
+    throw sessionError;
+  }
+
+  if (sessionData.session?.user) {
+    return sessionData.session.user;
+  }
+
+  const { data, error } = await supabaseClient.auth.signInAnonymously();
+
+  if (error) {
+    throw error;
+  }
+
+  return data.user;
+}
+
 function createAnswerRow(value = '') {
   const row = document.createElement('div');
   row.className = 'answer-row';
@@ -139,9 +159,13 @@ function showVoteScreen(question) {
 
   if (onlineMode) {
   onlineStatus.hidden = false;
-  onlineStatus.textContent = currentRoomCode
-    ? `Online-Raum: ${currentRoomCode} • ${currentVoteCount} ${currentVoteCount === 1 ? 'Stimme' : 'Stimmen'} bisher abgegeben`
-    : 'Online-Abstimmung ist aktiv.';
+  onlineStatus.textContent = isOnlineModerator
+    ? (currentRoomCode
+      ? `Online-Raum: ${currentRoomCode} • ${currentVoteCount} ${currentVoteCount === 1 ? 'Stimme' : 'Stimmen'} bisher abgegeben`
+      : 'Online-Abstimmung ist aktiv.')
+    : (currentRoomCode
+      ? `Online-Raum: ${currentRoomCode} • Deine Stimme bleibt bis zum Ende geheim.`
+      : 'Online-Abstimmung ist aktiv.');
 
   if (isOnlineModerator) {
     endVotingBtn.hidden = false;
@@ -344,6 +368,8 @@ async function refreshOnlineState() {
   }
 
   try {
+    await ensureAnonymousUser();
+
     const { data: pollData, error: pollError } = await supabaseClient
       .from('polls')
       .select('id, question, options, room_code, is_closed')
@@ -361,24 +387,33 @@ async function refreshOnlineState() {
       isVotingClosed = Boolean(pollData.is_closed);
     }
 
-    const { data: voteData, error: voteError } = await supabaseClient
-      .from('votes')
-      .select('option, voter_name')
-      .eq('poll_id', currentPollId);
+    if (isOnlineModerator) {
+      const { data: voteData, error: voteError } = await supabaseClient
+        .from('votes')
+        .select('option, voter_name')
+        .eq('poll_id', currentPollId);
 
-    if (voteError) {
-      throw voteError;
+      if (voteError) {
+        throw voteError;
+      }
+
+      votes = (voteData || []).map((vote) => ({ name: vote.voter_name, option: vote.option }));
+      currentVoteCount = votes.length;
+    } else {
+      votes = [];
     }
 
-    votes = (voteData || []).map((vote) => ({ name: vote.voter_name, option: vote.option }));
-    currentVoteCount = votes.length;
     saveState();
 
     if (currentPhase === 'vote' && onlineMode) {
-  onlineStatus.hidden = false;
-  onlineStatus.textContent = currentRoomCode
-    ? `Online-Raum: ${currentRoomCode} • ${currentVoteCount} ${currentVoteCount === 1 ? 'Stimme' : 'Stimmen'} bisher abgegeben`
-    : 'Online-Abstimmung ist aktiv.';
+      onlineStatus.hidden = false;
+      onlineStatus.textContent = isOnlineModerator
+        ? (currentRoomCode
+          ? `Online-Raum: ${currentRoomCode} • ${currentVoteCount} ${currentVoteCount === 1 ? 'Stimme' : 'Stimmen'} bisher abgegeben`
+          : 'Online-Abstimmung ist aktiv.')
+        : (currentRoomCode
+          ? `Online-Raum: ${currentRoomCode} • Deine Stimme bleibt bis zum Ende geheim.`
+          : 'Online-Abstimmung ist aktiv.');
     }
   } catch (error) {
     console.error('Fehler beim Laden der Online-Stimmen:', error);
@@ -495,6 +530,7 @@ if (new Set(normalizedAnswers).size !== normalizedAnswers.length) {
     }
   isOnlineModerator = true;
     try {
+      await ensureAnonymousUser();
       currentRoomCode = generateRoomCode();
       const { data, error } = await supabaseClient.from('polls').insert({
         question,
@@ -551,6 +587,8 @@ voteBtn.addEventListener('click', async () => {
     }
 
     try {
+      await ensureAnonymousUser();
+
       const { error } = await supabaseClient.from('votes').insert({
         poll_id: currentPollId,
         option: selectedOption,
@@ -559,6 +597,10 @@ voteBtn.addEventListener('click', async () => {
       });
 
       if (error) {
+        if (error.code === '23505') {
+          voteConfirmation.textContent = 'Du hast bereits für diesen Raum abgestimmt.';
+          return;
+        }
         throw error;
       }
 
@@ -777,9 +819,11 @@ joinOnlineBtn.addEventListener('click', async () => {
   }
 
   try {
+    await ensureAnonymousUser();
+
     const { data, error } = await supabaseClient
       .from('polls')
-      .select('*')
+      .select('id, question, options, room_code, is_closed')
       .eq('room_code', roomCode)
       .eq('is_closed', false)
       .single();
