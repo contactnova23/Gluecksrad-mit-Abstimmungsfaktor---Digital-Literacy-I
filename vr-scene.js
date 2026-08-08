@@ -84,6 +84,11 @@
       roughness: 0.90,
     });
 
+    const timberMaterial = new THREE.MeshStandardMaterial({
+      color: 0x6e4628,
+      roughness: 0.94,
+    });
+
     // ---------- Sky ----------
     const sky = new THREE.Mesh(
       new THREE.SphereGeometry(100, 24, 14),
@@ -307,6 +312,26 @@
       roof.castShadow = shadowsEnabled;
       group.add(roof);
 
+      if (((Math.round(spec.z * 10) + (spec.side > 0 ? 1 : 0)) % 2) === 0) {
+        const upperStorey = new THREE.Mesh(
+          bodyGeometry,
+          plasterMaterials[(spec.materialIndex + 1) % plasterMaterials.length]
+        );
+        upperStorey.scale.set(spec.depthX * 0.96, Math.max(1.1, spec.height * 0.34), spec.widthZ * 0.92);
+        upperStorey.position.set(spec.side * -0.18, spec.height * 0.72, 0);
+        upperStorey.castShadow = shadowsEnabled;
+        upperStorey.receiveShadow = shadowsEnabled;
+        group.add(upperStorey);
+      }
+
+      const chimney = new THREE.Mesh(
+        new THREE.BoxGeometry(0.32, 0.9, 0.32),
+        stoneMaterial
+      );
+      chimney.position.set(spec.side * 0.48, spec.height + 0.7, spec.z % 2 === 0 ? -0.75 : 0.75);
+      chimney.castShadow = shadowsEnabled;
+      group.add(chimney);
+
       const awning = new THREE.Mesh(
         awningGeometry,
         new THREE.MeshStandardMaterial({
@@ -410,6 +435,48 @@
       roof.position.set(x, height + 0.92, z);
       roof.castShadow = shadowsEnabled;
       castle.add(roof);
+    }
+
+    function addBattlements(parent, width, depth, y, countFrontBack, countSides) {
+      const merlonGeo = new THREE.BoxGeometry(0.34, 0.42, 0.34);
+      for (let i = 0; i < countFrontBack; i += 1) {
+        const z = -depth / 2 + 0.35 + (i / Math.max(1, countFrontBack - 1)) * Math.max(0.01, depth - 0.7);
+        for (const x of [-width / 2, width / 2]) {
+          const merlon = new THREE.Mesh(merlonGeo, stoneMaterial);
+          merlon.position.set(x, y, z);
+          parent.add(merlon);
+        }
+      }
+      for (let i = 0; i < countSides; i += 1) {
+        const x = -width / 2 + 0.35 + (i / Math.max(1, countSides - 1)) * Math.max(0.01, width - 0.7);
+        for (const z of [-depth / 2, depth / 2]) {
+          const merlon = new THREE.Mesh(merlonGeo, stoneMaterial);
+          merlon.position.set(x, y, z);
+          parent.add(merlon);
+        }
+      }
+    }
+
+    addBattlements(castle, 5.0, 3.35, 4.72, 8, 10);
+    addBattlements(castle, 2.15, 2.25, 7.02, 4, 5);
+
+    for (const [x, z, color] of [
+      [-0.9, 0.55, 0x7b4137],
+      [0.9, 0.55, 0x5f7a4d],
+    ]) {
+      const pole = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.035, 0.035, 1.3, 8),
+        woodMaterial
+      );
+      pole.position.set(x, 8.0, z);
+      castle.add(pole);
+
+      const flag = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.72, 0.44),
+        new THREE.MeshStandardMaterial({ color, side: THREE.DoubleSide, roughness: 0.86 })
+      );
+      flag.position.set(x + 0.34, 8.18, z);
+      castle.add(flag);
     }
 
     const hill = new THREE.Mesh(
@@ -603,14 +670,26 @@
     const lanternLights = [];
 
     function buildDeferredDetails() {
-      // ----- Instanced windows -----
+      // ----- Instanced medieval facade details -----
       const windowInstances = [];
       const trimInstances = [];
+      const timberInstances = [];
+      const shutterInstances = [];
 
       for (const { group, spec } of buildingGroups) {
         const baseX = group.position.x;
         const streetFaceX =
           baseX - spec.side * (spec.depthX / 2 + 0.012);
+        const timberX = streetFaceX + spec.side * 0.055;
+
+        timberInstances.push(
+          { x: timberX, y: spec.height / 2, z: spec.z - 1.45, sx: 0.09, sy: spec.height - 0.42, sz: 0.12 },
+          { x: timberX, y: spec.height / 2, z: spec.z, sx: 0.09, sy: spec.height - 0.42, sz: 0.12 },
+          { x: timberX, y: spec.height / 2, z: spec.z + 1.45, sx: 0.09, sy: spec.height - 0.42, sz: 0.12 },
+          { x: timberX, y: 1.10, z: spec.z, sx: 0.09, sy: 0.12, sz: spec.widthZ - 0.45 },
+          { x: timberX, y: 2.18, z: spec.z, sx: 0.09, sy: 0.12, sz: spec.widthZ - 0.55 },
+          { x: timberX, y: spec.height - 0.56, z: spec.z, sx: 0.09, sy: 0.12, sz: spec.widthZ - 0.35 },
+        );
 
         const rows = spec.height > 4.9 ? [1.55, 2.65, 3.75] : [1.55, 2.65];
 
@@ -626,6 +705,21 @@
               warm: ((Math.round(spec.z * 10) + Math.round(y * 10)) % 5) === 0,
             });
 
+            shutterInstances.push(
+              {
+                x: streetFaceX + spec.side * 0.03,
+                y,
+                z: spec.z + zOffset - 0.25,
+                rotationY: spec.side > 0 ? -Math.PI / 2 : Math.PI / 2,
+              },
+              {
+                x: streetFaceX + spec.side * 0.03,
+                y,
+                z: spec.z + zOffset + 0.25,
+                rotationY: spec.side > 0 ? -Math.PI / 2 : Math.PI / 2,
+              }
+            );
+
             trimInstances.push({
               x: streetFaceX + spec.side * 0.007,
               y,
@@ -635,6 +729,12 @@
           }
         }
       }
+
+      const timberMesh = new THREE.InstancedMesh(
+        new THREE.BoxGeometry(1, 1, 1),
+        timberMaterial,
+        timberInstances.length
+      );
 
       const trimGeo = new THREE.PlaneGeometry(0.50, 0.67);
       const trimMat = new THREE.MeshStandardMaterial({
@@ -646,6 +746,12 @@
         trimGeo,
         trimMat,
         trimInstances.length
+      );
+
+      const shutterMesh = new THREE.InstancedMesh(
+        new THREE.BoxGeometry(0.045, 0.48, 0.12),
+        new THREE.MeshStandardMaterial({ color: 0x596b3b, roughness: 0.92 }),
+        shutterInstances.length
       );
 
       const windowGeo = new THREE.PlaneGeometry(0.38, 0.54);
@@ -664,11 +770,27 @@
 
       const object = new THREE.Object3D();
 
+      timberInstances.forEach((item, index) => {
+        object.position.set(item.x, item.y, item.z);
+        object.rotation.set(0, 0, 0);
+        object.scale.set(item.sx, item.sy, item.sz);
+        object.updateMatrix();
+        timberMesh.setMatrixAt(index, object.matrix);
+        object.scale.set(1, 1, 1);
+      });
+
       trimInstances.forEach((item, index) => {
         object.position.set(item.x, item.y, item.z);
         object.rotation.set(0, item.rotationY, 0);
         object.updateMatrix();
         trims.setMatrixAt(index, object.matrix);
+      });
+
+      shutterInstances.forEach((item, index) => {
+        object.position.set(item.x, item.y, item.z);
+        object.rotation.set(0, item.rotationY, 0);
+        object.updateMatrix();
+        shutterMesh.setMatrixAt(index, object.matrix);
       });
 
       windowInstances.forEach((item, index) => {
@@ -689,11 +811,13 @@
         );
       });
 
+      timberMesh.instanceMatrix.needsUpdate = true;
       trims.instanceMatrix.needsUpdate = true;
+      shutterMesh.instanceMatrix.needsUpdate = true;
       windows.instanceMatrix.needsUpdate = true;
       if (windows.instanceColor) windows.instanceColor.needsUpdate = true;
 
-      scene.add(trims, windows);
+      scene.add(timberMesh, trims, shutterMesh, windows);
 
       // ----- Instanced street lamps -----
       const lampZ = [8, 2.5, -3, -8.5, -14, -19.5];
@@ -704,40 +828,60 @@
       }
 
       const postMesh = new THREE.InstancedMesh(
-        new THREE.CylinderGeometry(0.055, 0.074, 2.65, 10),
+        new THREE.CylinderGeometry(0.065, 0.085, 2.68, 8),
+        woodMaterial,
+        lampPositions.length
+      );
+
+      const armMesh = new THREE.InstancedMesh(
+        new THREE.BoxGeometry(0.58, 0.07, 0.07),
+        timberMaterial,
+        lampPositions.length
+      );
+
+      const lanternMesh = new THREE.InstancedMesh(
+        new THREE.BoxGeometry(0.24, 0.32, 0.24),
         new THREE.MeshStandardMaterial({
-          color: 0x514a40,
-          roughness: 0.58,
-          metalness: 0.18,
+          color: 0xffdfa8,
+          emissive: 0xffc76a,
+          emissiveIntensity: 0.72,
+          roughness: 0.36,
         }),
         lampPositions.length
       );
 
-      const globeMesh = new THREE.InstancedMesh(
-        new THREE.SphereGeometry(0.12, 10, 8),
-        new THREE.MeshStandardMaterial({
-          color: 0xffe0a1,
-          emissive: 0xffc76a,
-          emissiveIntensity: 0.75,
-          roughness: 0.34,
-        }),
+      const lanternCapMesh = new THREE.InstancedMesh(
+        new THREE.ConeGeometry(0.15, 0.16, 4),
+        new THREE.MeshStandardMaterial({ color: 0x59473c, roughness: 0.72 }),
         lampPositions.length
       );
 
       lampPositions.forEach(([x, z], index) => {
-        object.position.set(x, 1.33, z);
+        object.position.set(x, 1.34, z);
         object.rotation.set(0, 0, 0);
         object.updateMatrix();
         postMesh.setMatrixAt(index, object.matrix);
 
-        object.position.set(x, 2.66, z);
+        object.position.set(x - Math.sign(x) * 0.22, 2.38, z);
         object.updateMatrix();
-        globeMesh.setMatrixAt(index, object.matrix);
+        armMesh.setMatrixAt(index, object.matrix);
+
+        object.position.set(x - Math.sign(x) * 0.45, 2.18, z);
+        object.updateMatrix();
+        lanternMesh.setMatrixAt(index, object.matrix);
+
+        object.position.set(x - Math.sign(x) * 0.45, 2.42, z);
+        object.rotation.set(Math.PI, 0, 0);
+        object.updateMatrix();
+        lanternCapMesh.setMatrixAt(index, object.matrix);
+        object.rotation.set(0, 0, 0);
       });
 
       postMesh.instanceMatrix.needsUpdate = true;
-      globeMesh.instanceMatrix.needsUpdate = true;
-      scene.add(postMesh, globeMesh);
+      armMesh.instanceMatrix.needsUpdate = true;
+      lanternMesh.instanceMatrix.needsUpdate = true;
+      lanternCapMesh.instanceMatrix.needsUpdate = true;
+      scene.add(postMesh, armMesh, lanternMesh, lanternCapMesh);
 
       // Only three real lights, not one per lantern.
       for (const [x, z] of [
@@ -949,6 +1093,30 @@
       createMarketStall(-6.6, -23.6, 0xa57a4b, 0x687f52);
       createMarketStall(6.8, -22.8, 0x946540, 0x7f4e31);
 
+      const crateMaterial = new THREE.MeshStandardMaterial({ color: 0x93673c, roughness: 0.92 });
+      const crateGeometry = new THREE.BoxGeometry(0.55, 0.55, 0.55);
+      [
+        [-5.8, -22.9], [-6.35, -22.3], [6.1, -22.1], [6.75, -23.3],
+        [-5.6, -9.8], [5.9, -4.9]
+      ].forEach(([x, z], index) => {
+        const crate = new THREE.Mesh(crateGeometry, crateMaterial);
+        crate.position.set(x, 0.28, z);
+        crate.rotation.y = index * 0.35;
+        crate.castShadow = shadowsEnabled;
+        scene.add(crate);
+      });
+
+      const barrelGeometry = new THREE.CylinderGeometry(0.22, 0.24, 0.5, 10);
+      [
+        [-5.2, -10.2], [5.4, -5.3], [-6.1, -17.4], [6.0, 1.1]
+      ].forEach(([x, z], index) => {
+        const barrel = new THREE.Mesh(barrelGeometry, woodMaterial);
+        barrel.position.set(x, 0.25, z);
+        barrel.rotation.y = index * 0.25;
+        barrel.castShadow = shadowsEnabled;
+        scene.add(barrel);
+      });
+
       // ----- Wooden fortune wheel at the town square -----
       const squareWheel = new THREE.Group();
 
@@ -1064,7 +1232,7 @@
       }
 
       const cloudMap = cloudTexture();
-      const cloudCount = mobile ? 6 : 9;
+      const cloudCount = mobile ? 5 : 7;
 
       for (let index = 0; index < cloudCount; index += 1) {
         const sprite = new THREE.Sprite(
@@ -1089,7 +1257,7 @@
       }
 
       // ----- Tiny light particles -----
-      particleCount = mobile ? 55 : 95;
+      particleCount = mobile ? 44 : 72;
       const positions = new Float32Array(particleCount * 3);
       particlePhases = new Float32Array(particleCount);
 
