@@ -1596,3 +1596,427 @@ button {
     animation: none !important;
   }
 }
+
+
+/* =========================================================
+   ANIMATED FANTASY VR v7
+   Sichtbare Bewegung + Parallax.
+   #wheel, Abstimmung und Supabase bleiben unangetastet.
+   ========================================================= */
+
+:root {
+  --vr-look-x: 0px;
+  --vr-look-y: 0px;
+  --vr-look-x-soft: 0px;
+  --vr-look-y-soft: 0px;
+}
+
+/* Der gesamte Raum reagiert leicht auf die Blickrichtung */
+.fantasy-vr {
+  transition: filter 0.4s ease;
+}
+
+/* Fernraum bewegt sich am wenigsten */
+.vr-sky,
+.vr-moon-glow,
+.vr-distant-castle,
+.vr-back-hills {
+  will-change: transform;
+}
+
+.vr-sky {
+  transform:
+    translate3d(
+      calc(var(--vr-look-x-soft) * -0.12),
+      calc(var(--vr-look-y-soft) * -0.08),
+      -240px
+    )
+    scale(1.12);
+  animation: sky-breathe 12s ease-in-out infinite alternate;
+}
+
+.vr-moon-glow {
+  margin-left: calc(var(--vr-look-x-soft) * -0.18);
+  margin-top: calc(var(--vr-look-y-soft) * -0.10);
+  animation: moon-pulse 6s ease-in-out infinite alternate;
+}
+
+.vr-distant-castle {
+  margin-left: calc(var(--vr-look-x-soft) * -0.24);
+  margin-top: calc(var(--vr-look-y-soft) * -0.12);
+  animation: castle-breathe 9s ease-in-out infinite alternate;
+}
+
+.vr-back-hills {
+  transform:
+    translate3d(
+      calc(var(--vr-look-x-soft) * -0.35),
+      calc(var(--vr-look-y-soft) * -0.12),
+      -120px
+    )
+    scale(1.10);
+  animation: hills-drift 14s ease-in-out infinite alternate;
+}
+
+/* Boden reagiert mittelstark und erzeugt deutlicheres Raumgefühl */
+.vr-floor {
+  will-change: transform;
+  transform:
+    translate3d(
+      calc(var(--vr-look-x-soft) * -0.24),
+      calc(var(--vr-look-y-soft) * -0.05),
+      10px
+    )
+    rotateX(69deg);
+  animation: floor-glow-cycle 7s ease-in-out infinite alternate;
+}
+
+/* Seitenwände stärker - wie echte nahe Geometrie */
+.vr-left-wall {
+  will-change: transform;
+  transform:
+    translate3d(
+      calc(var(--vr-look-x) * -0.70),
+      calc(var(--vr-look-y) * -0.20),
+      20px
+    )
+    rotateY(54deg);
+}
+
+.vr-right-wall {
+  will-change: transform;
+  transform:
+    translate3d(
+      calc(var(--vr-look-x) * -0.70),
+      calc(var(--vr-look-y) * -0.20),
+      20px
+    )
+    rotateY(-54deg);
+}
+
+.vr-canopy {
+  will-change: transform;
+  transform:
+    translate3d(
+      calc(var(--vr-look-x) * -0.55),
+      calc(var(--vr-look-y) * -0.34),
+      70px
+    );
+  animation: canopy-sway 11s ease-in-out infinite alternate;
+}
+
+/* Vordergrundblätter bewegen sich am stärksten -> Parallax */
+.vr-near-leaves {
+  position: absolute;
+  z-index: 8;
+  top: 8vh;
+  bottom: 0;
+  width: 22vw;
+  min-width: 180px;
+  pointer-events: none;
+  opacity: 0.68;
+  filter: blur(0.15px) drop-shadow(0 18px 28px rgba(0,0,0,0.32));
+  will-change: transform;
+}
+
+.vr-near-leaves::before,
+.vr-near-leaves::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 22% 14%, #32533a 0 7%, transparent 8%),
+    radial-gradient(ellipse at 46% 24%, #426449 0 8%, transparent 9%),
+    radial-gradient(ellipse at 30% 39%, #27452f 0 8%, transparent 9%),
+    radial-gradient(ellipse at 62% 51%, #3c6043 0 7%, transparent 8%),
+    radial-gradient(ellipse at 40% 66%, #284731 0 8%, transparent 9%),
+    radial-gradient(ellipse at 68% 78%, #35583d 0 7%, transparent 8%);
+}
+
+.vr-near-leaves::after {
+  transform: translate(34px, 18px) scale(0.88);
+  opacity: 0.62;
+}
+
+.leaves-left {
+  left: -6vw;
+  transform:
+    translate3d(
+      calc(var(--vr-look-x) * -1.15),
+      calc(var(--vr-look-y) * -0.60),
+      150px
+    );
+  animation: leaves-sway-left 7.5s ease-in-out infinite alternate;
+}
+
+.leaves-right {
+  right: -6vw;
+  transform:
+    scaleX(-1)
+    translate3d(
+      calc(var(--vr-look-x) * 1.15),
+      calc(var(--vr-look-y) * -0.60),
+      150px
+    );
+  animation: leaves-sway-right 8.5s ease-in-out infinite alternate;
+}
+
+/* Lichtstrahlen */
+.vr-light-ray {
+  position: absolute;
+  z-index: 2;
+  top: -14vh;
+  width: 24vw;
+  min-width: 220px;
+  height: 88vh;
+  opacity: 0.11;
+  filter: blur(6px);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.ray-left {
+  left: 13vw;
+  transform: rotate(13deg) translateX(calc(var(--vr-look-x-soft) * -0.2));
+  background: linear-gradient(
+    180deg,
+    rgba(142,240,192,0.42),
+    rgba(142,240,192,0.08) 56%,
+    transparent 100%
+  );
+  clip-path: polygon(38% 0, 58% 0, 100% 100%, 0 100%);
+  animation: light-ray-left 9s ease-in-out infinite alternate;
+}
+
+.ray-right {
+  right: 13vw;
+  transform: rotate(-14deg) translateX(calc(var(--vr-look-x-soft) * -0.2));
+  background: linear-gradient(
+    180deg,
+    rgba(255,213,138,0.34),
+    rgba(189,165,255,0.07) 56%,
+    transparent 100%
+  );
+  clip-path: polygon(42% 0, 62% 0, 100% 100%, 0 100%);
+  animation: light-ray-right 11s ease-in-out infinite alternate;
+}
+
+/* Magische Ringe um den Fernpunkt */
+.vr-portal-rings {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 31vh;
+  width: min(34vw, 360px);
+  aspect-ratio: 1;
+  transform:
+    translateX(calc(-50% + var(--vr-look-x-soft) * -0.10))
+    translateY(calc(var(--vr-look-y-soft) * -0.05));
+  border-radius: 50%;
+  border: 1px solid rgba(142,240,192,0.13);
+  box-shadow:
+    0 0 0 24px rgba(142,240,192,0.015),
+    0 0 0 49px rgba(255,213,138,0.010),
+    0 0 52px rgba(142,240,192,0.07);
+  animation: portal-breathe 6.5s ease-in-out infinite alternate;
+}
+
+/* Zusätzliche Partikel werden von effects.js erzeugt */
+.vr-particles {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+}
+
+.vr-particle {
+  position: absolute;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: var(--particle-color);
+  box-shadow:
+    0 0 7px var(--particle-color),
+    0 0 16px color-mix(in srgb, var(--particle-color) 52%, transparent);
+  opacity: 0;
+  animation:
+    particle-rise var(--duration) linear var(--delay) infinite,
+    particle-flicker 2.2s ease-in-out var(--delay) infinite alternate;
+}
+
+/* Nebel sichtbar in mehreren Geschwindigkeiten */
+.fog-one {
+  animation:
+    fog-drift-one 8s ease-in-out infinite alternate,
+    fog-breathe 5.5s ease-in-out infinite alternate;
+}
+
+.fog-two {
+  animation:
+    fog-drift-two 12s ease-in-out infinite alternate,
+    fog-breathe 7s ease-in-out -2s infinite alternate;
+}
+
+/* Fireflies lebendiger */
+.vr-firefly {
+  animation-timing-function: ease-in-out !important;
+  filter: brightness(1.12);
+}
+
+/* Panel schwebt minimal - sehr dezent */
+.card {
+  animation: interface-float 7s ease-in-out infinite alternate;
+  transform-origin: center top;
+}
+
+@keyframes interface-float {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes sky-breathe {
+  from { filter: brightness(0.96); }
+  to { filter: brightness(1.08); }
+}
+
+@keyframes moon-pulse {
+  from {
+    opacity: 0.72;
+    filter: blur(12px) brightness(0.95);
+  }
+  to {
+    opacity: 1;
+    filter: blur(14px) brightness(1.13);
+  }
+}
+
+@keyframes castle-breathe {
+  from {
+    filter: drop-shadow(0 0 14px rgba(255,213,138,0.08));
+  }
+  to {
+    filter: drop-shadow(0 0 30px rgba(255,213,138,0.18));
+  }
+}
+
+@keyframes hills-drift {
+  from {
+    margin-left: -0.7vw;
+  }
+  to {
+    margin-left: 0.7vw;
+  }
+}
+
+@keyframes floor-glow-cycle {
+  from {
+    filter: brightness(0.88);
+  }
+  to {
+    filter: brightness(1.08);
+  }
+}
+
+@keyframes canopy-sway {
+  from { margin-left: -4px; }
+  to { margin-left: 5px; }
+}
+
+@keyframes leaves-sway-left {
+  from { margin-left: -5px; margin-top: 0; }
+  to { margin-left: 8px; margin-top: -8px; }
+}
+
+@keyframes leaves-sway-right {
+  from { margin-right: -6px; margin-top: -3px; }
+  to { margin-right: 8px; margin-top: 7px; }
+}
+
+@keyframes light-ray-left {
+  from { opacity: 0.07; filter: blur(7px); }
+  to { opacity: 0.16; filter: blur(4px); }
+}
+
+@keyframes light-ray-right {
+  from { opacity: 0.06; filter: blur(8px); }
+  to { opacity: 0.14; filter: blur(5px); }
+}
+
+@keyframes portal-breathe {
+  from {
+    opacity: 0.55;
+    scale: 0.96;
+  }
+  to {
+    opacity: 0.95;
+    scale: 1.03;
+  }
+}
+
+@keyframes particle-rise {
+  0% {
+    transform: translate3d(0, 18px, 0) scale(0.65);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.78;
+  }
+  75% {
+    opacity: 0.54;
+  }
+  100% {
+    transform: translate3d(var(--drift), -32vh, 0) scale(1.12);
+    opacity: 0;
+  }
+}
+
+@keyframes particle-flicker {
+  from { filter: brightness(0.72); }
+  to { filter: brightness(1.35); }
+}
+
+@keyframes fog-breathe {
+  from { filter: blur(26px) brightness(0.86); }
+  to { filter: blur(20px) brightness(1.10); }
+}
+
+/* Auf Touch-Geräten ohne Maus bleibt die Welt automatisch animiert */
+@media (max-width: 700px) {
+  .vr-near-leaves {
+    width: 30vw;
+    min-width: 130px;
+    opacity: 0.52;
+  }
+
+  .vr-light-ray {
+    opacity: 0.08;
+  }
+
+  .vr-portal-rings {
+    width: 48vw;
+  }
+}
+
+/* Nutzer mit reduzierter Bewegung erhalten weiterhin eine ruhige Version */
+@media (prefers-reduced-motion: reduce) {
+  .vr-sky,
+  .vr-moon-glow,
+  .vr-distant-castle,
+  .vr-back-hills,
+  .vr-floor,
+  .vr-canopy,
+  .vr-near-leaves,
+  .vr-light-ray,
+  .vr-portal-rings,
+  .vr-particle,
+  .vr-fog,
+  .vr-firefly,
+  .card {
+    animation: none !important;
+    transition: none !important;
+  }
+}
