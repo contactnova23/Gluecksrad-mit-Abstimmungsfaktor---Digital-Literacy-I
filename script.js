@@ -7,11 +7,20 @@ const answersContainer = document.getElementById('answers-container');
 const addAnswerBtn = document.getElementById('add-answer-btn');
 const startBtn = document.getElementById('start-btn');
 const setupError = document.getElementById('setup-error');
+const simpleModeToggle = document.getElementById('simple-mode-toggle');
 const roomModeToggle = document.getElementById('room-mode-toggle');
 const onlineModeToggle = document.getElementById('online-mode-toggle');
 const joinRoomCodeInput = document.getElementById('join-room-code-input');
 const joinOnlineBtn = document.getElementById('join-online-btn');
 const joinError = document.getElementById('join-error');
+
+const entryChoice = document.getElementById('entry-choice');
+const createPanel = document.getElementById('create-panel');
+const joinPanel = document.getElementById('join-panel');
+const showCreateBtn = document.getElementById('show-create-btn');
+const showJoinBtn = document.getElementById('show-join-btn');
+const backFromCreateBtn = document.getElementById('back-from-create-btn');
+const backFromJoinBtn = document.getElementById('back-from-join-btn');
 
 const questionDisplay = document.getElementById('question-display');
 const voteInfo = document.getElementById('vote-info');
@@ -52,6 +61,30 @@ let onlineRefreshTimer = null;
 let currentWinnerOption = '';
 let isOnlineModerator = false;
 let wheelSpinAnimation = null;
+
+function showSetupHome() {
+  entryChoice.hidden = false;
+  createPanel.hidden = true;
+  joinPanel.hidden = true;
+  setupError.textContent = '';
+  joinError.textContent = '';
+}
+
+function showCreatePanel() {
+  entryChoice.hidden = true;
+  createPanel.hidden = false;
+  joinPanel.hidden = true;
+  setupError.textContent = '';
+  questionInput.focus();
+}
+
+function showJoinPanel() {
+  entryChoice.hidden = true;
+  createPanel.hidden = true;
+  joinPanel.hidden = false;
+  joinError.textContent = '';
+  joinRoomCodeInput.focus();
+}
 
 function generateRoomCode() {
   return Math.random().toString(36).slice(2, 8).toUpperCase();
@@ -316,6 +349,7 @@ function resetApp() {
   answersContainer.innerHTML = '';
   createAnswerRow('');
   createAnswerRow('');
+  simpleModeToggle.checked = true;
   roomModeToggle.checked = false;
   onlineModeToggle.checked = false;
   joinRoomCodeInput.value = '';
@@ -324,6 +358,7 @@ function resetApp() {
   voteConfirmation.textContent = '';
   winnerDisplay.textContent = '';
   setupSection.hidden = false;
+  showSetupHome();
   voteSection.hidden = true;
   resultsSection.hidden = true;
   roomStatus.hidden = true;
@@ -446,6 +481,7 @@ function restoreSavedState() {
     currentVoteCount = parsedState.currentVoteCount || 0;
     isVotingClosed = Boolean(parsedState.isVotingClosed);
     currentBrowserVoteKey = parsedState.currentBrowserVoteKey || '';
+    simpleModeToggle.checked = !roomMode && !onlineMode;
     roomModeToggle.checked = roomMode;
     onlineModeToggle.checked = onlineMode;
 
@@ -467,8 +503,20 @@ function restoreSavedState() {
   }
 }
 
+showCreateBtn.addEventListener('click', showCreatePanel);
+showJoinBtn.addEventListener('click', showJoinPanel);
+backFromCreateBtn.addEventListener('click', showSetupHome);
+backFromJoinBtn.addEventListener('click', showSetupHome);
+
 addAnswerBtn.addEventListener('click', () => {
   createAnswerRow('');
+});
+
+simpleModeToggle.addEventListener('change', () => {
+  if (simpleModeToggle.checked) {
+    roomModeToggle.checked = false;
+    onlineModeToggle.checked = false;
+  }
 });
 
 roomModeToggle.addEventListener('change', () => {

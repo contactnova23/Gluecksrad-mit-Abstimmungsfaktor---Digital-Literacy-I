@@ -3,62 +3,104 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Glücksrad-Abstimmung</title>
+    <title>Glücksrad mit Abstimmungsfaktor</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <main class="app">
       <section class="card">
-        <h1>Glücksrad-Abstimmung</h1>
+        <h1>Glücksrad mit Abstimmungsfaktor</h1>
         <p class="intro">
-          Erstelle eine einfache Abstimmung, sammle Stimmen und lasse das Glücksrad entscheiden.
+          Erstelle eine Abstimmung und lasse das Glücksrad gewichtet nach den abgegebenen Stimmen entscheiden.
         </p>
 
         <section id="setup-section">
-          <label class="field">
-            <span>Abstimmungsfrage</span>
-            <input id="question-input" type="text" placeholder="Zum Beispiel: Was sollen wir heute essen?" />
-          </label>
-
-          <label class="field">
-            <span>Abstimmungsmodus</span>
-            <label class="mode-toggle">
-              <input id="room-mode-toggle" type="checkbox" />
-              <span>Raum-Modus aktivieren (mehrere Personen, Ergebnisse erst am Ende sichtbar)</span>
-            </label>
-            <label class="mode-toggle">
-              <input id="online-mode-toggle" type="checkbox" />
-              <span>Online-Modus mit Supabase aktivieren</span>
-            </label>
-          </label>
-
-          <div class="answers-box">
-            <h2>Antwortmöglichkeiten</h2>
-            <div id="answers-container">
-              <div class="answer-row">
-                <input class="answer-input" type="text" placeholder="Antwort 1" />
-                <button class="remove-answer-btn" type="button">Entfernen</button>
-              </div>
-              <div class="answer-row">
-                <input class="answer-input" type="text" placeholder="Antwort 2" />
-                <button class="remove-answer-btn" type="button">Entfernen</button>
-              </div>
+          <div id="entry-choice" class="entry-choice">
+            <h2>Was möchtest du tun?</h2>
+            <p class="info">Erstelle eine neue Abstimmung oder tritt mit einem Raumcode einer Online-Abstimmung bei.</p>
+            <div class="entry-actions">
+              <button id="show-create-btn" type="button">Neue Abstimmung erstellen</button>
+              <button id="show-join-btn" type="button" class="secondary-choice-btn">Mit Raumcode teilnehmen</button>
             </div>
-            <button id="add-answer-btn" type="button">Weitere Antwortmöglichkeit hinzufügen</button>
           </div>
 
-          <div class="answers-box">
-            <h2>Online teilnehmen</h2>
+          <section id="create-panel" class="setup-panel" hidden>
+            <div class="panel-header">
+              <div>
+                <h2>Neue Abstimmung erstellen</h2>
+                <p class="info">Lege Frage, Antworten und die Abstimmungsart fest.</p>
+              </div>
+              <button id="back-from-create-btn" type="button" class="back-btn">Zurück</button>
+            </div>
+
             <label class="field">
-              <span>Raumcode eingeben</span>
-              <input id="join-room-code-input" type="text" placeholder="Zum Beispiel: AB12" />
+              <span class="step-label">1. Abstimmungsfrage</span>
+              <input id="question-input" type="text" placeholder="Zum Beispiel: Was sollen wir heute essen?" />
             </label>
-            <button id="join-online-btn" type="button">Online-Abstimmung beitreten</button>
-            <p id="join-error" class="error"></p>
-          </div>
 
-          <p id="setup-error" class="error"></p>
-          <button id="start-btn" type="button">Abstimmung starten</button>
+            <div class="answers-box setup-block">
+              <h3>2. Antwortmöglichkeiten</h3>
+              <div id="answers-container">
+                <div class="answer-row">
+                  <input class="answer-input" type="text" placeholder="Antwort 1" />
+                  <button class="remove-answer-btn" type="button">Entfernen</button>
+                </div>
+                <div class="answer-row">
+                  <input class="answer-input" type="text" placeholder="Antwort 2" />
+                  <button class="remove-answer-btn" type="button">Entfernen</button>
+                </div>
+              </div>
+              <button id="add-answer-btn" type="button">+ Weitere Antwort</button>
+            </div>
+
+            <fieldset class="mode-fieldset">
+              <legend>3. Wie soll abgestimmt werden?</legend>
+
+              <label class="mode-option">
+                <input id="simple-mode-toggle" type="radio" name="voting-mode" value="simple" checked />
+                <span class="mode-copy">
+                  <strong>Einfacher Modus – dieses Gerät</strong>
+                  <small>Für eine einzelne Person oder zum Testen.</small>
+                </span>
+              </label>
+
+              <label class="mode-option">
+                <input id="room-mode-toggle" type="radio" name="voting-mode" value="room" />
+                <span class="mode-copy">
+                  <strong>Raum-Modus – ein gemeinsames Gerät</strong>
+                  <small>Mehrere Personen stimmen nacheinander ab. Ergebnisse werden erst am Ende angezeigt.</small>
+                </span>
+              </label>
+
+              <label class="mode-option">
+                <input id="online-mode-toggle" type="radio" name="voting-mode" value="online" />
+                <span class="mode-copy">
+                  <strong>Online-Modus – mehrere Geräte</strong>
+                  <small>Teilnehmende stimmen mit ihrem eigenen Gerät über einen Raumcode ab.</small>
+                </span>
+              </label>
+            </fieldset>
+
+            <p id="setup-error" class="error"></p>
+            <button id="start-btn" type="button" class="primary-action">Abstimmung starten</button>
+          </section>
+
+          <section id="join-panel" class="setup-panel" hidden>
+            <div class="panel-header">
+              <div>
+                <h2>Mit Raumcode teilnehmen</h2>
+                <p class="info">Gib den Raumcode ein, den du von der moderierenden Person erhalten hast.</p>
+              </div>
+              <button id="back-from-join-btn" type="button" class="back-btn">Zurück</button>
+            </div>
+
+            <label class="field">
+              <span>Raumcode</span>
+              <input id="join-room-code-input" type="text" placeholder="Zum Beispiel: AB12CD" autocomplete="off" />
+            </label>
+            <button id="join-online-btn" type="button" class="primary-action">Online-Abstimmung beitreten</button>
+            <p id="join-error" class="error"></p>
+          </section>
         </section>
 
         <section id="vote-section" hidden>
@@ -109,6 +151,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
-    <script src="script.js?v=15"></script>
+    <script src="script.js?v=16"></script>
   </body>
 </html>
