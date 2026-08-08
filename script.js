@@ -357,12 +357,22 @@ function buildResultsList(summary) {
 function buildWheel(summary) {
   const totalVotes = summary.reduce((sum, item) => sum + item.votes, 0);
   const gradientParts = [];
+  const palette = [
+    '#804337',
+    '#6f7d3d',
+    '#8d6a37',
+    '#546e79',
+    '#785277',
+    '#a55f36',
+    '#4e6a55',
+    '#934851',
+  ];
   let startAngle = 0;
 
   summary.forEach((item, index) => {
     const size = totalVotes > 0 ? (item.votes / totalVotes) * 360 : 360 / summary.length;
     const endAngle = startAngle + size;
-    const color = `hsl(${index * 55} 70% 55%)`;
+    const color = palette[index % palette.length];
     gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
     startAngle = endAngle;
   });

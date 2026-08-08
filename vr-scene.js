@@ -18,7 +18,7 @@
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0xe8efdd, mobile ? 0.016 : 0.0135);
+    scene.fog = new THREE.FogExp2(0xf0ead7, mobile ? 0.016 : 0.0135);
 
     const renderer = new THREE.WebGLRenderer({
       canvas,
@@ -36,7 +36,7 @@
     );
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.08;
+    renderer.toneMappingExposure = 1.12;
 
     const shadowsEnabled = !mobile && !lowPower;
     renderer.shadowMap.enabled = shadowsEnabled;
@@ -599,6 +599,8 @@
     let particlePhases = null;
     let particleCount = 0;
     const swayingTrees = [];
+    const animatedDecorations = [];
+    const lanternLights = [];
 
     function buildDeferredDetails() {
       // ----- Instanced windows -----
@@ -751,6 +753,7 @@
         );
         light.position.set(x, 2.7, z);
         scene.add(light);
+        lanternLights.push(light);
       }
 
       // ----- Instanced ornamental trees -----
@@ -837,6 +840,197 @@
 
       fountain.position.set(0, 0, -25.0);
       scene.add(fountain);
+
+      // ----- Medieval plaza details -----
+      function createBanner(colorHex, accentHex) {
+        const group = new THREE.Group();
+
+        const bar = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.025, 0.025, 1.25, 8),
+          new THREE.MeshStandardMaterial({ color: 0x7f5731, roughness: 0.78 })
+        );
+        bar.rotation.z = Math.PI / 2;
+        group.add(bar);
+
+        const cloth = new THREE.Mesh(
+          new THREE.PlaneGeometry(0.86, 1.15, 1, 4),
+          new THREE.MeshStandardMaterial({
+            color: colorHex,
+            roughness: 0.88,
+            side: THREE.DoubleSide,
+          })
+        );
+        cloth.position.set(0.34, -0.56, 0);
+        group.add(cloth);
+
+        const stripe = new THREE.Mesh(
+          new THREE.PlaneGeometry(0.18, 1.05),
+          new THREE.MeshStandardMaterial({
+            color: accentHex,
+            roughness: 0.86,
+            side: THREE.DoubleSide,
+          })
+        );
+        stripe.position.set(0.34, -0.56, 0.006);
+        group.add(stripe);
+
+        return { group, cloth };
+      }
+
+      [
+        { x: -6.1, y: 3.8, z: -17.0, side: 1, colors: [0x7e4e32, 0xe6c27c] },
+        { x:  6.1, y: 3.8, z: -13.0, side: -1, colors: [0x5f7b4d, 0xf3dfab] },
+        { x: -6.1, y: 3.8, z:  -6.3, side: 1, colors: [0x6d4256, 0xf3d29d] },
+        { x:  6.1, y: 3.8, z:  -1.2, side: -1, colors: [0x7d5b33, 0xf6ead0] },
+      ].forEach((item, index) => {
+        const pole = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.05, 0.065, 4.2, 10),
+          woodMaterial
+        );
+        pole.position.set(item.x, 2.1, item.z);
+        scene.add(pole);
+
+        const banner = createBanner(item.colors[0], item.colors[1]);
+        banner.group.position.set(item.x + item.side * 0.06, 3.75, item.z);
+        banner.group.rotation.y = item.side > 0 ? Math.PI / 2 : -Math.PI / 2;
+        scene.add(banner.group);
+
+        animatedDecorations.push({
+          mesh: banner.group,
+          baseRotationZ: 0,
+          amplitude: 0.05 + index * 0.01,
+          speed: 0.8 + index * 0.18,
+          axis: 'z',
+        });
+      });
+
+      function createMarketStall(x, z, mainColor, canopyColor) {
+        const stall = new THREE.Group();
+
+        const top = new THREE.Mesh(
+          new THREE.BoxGeometry(1.65, 0.1, 1.12),
+          new THREE.MeshStandardMaterial({ color: canopyColor, roughness: 0.82 })
+        );
+        top.position.y = 1.9;
+        stall.add(top);
+
+        const fabricStripe = new THREE.Mesh(
+          new THREE.BoxGeometry(1.65, 0.03, 0.18),
+          new THREE.MeshStandardMaterial({ color: 0xf4e4bf, roughness: 0.7 })
+        );
+        fabricStripe.position.set(0, 1.92, 0.28);
+        stall.add(fabricStripe);
+        const fabricStripe2 = fabricStripe.clone();
+        fabricStripe2.position.z = -0.28;
+        stall.add(fabricStripe2);
+
+        for (const px of [-0.65, 0.65]) {
+          for (const pz of [-0.42, 0.42]) {
+            const leg = new THREE.Mesh(
+              new THREE.CylinderGeometry(0.05, 0.05, 1.9, 8),
+              woodMaterial
+            );
+            leg.position.set(px, 0.95, pz);
+            stall.add(leg);
+          }
+        }
+
+        const counter = new THREE.Mesh(
+          new THREE.BoxGeometry(1.4, 0.68, 0.75),
+          new THREE.MeshStandardMaterial({ color: mainColor, roughness: 0.84 })
+        );
+        counter.position.set(0, 0.38, 0);
+        stall.add(counter);
+
+        stall.position.set(x, 0, z);
+        scene.add(stall);
+      }
+
+      createMarketStall(-6.6, -23.6, 0xa57a4b, 0x687f52);
+      createMarketStall(6.8, -22.8, 0x946540, 0x7f4e31);
+
+      // ----- Wooden fortune wheel at the town square -----
+      const squareWheel = new THREE.Group();
+
+      const wheelStand = new THREE.Mesh(
+        new THREE.BoxGeometry(0.32, 2.1, 0.32),
+        woodMaterial
+      );
+      wheelStand.position.set(0, 1.05, 0);
+      squareWheel.add(wheelStand);
+
+      const crossBeam = new THREE.Mesh(
+        new THREE.BoxGeometry(2.4, 0.22, 0.22),
+        woodMaterial
+      );
+      crossBeam.position.set(0, 2.15, 0);
+      squareWheel.add(crossBeam);
+
+      for (const offset of [-0.95, 0.95]) {
+        const brace = new THREE.Mesh(
+          new THREE.BoxGeometry(0.18, 2.0, 0.18),
+          woodMaterial
+        );
+        brace.position.set(offset, 1.0, 0);
+        brace.rotation.z = offset < 0 ? 0.44 : -0.44;
+        squareWheel.add(brace);
+      }
+
+      const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(1.25, 0.12, 12, 36),
+        new THREE.MeshStandardMaterial({ color: 0x704523, roughness: 0.86 })
+      );
+      ring.position.set(0, 2.15, 0);
+      squareWheel.add(ring);
+
+      const hub = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.18, 0.18, 0.34, 18),
+        new THREE.MeshStandardMaterial({ color: 0xc7a068, roughness: 0.58, metalness: 0.08 })
+      );
+      hub.rotation.x = Math.PI / 2;
+      hub.position.set(0, 2.15, 0);
+      squareWheel.add(hub);
+
+      const spokeMaterial = new THREE.MeshStandardMaterial({ color: 0x8c6235, roughness: 0.84 });
+      for (let i = 0; i < 8; i += 1) {
+        const spoke = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.04, 0.04, 2.15, 8),
+          spokeMaterial
+        );
+        spoke.position.set(0, 2.15, 0);
+        spoke.rotation.z = (Math.PI / 8) + (i * Math.PI / 4);
+        squareWheel.add(spoke);
+      }
+
+      const wedgeColors = [0x7d4334, 0x637644, 0x8c6738, 0x586e79, 0x7a586b, 0x9b5a37];
+      wedgeColors.forEach((color, index) => {
+        const wedge = new THREE.Mesh(
+          new THREE.CylinderGeometry(1.10, 1.10, 0.08, 24, 1, false, index * (Math.PI * 2 / wedgeColors.length), (Math.PI * 2 / wedgeColors.length) - 0.035),
+          new THREE.MeshStandardMaterial({ color, roughness: 0.9 })
+        );
+        wedge.rotation.x = Math.PI / 2;
+        wedge.position.set(0, 2.15, -0.02);
+        squareWheel.add(wedge);
+      });
+
+      const pointer = new THREE.Mesh(
+        new THREE.ConeGeometry(0.12, 0.35, 5),
+        new THREE.MeshStandardMaterial({ color: 0xe2bf7d, roughness: 0.56, metalness: 0.08 })
+      );
+      pointer.position.set(0, 3.65, 0.08);
+      pointer.rotation.z = Math.PI;
+      squareWheel.add(pointer);
+
+      squareWheel.position.set(0, 0, -20.8);
+      scene.add(squareWheel);
+      animatedDecorations.push({
+        mesh: squareWheel,
+        baseRotationZ: 0,
+        amplitude: 0.012,
+        speed: 0.55,
+        axis: 'y',
+        originY: squareWheel.rotation.y,
+      });
 
       // ----- Clouds -----
       function cloudTexture() {
@@ -1017,6 +1211,22 @@
         if (cloud.position.x > 36) {
           cloud.position.x = -36;
         }
+      }
+
+      for (let index = 0; index < animatedDecorations.length; index += 1) {
+        const item = animatedDecorations[index];
+        const sway = Math.sin(now * 0.001 * item.speed + index) * item.amplitude;
+
+        if (item.axis === 'z') {
+          item.mesh.rotation.z = (item.baseRotationZ || 0) + sway;
+        } else if (item.axis === 'y') {
+          item.mesh.rotation.y = (item.originY || 0) + sway;
+        }
+      }
+
+      for (let index = 0; index < lanternLights.length; index += 1) {
+        const light = lanternLights[index];
+        light.intensity = 0.58 + Math.sin(now * 0.0024 + index * 1.7) * 0.06;
       }
 
       if (particleGeometry && particlePhases) {
