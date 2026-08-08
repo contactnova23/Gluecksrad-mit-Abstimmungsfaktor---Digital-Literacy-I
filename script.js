@@ -51,6 +51,7 @@ let currentBrowserVoteKey = '';
 let onlineRefreshTimer = null;
 let currentWinnerOption = '';
 let isOnlineModerator = false;
+let wheelSpinAnimation = null;
 
 function generateRoomCode() {
   return Math.random().toString(36).slice(2, 8).toUpperCase();
@@ -219,7 +220,7 @@ function getWeightedWinner(summary) {
 
   for (const item of summary) {
     runningTotal += item.votes;
-    if (randomValue <= runningTotal) {
+    if (randomValue < runningTotal) {
       return item;
     }
   }
@@ -282,6 +283,10 @@ function clearSavedState() {
 }
 
 function resetApp() {
+  if (wheelSpinAnimation) {
+    wheelSpinAnimation.cancel();
+    wheelSpinAnimation = null;
+  }
   stopOnlineRefreshLoop();
   questionInput.value = '';
   answersContainer.innerHTML = '';
@@ -569,20 +574,18 @@ return;
   votes.push({ name: name || 'Anonym', option: selectedOption });
 
   if (roomMode) {
-       voteConfirmation.textContent = 'Stimme gespeichert. Die nächste Person kann jetzt abstimmen.';
+    voteConfirmation.textContent = 'Stimme gespeichert. Übergib das Gerät jetzt an die nächste Person.';
 
-  roomStatus.hidden = false;
-  roomStatus.textContent = `Bisher abgegebene Stimmen: ${votes.length}`;
+    roomStatus.hidden = false;
+    roomStatus.textContent = `Bisher abgegebene Stimmen: ${votes.length}`;
 
-  voteInfo.textContent = `Person ${votes.length + 1} stimmt jetzt ab. Deine Stimme bleibt geheim.`;
+    voteInfo.textContent = 'Die Stimme wurde gespeichert und bleibt geheim.';
 
-  voterNameInput.closest('.field').hidden = false;
-  voteSelect.closest('.field').hidden = false;
+    voterNameInput.closest('.field').hidden = true;
+    voteSelect.closest('.field').hidden = true;
 
-  voteBtn.hidden = false;
-  voteBtn.textContent = 'Stimme abgeben';
-
-  nextPersonBtn.hidden = true;
+    voteBtn.hidden = true;
+    nextPersonBtn.hidden = false;
   } else {
     voteConfirmation.textContent = name ? `Vielen Dank, ${name}. Deine Stimme wurde gezählt.` : 'Vielen Dank. Deine Stimme wurde gezählt.';
   }
@@ -650,52 +653,96 @@ if (onlineMode && !isOnlineModerator) {
   winnerDisplay.textContent = 'Glücksrad kann jetzt gedreht werden.';
 });
 
+function getCurrentWheelAngle() {
+  const transform = window.getComputedStyle(wheel).transform;
+
+  if (!transform || transform === 'none') {
+    return 0;
+  }
+
+  const matrix = new DOMMatrixReadOnly(transform);
+  let angle = Math.atan2(matrix.b, matrix.a) * (180 / Math.PI);
+
+  if (angle < 0) {
+    angle += 360;
+  }
+
+  return angle;
+}
+
 spinBtn.addEventListener('click', () => {
   if (wheelIsSpinning) {
     return;
   }
 
-  const summary = computeSummary();
-  const weightedWinner = getWeightedWinner(summary);
-  currentWinnerOption = weightedWinner ? weightedWinner.option : '';
-  const winnerIndex = summary.findIndex((item) => item.option === currentWinnerOption);
-  const extraRotation = calculateStopRotation(summary, winnerIndex);
-  targetRotation = currentRotation + extraRotation;
+  winnerDisplay.textContent = 'Das Rad dreht sich. Klicke auf „Glücksrad stoppen“.';
 
-  wheel.style.transition = 'transform 3s ease-out';
-  wheel.style.transform = `rotate(${targetRotation}deg)`;
-  currentRotation = targetRotation;
+  wheelSpinAnimation = wheel.animate(
+    [
+      { transform: `rotate(${currentRotation}deg)` },
+      { transform: `rotate(${currentRotation + 3600}deg)` },
+    ],
+    {
+      duration: 10000,
+      iterations: Infinity,
+      easing: 'linear',
+    }
+  );
+
   wheelIsSpinning = true;
   spinBtn.disabled = true;
   stopBtn.disabled = false;
 });
-wheel.addEventListener('transitionend', () => {
-  if (!wheelIsSpinning) {
-    return;
-  }
 
-  wheelIsSpinning = false;
-  spinBtn.disabled = false;
-  stopBtn.disabled = true;
-
-  if (currentWinnerOption) {
-    winnerDisplay.textContent = `Gewinner: ${currentWinnerOption}`;
-  }
-});
 stopBtn.addEventListener('click', () => {
   if (!wheelIsSpinning) {
     return;
   }
 
-  wheel.style.transition = 'transform 0.4s ease-out';
-  wheel.style.transform = `rotate(${currentRotation}deg)`;
+  const visibleAngle = getCurrentWheelAngle();
+
+  if (wheelSpinAnimation) {
+    wheelSpinAnimation.cancel();
+    wheelSpinAnimation = null;
+  }
+
+  wheel.style.transition = 'none';
+  wheel.style.transform = `rotate(${visibleAngle}deg)`;
+  void wheel.offsetHeight;
+
+  const summary = computeSummary();
+  const weightedWinner = getWeightedWinner(summary);
+  currentWinnerOption = weightedWinner ? weightedWinner.option : '';
+  const winnerIndex = summary.findIndex((item) => item.option === currentWinnerOption);
+
+  if (winnerIndex < 0) {
+    wheelIsSpinning = false;
+    spinBtn.disabled = false;
+    stopBtn.disabled = true;
+    winnerDisplay.textContent = 'Kein Gewinner konnte ermittelt werden.';
+    return;
+  }
+
+  const desiredAngle = calculateStopRotation(summary, winnerIndex) % 360;
+  const delta = (desiredAngle - visibleAngle + 360) % 360;
+  targetRotation = visibleAngle + 360 * 3 + delta;
+
+  wheel.style.transition = 'transform 2.5s ease-out';
+  wheel.style.transform = `rotate(${targetRotation}deg)`;
+  currentRotation = targetRotation;
+  stopBtn.disabled = true;
+});
+
+wheel.addEventListener('transitionend', () => {
+  if (!wheelIsSpinning || !currentWinnerOption) {
+    return;
+  }
+
   wheelIsSpinning = false;
   spinBtn.disabled = false;
   stopBtn.disabled = true;
-
-  const summary = computeSummary();
-  const winner = currentWinnerOption ? { option: currentWinnerOption } : getWinner(summary);
-  winnerDisplay.textContent = winner ? `Gewinner: ${winner.option}` : 'Noch keine Stimmen vorhanden.';
+  winnerDisplay.textContent = `Gewinner: ${currentWinnerOption}`;
+  saveState();
 });
 
 newVotingBtnVote.addEventListener('click', () => {
