@@ -120,39 +120,134 @@ function animateFeedback(element) {
 }
 
 function celebrateWinner() {
-  winnerDisplay.classList.remove('winner-pop');
-  void winnerDisplay.offsetWidth;
-  winnerDisplay.classList.add('winner-pop');
+  const existingCeremony = document.querySelector('.winner-ceremony-layer');
+  if (existingCeremony) {
+    existingCeremony.remove();
+  }
 
-  const oldLayer = document.querySelector('.confetti-layer');
-  if (oldLayer) {
-    oldLayer.remove();
+  const oldConfetti = document.querySelector('.confetti-layer');
+  if (oldConfetti) {
+    oldConfetti.remove();
   }
 
   const layer = document.createElement('div');
-  layer.className = 'confetti-layer';
-  layer.setAttribute('aria-hidden', 'true');
+  layer.className = 'winner-ceremony-layer';
+  layer.setAttribute('role', 'dialog');
+  layer.setAttribute('aria-modal', 'true');
+  layer.setAttribute('aria-label', `Gewinner: ${currentWinnerOption}`);
 
-  const colors = ['#2563eb', '#7c3aed', '#0f766e', '#f59e0b', '#ef4444'];
+  const glow = document.createElement('div');
+  glow.className = 'winner-ceremony-glow';
+  glow.setAttribute('aria-hidden', 'true');
 
-  for (let index = 0; index < 28; index += 1) {
-    const piece = document.createElement('span');
-    piece.className = 'confetti-piece';
-    piece.style.left = `${8 + Math.random() * 84}%`;
-    piece.style.backgroundColor = colors[index % colors.length];
-    piece.style.setProperty('--delay', `${Math.random() * 0.25}s`);
-    piece.style.setProperty('--duration', `${0.95 + Math.random() * 0.45}s`);
-    piece.style.setProperty('--drift', `${-70 + Math.random() * 140}px`);
-    piece.style.setProperty('--turn', `${180 + Math.random() * 540}deg`);
-    layer.appendChild(piece);
+  const rays = document.createElement('div');
+  rays.className = 'winner-ceremony-rays';
+  rays.setAttribute('aria-hidden', 'true');
+
+  const ceremony = document.createElement('section');
+  ceremony.className = 'winner-ceremony';
+
+  const ornamentTop = document.createElement('div');
+  ornamentTop.className = 'winner-ornament winner-ornament-top';
+  ornamentTop.textContent = '✦  ⚜  ✦';
+  ornamentTop.setAttribute('aria-hidden', 'true');
+
+  const crest = document.createElement('div');
+  crest.className = 'winner-crest';
+  crest.textContent = '♛';
+  crest.setAttribute('aria-hidden', 'true');
+
+  const kicker = document.createElement('p');
+  kicker.className = 'winner-ceremony-kicker';
+  kicker.textContent = 'Das Glücksrad hat entschieden';
+
+  const title = document.createElement('p');
+  title.className = 'winner-ceremony-title';
+  title.textContent = 'Gewinner';
+
+  const name = document.createElement('p');
+  name.className = 'winner-ceremony-name';
+  name.textContent = currentWinnerOption;
+
+  const divider = document.createElement('div');
+  divider.className = 'winner-ceremony-divider';
+  divider.setAttribute('aria-hidden', 'true');
+
+  const message = document.createElement('p');
+  message.className = 'winner-ceremony-message';
+  message.textContent = 'Die gewichtete Ziehung ist abgeschlossen.';
+
+  const closeButton = document.createElement('button');
+  closeButton.type = 'button';
+  closeButton.className = 'winner-ceremony-close';
+  closeButton.textContent = 'Ergebnis ansehen';
+
+  const ornamentBottom = document.createElement('div');
+  ornamentBottom.className = 'winner-ornament winner-ornament-bottom';
+  ornamentBottom.textContent = '❦';
+  ornamentBottom.setAttribute('aria-hidden', 'true');
+
+  ceremony.append(
+    ornamentTop,
+    crest,
+    kicker,
+    title,
+    name,
+    divider,
+    message,
+    closeButton,
+    ornamentBottom,
+  );
+
+  const particleColors = ['#f7e2a1', '#d6ad59', '#fff4ce', '#8aa66d', '#8b4b43'];
+  const particleLayer = document.createElement('div');
+  particleLayer.className = 'winner-ceremony-particles';
+  particleLayer.setAttribute('aria-hidden', 'true');
+
+  for (let index = 0; index < 34; index += 1) {
+    const particle = document.createElement('span');
+    particle.className = 'winner-ceremony-particle';
+    particle.style.left = `${4 + Math.random() * 92}%`;
+    particle.style.setProperty('--particle-delay', `${Math.random() * 0.65}s`);
+    particle.style.setProperty('--particle-duration', `${2.2 + Math.random() * 1.5}s`);
+    particle.style.setProperty('--particle-drift', `${-65 + Math.random() * 130}px`);
+    particle.style.setProperty('--particle-size', `${4 + Math.random() * 6}px`);
+    particle.style.backgroundColor = particleColors[index % particleColors.length];
+    particleLayer.appendChild(particle);
   }
 
+  layer.append(glow, rays, particleLayer, ceremony);
   document.body.appendChild(layer);
 
+  document.body.classList.add('winner-ceremony-open');
+
+  const handleEscape = (event) => {
+    if (event.key === 'Escape') {
+      closeCeremony();
+    }
+  };
+
+  const closeCeremony = () => {
+    if (!layer.isConnected) {
+      return;
+    }
+
+    document.removeEventListener('keydown', handleEscape);
+    document.body.classList.remove('winner-ceremony-open');
+    layer.classList.add('is-leaving');
+    window.setTimeout(() => {
+      layer.remove();
+      newVotingBtnResults?.focus();
+    }, 460);
+  };
+
+  closeButton.addEventListener('click', closeCeremony, { once: true });
+  document.addEventListener('keydown', handleEscape);
   window.setTimeout(() => {
-    layer.remove();
-    winnerDisplay.classList.remove('winner-pop');
-  }, 1700);
+    if (layer.isConnected) {
+      closeButton.focus();
+    }
+  }, 1150);
 }
 
 function showSetupHome() {
@@ -477,6 +572,7 @@ function resetApp() {
   joinError.textContent = '';
   voteConfirmation.textContent = '';
   winnerDisplay.textContent = '';
+  winnerDisplay.classList.remove('winner-announced');
   setupSection.hidden = false;
   showSetupHome();
   voteSection.hidden = true;
@@ -681,6 +777,7 @@ startBtn.addEventListener('click', async () => {
   spinBtn.disabled = false;
   stopBtn.disabled = true;
   winnerDisplay.textContent = '';
+  winnerDisplay.classList.remove('winner-announced');
   fillVoteOptions();
   currentPhase = 'vote';
 
@@ -893,6 +990,7 @@ spinBtn.addEventListener('click', () => {
     return;
   }
 
+  winnerDisplay.classList.remove('winner-announced');
   winnerDisplay.textContent = '🎡 Das Rad dreht sich. Klicke auf „Glücksrad stoppen“.';
 
   wheelSpinAnimation = wheel.animate(
@@ -961,7 +1059,8 @@ wheel.addEventListener('transitionend', () => {
   wheelIsSpinning = false;
   spinBtn.disabled = false;
   stopBtn.disabled = true;
-  winnerDisplay.textContent = `🎉 Gewinner: ${currentWinnerOption}`;
+  winnerDisplay.textContent = `Gewinner: ${currentWinnerOption}`;
+  winnerDisplay.classList.add('winner-announced');
   celebrateWinner();
   saveState();
 });
