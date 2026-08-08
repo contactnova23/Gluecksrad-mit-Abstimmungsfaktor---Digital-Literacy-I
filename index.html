@@ -4,29 +4,49 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Glücksrad mit Abstimmungsfaktor</title>
-    <link rel="stylesheet" href="style.css?v=fairytale8" />
+    <link rel="stylesheet" href="style.css?v=fairytale9" />
   </head>
   <body>
-    <div class="fairytale-vr" aria-hidden="true">
+    <div class="fairytale-vr pro-scene" aria-hidden="true">
       <div class="ft-sky"></div>
-      <div class="ft-clouds layer-back"></div>
-      <div class="ft-clouds layer-front"></div>
       <div class="ft-sun-glow"></div>
+      <div class="ft-clouds layer-back"></div>
+      <div class="ft-clouds layer-mid"></div>
+      <div class="ft-clouds layer-front"></div>
+
       <div class="ft-mountains"></div>
       <div class="ft-castle-hill"></div>
-      <div class="ft-boulevard"></div>
-      <div class="ft-left-buildings"></div>
-      <div class="ft-right-buildings"></div>
-      <div class="ft-lanterns left-lanterns"></div>
-      <div class="ft-lanterns right-lanterns"></div>
+      <div class="ft-aerial-haze"></div>
+
+      <div class="ft-street-perspective"></div>
+      <div class="ft-street-centerline"></div>
+
+      <div class="ft-left-blocks far"></div>
+      <div class="ft-right-blocks far"></div>
+      <div class="ft-left-blocks mid"></div>
+      <div class="ft-right-blocks mid"></div>
+      <div class="ft-left-blocks near"></div>
+      <div class="ft-right-blocks near"></div>
+
+      <div class="ft-left-arcade"></div>
+      <div class="ft-right-arcade"></div>
+
       <div class="ft-palms left-palms"></div>
       <div class="ft-palms right-palms"></div>
+      <div class="ft-lamps left-lamps"></div>
+      <div class="ft-lamps right-lamps"></div>
+
+      <div class="ft-foreground-wing left-wing"></div>
+      <div class="ft-foreground-wing right-wing"></div>
+
       <div class="ft-flowers flower-left"></div>
       <div class="ft-flowers flower-right"></div>
+      <div class="ft-volumetric-light left-light"></div>
+      <div class="ft-volumetric-light right-light"></div>
       <div class="ft-atmosphere"></div>
       <div class="ft-sparkles" id="vr-particles"></div>
     </div>
-    <main class="app">
+<main class="app">
       <section class="card">
         <h1>Glücksrad mit Abstimmungsfaktor</h1>
         <p class="intro">
@@ -189,6 +209,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <script src="script.js?v=18"></script>
-    <script src="effects.js?v=fairytale8"></script>
+    <script src="effects.js?v=fairytale9"></script>
   </body>
 </html>

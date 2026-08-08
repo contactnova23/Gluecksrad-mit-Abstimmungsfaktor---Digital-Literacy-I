@@ -2692,3 +2692,670 @@ button:hover {
     animation: none !important;
   }
 }
+
+
+/* =========================================================
+   FAIRYTALE VR PRO v9
+   Helle Farben bleiben. 3D/VR deutlich stärker und professioneller.
+   ========================================================= */
+
+:root {
+  --ft-depth-x: var(--vr-look-x, 0px);
+  --ft-depth-y: var(--vr-look-y, 0px);
+  --ft-depth-x-soft: var(--vr-look-x-soft, 0px);
+  --ft-depth-y-soft: var(--vr-look-y-soft, 0px);
+}
+
+/* Szene */
+.fairytale-vr.pro-scene {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  perspective: 1550px;
+  perspective-origin: 50% 42%;
+  transform-style: preserve-3d;
+  background:
+    linear-gradient(180deg, rgba(214,230,255,0.0), rgba(255,245,224,0.0));
+}
+
+.app {
+  position: relative !important;
+  z-index: 5 !important;
+}
+
+/* App schwebt etwas im Raum */
+.card {
+  position: relative;
+  transform-style: preserve-3d;
+  box-shadow:
+    0 36px 85px rgba(124, 96, 53, 0.16),
+    0 20px 44px rgba(92, 74, 39, 0.10),
+    0 0 0 1px rgba(255,255,255,0.22) inset !important;
+}
+
+/* Hintergrund: Himmel und Wolken */
+.ft-sky {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 20% 18%, rgba(255,255,255,0.80) 0 1.2px, transparent 1.6px),
+    radial-gradient(circle at 73% 12%, rgba(255,255,255,0.76) 0 1.2px, transparent 1.6px),
+    linear-gradient(180deg, rgba(255,255,255,0.10), transparent 70%);
+  transform:
+    translate3d(calc(var(--ft-depth-x-soft) * -0.10), calc(var(--ft-depth-y-soft) * -0.08), -320px)
+    scale(1.05);
+}
+
+.ft-sun-glow {
+  position: absolute;
+  z-index: 1;
+  top: 6vh;
+  right: 14vw;
+  width: min(18vw, 250px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255,240,202,0.96) 0%, rgba(248,210,131,0.54) 34%, transparent 70%);
+  filter: blur(12px);
+  transform:
+    translate3d(calc(var(--ft-depth-x-soft) * -0.14), calc(var(--ft-depth-y-soft) * -0.08), -280px);
+  animation: ft-pro-sun-pulse 6.5s ease-in-out infinite alternate;
+}
+
+.ft-clouds {
+  position: absolute;
+  left: -8vw;
+  right: -8vw;
+  height: 26vh;
+  z-index: 1;
+  opacity: 0.9;
+  will-change: transform;
+}
+
+.ft-clouds::before,
+.ft-clouds::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 12% 48%, rgba(255,255,255,0.82) 0 8%, transparent 9%),
+    radial-gradient(circle at 24% 42%, rgba(255,255,255,0.84) 0 10%, transparent 11%),
+    radial-gradient(circle at 38% 52%, rgba(255,255,255,0.80) 0 9%, transparent 10%),
+    radial-gradient(circle at 56% 44%, rgba(255,255,255,0.86) 0 10%, transparent 11%),
+    radial-gradient(circle at 72% 50%, rgba(255,255,255,0.80) 0 8%, transparent 9%),
+    radial-gradient(circle at 86% 40%, rgba(255,255,255,0.84) 0 10%, transparent 11%);
+  filter: blur(6px);
+}
+
+.layer-back {
+  top: 7vh;
+  transform:
+    translate3d(calc(var(--ft-depth-x-soft) * -0.12), calc(var(--ft-depth-y-soft) * -0.05), -260px)
+    scale(1.08);
+  animation: ft-pro-cloud-back 46s linear infinite;
+}
+
+.layer-mid {
+  top: 13vh;
+  opacity: 0.76;
+  transform:
+    translate3d(calc(var(--ft-depth-x-soft) * -0.22), calc(var(--ft-depth-y-soft) * -0.08), -180px)
+    scale(1.10);
+  animation: ft-pro-cloud-mid 36s linear infinite;
+}
+
+.layer-front {
+  top: 19vh;
+  opacity: 0.64;
+  transform:
+    translate3d(calc(var(--ft-depth-x) * -0.30), calc(var(--ft-depth-y) * -0.10), -120px)
+    scale(1.12);
+  animation: ft-pro-cloud-front 28s linear infinite;
+}
+
+/* Berge und Schloss */
+.ft-mountains {
+  position: absolute;
+  z-index: 2;
+  left: -4vw;
+  right: -4vw;
+  top: 19vh;
+  height: 34vh;
+  transform:
+    translate3d(calc(var(--ft-depth-x-soft) * -0.18), calc(var(--ft-depth-y-soft) * -0.06), -170px)
+    scale(1.05);
+  background:
+    radial-gradient(ellipse at 14% 100%, rgba(144,171,139,0.96) 0 28%, transparent 29%),
+    radial-gradient(ellipse at 34% 100%, rgba(158,182,150,0.98) 0 36%, transparent 37%),
+    radial-gradient(ellipse at 57% 100%, rgba(137,165,130,0.97) 0 32%, transparent 33%),
+    radial-gradient(ellipse at 82% 100%, rgba(164,186,155,0.98) 0 35%, transparent 36%);
+}
+
+.ft-castle-hill {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: 20vh;
+  width: min(48vw, 560px);
+  height: 32vh;
+  transform:
+    translateX(calc(-50% + var(--ft-depth-x-soft) * -0.22))
+    translateY(calc(var(--ft-depth-y-soft) * -0.08))
+    translateZ(-120px);
+}
+
+.ft-castle-hill::before {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 0;
+  height: 50%;
+  background:
+    radial-gradient(ellipse at 50% 100%, #b9cb9d 0 56%, transparent 57%);
+  filter: blur(0.2px);
+}
+
+.ft-castle-hill::after {
+  content: "";
+  position: absolute;
+  left: 32%;
+  right: 32%;
+  top: 1%;
+  bottom: 29%;
+  background: linear-gradient(180deg, rgba(248,243,232,0.98), rgba(228,215,191,0.98));
+  clip-path: polygon(
+    0 100%, 0 74%, 8% 74%, 8% 56%, 14% 56%, 14% 28%, 22% 28%, 22% 55%,
+    30% 55%, 30% 76%, 38% 76%, 38% 44%, 46% 44%, 46% 18%, 54% 18%, 54% 44%,
+    62% 44%, 62% 28%, 70% 28%, 70% 56%, 78% 56%, 78% 74%, 86% 74%, 86% 54%,
+    92% 54%, 92% 74%, 100% 74%, 100% 100%
+  );
+  box-shadow:
+    0 0 28px rgba(255,230,178,0.42),
+    inset 0 -10px 22px rgba(142,120,94,0.18);
+}
+
+.ft-aerial-haze {
+  position: absolute;
+  z-index: 3;
+  left: -5vw;
+  right: -5vw;
+  top: 25vh;
+  height: 36vh;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.00), rgba(255,245,225,0.14) 45%, rgba(255,245,225,0.24) 100%);
+  transform:
+    translate3d(calc(var(--ft-depth-x-soft) * -0.10), calc(var(--ft-depth-y-soft) * -0.04), -110px);
+}
+
+/* Perspektivische Straße */
+.ft-street-perspective {
+  position: absolute;
+  z-index: 3;
+  left: -32vw;
+  right: -32vw;
+  top: 50vh;
+  height: 72vh;
+  transform-origin: 50% 0%;
+  transform:
+    translate3d(calc(var(--ft-depth-x-soft) * -0.14), calc(var(--ft-depth-y-soft) * -0.04), 20px)
+    rotateX(72deg);
+  background:
+    linear-gradient(rgba(255,255,255,0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(235,221,194,0.94) 0%, rgba(201,182,151,0.98) 100%);
+  background-size: 64px 64px, 64px 64px, auto;
+  border-top: 1px solid rgba(255,255,255,0.44);
+  box-shadow:
+    inset 0 16px 44px rgba(255,246,218,0.24),
+    0 -16px 34px rgba(225,195,134,0.14);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.98), rgba(0,0,0,0.72) 46%, transparent 100%);
+  animation: ft-road-glow 9s ease-in-out infinite alternate;
+}
+
+.ft-street-centerline {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 53vh;
+  width: 18vw;
+  min-width: 120px;
+  height: 48vh;
+  transform-origin: 50% 0%;
+  transform:
+    translateX(calc(-50% + var(--ft-depth-x-soft) * -0.12))
+    rotateX(72deg)
+    translateZ(22px);
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.45) 0 10px,
+      transparent 10px 28px
+    );
+  opacity: 0.42;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.90), transparent 100%);
+}
+
+/* Gebäude-Blöcke */
+.ft-left-blocks,
+.ft-right-blocks {
+  position: absolute;
+  width: 26vw;
+  min-width: 220px;
+  height: 38vh;
+  top: 31vh;
+  z-index: 4;
+  opacity: 0.98;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.ft-left-blocks { left: 0; }
+.ft-right-blocks { right: 0; }
+
+.ft-left-blocks::before,
+.ft-right-blocks::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #f7ecd8 0%, #eddcc0 100%);
+  box-shadow:
+    inset 0 -10px 20px rgba(186,156,105,0.10),
+    inset -10px 0 0 rgba(203,181,145,0.36);
+  clip-path: polygon(
+    0 100%, 0 42%, 8% 42%, 8% 30%, 16% 30%, 16% 12%, 28% 12%, 28% 32%,
+    38% 32%, 38% 22%, 50% 22%, 50% 38%, 62% 38%, 62% 18%, 76% 18%, 76% 42%,
+    88% 42%, 88% 26%, 100% 26%, 100% 100%
+  );
+}
+
+.ft-left-blocks::after,
+.ft-right-blocks::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, transparent 0 10%, rgba(170,112,68,0.90) 10% 18%, transparent 18% 100%),
+    radial-gradient(circle at 14% 52%, rgba(164,116,73,0.90) 0 3.2%, transparent 3.8%),
+    radial-gradient(circle at 30% 40%, rgba(164,116,73,0.90) 0 3.2%, transparent 3.8%),
+    radial-gradient(circle at 48% 48%, rgba(164,116,73,0.90) 0 3.2%, transparent 3.8%),
+    radial-gradient(circle at 66% 38%, rgba(164,116,73,0.90) 0 3.2%, transparent 3.8%),
+    radial-gradient(circle at 84% 52%, rgba(164,116,73,0.90) 0 3.2%, transparent 3.8%);
+  opacity: 0.68;
+}
+
+.ft-left-blocks.far {
+  top: 31vh;
+  transform:
+    translate3d(calc(var(--ft-depth-x-soft) * -0.18), calc(var(--ft-depth-y-soft) * -0.05), -50px)
+    scale(0.70);
+  opacity: 0.62;
+}
+.ft-right-blocks.far {
+  top: 31vh;
+  transform:
+    translate3d(calc(var(--ft-depth-x-soft) * -0.18), calc(var(--ft-depth-y-soft) * -0.05), -50px)
+    scale(0.70) scaleX(-1);
+  opacity: 0.62;
+}
+
+.ft-left-blocks.mid {
+  top: 34vh;
+  transform:
+    translate3d(calc(var(--ft-depth-x) * -0.30), calc(var(--ft-depth-y) * -0.08), 28px)
+    scale(0.88);
+}
+.ft-right-blocks.mid {
+  top: 34vh;
+  transform:
+    translate3d(calc(var(--ft-depth-x) * -0.30), calc(var(--ft-depth-y) * -0.08), 28px)
+    scale(0.88) scaleX(-1);
+}
+
+.ft-left-blocks.near {
+  top: 37vh;
+  transform:
+    translate3d(calc(var(--ft-depth-x) * -0.54), calc(var(--ft-depth-y) * -0.12), 84px)
+    scale(1.04);
+  opacity: 0.92;
+}
+.ft-right-blocks.near {
+  top: 37vh;
+  transform:
+    translate3d(calc(var(--ft-depth-x) * -0.54), calc(var(--ft-depth-y) * -0.12), 84px)
+    scale(1.04) scaleX(-1);
+  opacity: 0.92;
+}
+
+/* Seitliche Arkaden als zusätzliche 3D-Flächen */
+.ft-left-arcade,
+.ft-right-arcade {
+  position: absolute;
+  z-index: 5;
+  top: 36vh;
+  width: 18vw;
+  min-width: 130px;
+  height: 40vh;
+  opacity: 0.42;
+  will-change: transform;
+}
+
+.ft-left-arcade {
+  left: 0;
+  transform:
+    translate3d(calc(var(--ft-depth-x) * -0.85), calc(var(--ft-depth-y) * -0.12), 120px)
+    rotateY(44deg);
+  transform-origin: left center;
+}
+
+.ft-right-arcade {
+  right: 0;
+  transform:
+    translate3d(calc(var(--ft-depth-x) * -0.85), calc(var(--ft-depth-y) * -0.12), 120px)
+    rotateY(-44deg);
+  transform-origin: right center;
+}
+
+.ft-left-arcade::before,
+.ft-right-arcade::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(247,236,214,0.90), rgba(229,213,186,0.94));
+  clip-path: polygon(
+    0 100%, 0 18%, 14% 18%, 14% 100%, 26% 100%, 26% 18%, 40% 18%, 40% 100%,
+    52% 100%, 52% 18%, 66% 18%, 66% 100%, 78% 100%, 78% 18%, 92% 18%, 92% 100%, 100% 100%
+  );
+  box-shadow: inset 0 -14px 26px rgba(170,132,74,0.10);
+}
+
+.ft-left-arcade::after,
+.ft-right-arcade::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 7% 20%, rgba(255,255,255,0.70) 0 2%, transparent 2.8%),
+    radial-gradient(circle at 33% 20%, rgba(255,255,255,0.70) 0 2%, transparent 2.8%),
+    radial-gradient(circle at 59% 20%, rgba(255,255,255,0.70) 0 2%, transparent 2.8%),
+    radial-gradient(circle at 85% 20%, rgba(255,255,255,0.70) 0 2%, transparent 2.8%);
+  opacity: 0.52;
+}
+
+/* Palmen und Lampen */
+.ft-palms,
+.ft-lamps {
+  position: absolute;
+  z-index: 6;
+  top: 28vh;
+  bottom: 0;
+  width: 14vw;
+  min-width: 90px;
+  will-change: transform;
+}
+
+.left-palms, .left-lamps { left: 11vw; }
+.right-palms, .right-lamps { right: 11vw; }
+
+.left-palms {
+  transform: translate3d(calc(var(--ft-depth-x) * -0.66), calc(var(--ft-depth-y) * -0.16), 90px);
+}
+.right-palms {
+  transform: translate3d(calc(var(--ft-depth-x) * 0.66), calc(var(--ft-depth-y) * -0.16), 90px) scaleX(-1);
+}
+.left-lamps {
+  transform: translate3d(calc(var(--ft-depth-x) * -0.48), calc(var(--ft-depth-y) * -0.12), 76px);
+}
+.right-lamps {
+  transform: translate3d(calc(var(--ft-depth-x) * 0.48), calc(var(--ft-depth-y) * -0.12), 76px) scaleX(-1);
+}
+
+.ft-palms::before,
+.ft-palms::after,
+.ft-lamps::before,
+.ft-lamps::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.ft-palms::before {
+  background: linear-gradient(90deg, transparent 48%, #8a714b 49% 52%, transparent 53%);
+  opacity: 0.70;
+}
+
+.ft-palms::after {
+  background:
+    radial-gradient(ellipse at 46% 14%, #6c9d67 0 10%, transparent 11%),
+    radial-gradient(ellipse at 34% 18%, #80b27d 0 9%, transparent 10%),
+    radial-gradient(ellipse at 58% 19%, #719f6c 0 9%, transparent 10%),
+    radial-gradient(ellipse at 46% 26%, #7baa74 0 11%, transparent 12%);
+  opacity: 0.86;
+  animation: ft-palm-sway 7s ease-in-out infinite alternate;
+}
+
+.ft-lamps::before {
+  background:
+    linear-gradient(90deg, transparent 48%, #6b5842 49% 51%, transparent 52%),
+    radial-gradient(circle at 50% 22%, rgba(249,226,167,0.90) 0 5%, transparent 6%),
+    radial-gradient(circle at 50% 48%, rgba(249,226,167,0.82) 0 4%, transparent 5%);
+  opacity: 0.82;
+}
+
+.ft-lamps::after {
+  background:
+    radial-gradient(circle at 50% 22%, rgba(255,239,196,0.42) 0 10%, transparent 11%),
+    radial-gradient(circle at 50% 48%, rgba(255,239,196,0.34) 0 8%, transparent 9%);
+  filter: blur(6px);
+  opacity: 0.64;
+  animation: ft-lamp-glow 3.6s ease-in-out infinite alternate;
+}
+
+/* Vordere Flügel / seitliche 3D-Kulissen */
+.ft-foreground-wing {
+  position: absolute;
+  z-index: 7;
+  top: 18vh;
+  width: 16vw;
+  min-width: 120px;
+  height: 62vh;
+  opacity: 0.30;
+  will-change: transform;
+}
+
+.left-wing {
+  left: -1vw;
+  transform:
+    translate3d(calc(var(--ft-depth-x) * -1.12), calc(var(--ft-depth-y) * -0.28), 190px)
+    rotateY(52deg);
+  transform-origin: left center;
+}
+
+.right-wing {
+  right: -1vw;
+  transform:
+    translate3d(calc(var(--ft-depth-x) * 1.12), calc(var(--ft-depth-y) * -0.28), 190px)
+    rotateY(-52deg);
+  transform-origin: right center;
+}
+
+.ft-foreground-wing::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(242,228,202,0.90), rgba(221,203,171,0.94));
+  clip-path: polygon(0 100%, 0 22%, 100% 0, 100% 100%);
+  box-shadow: inset 0 -16px 28px rgba(166,133,79,0.12);
+}
+
+/* Blumen im Vordergrund */
+.ft-flowers {
+  position: absolute;
+  z-index: 8;
+  bottom: -1vh;
+  width: 18vw;
+  min-width: 130px;
+  height: 25vh;
+  opacity: 0.80;
+  will-change: transform;
+}
+.flower-left {
+  left: -1vw;
+  transform: translate3d(calc(var(--ft-depth-x) * -1.25), calc(var(--ft-depth-y) * -0.46), 230px);
+}
+.flower-right {
+  right: -1vw;
+  transform: translate3d(calc(var(--ft-depth-x) * 1.25), calc(var(--ft-depth-y) * -0.46), 230px) scaleX(-1);
+}
+
+.ft-flowers::before,
+.ft-flowers::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 22% 74%, rgba(255,170,183,0.95) 0 4%, transparent 5%),
+    radial-gradient(circle at 36% 60%, rgba(255,216,124,0.96) 0 4%, transparent 5%),
+    radial-gradient(circle at 52% 78%, rgba(192,163,255,0.95) 0 4%, transparent 5%),
+    radial-gradient(circle at 68% 56%, rgba(255,255,255,0.98) 0 4%, transparent 5%),
+    radial-gradient(circle at 56% 90%, rgba(125,180,102,0.92) 0 14%, transparent 15%),
+    radial-gradient(circle at 30% 90%, rgba(125,180,102,0.92) 0 13%, transparent 14%);
+}
+
+/* Volumetric light */
+.ft-volumetric-light {
+  position: absolute;
+  z-index: 5;
+  top: -4vh;
+  width: 18vw;
+  min-width: 180px;
+  height: 88vh;
+  opacity: 0.10;
+  filter: blur(6px);
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+
+.left-light {
+  left: 14vw;
+  transform:
+    translate3d(calc(var(--ft-depth-x-soft) * -0.16), calc(var(--ft-depth-y-soft) * -0.05), -10px)
+    rotate(10deg);
+  background: linear-gradient(180deg, rgba(255,233,185,0.44), rgba(255,233,185,0.08) 56%, transparent 100%);
+  clip-path: polygon(40% 0, 62% 0, 100% 100%, 0 100%);
+  animation: ft-light-shift-left 11s ease-in-out infinite alternate;
+}
+.right-light {
+  right: 14vw;
+  transform:
+    translate3d(calc(var(--ft-depth-x-soft) * 0.16), calc(var(--ft-depth-y-soft) * -0.05), -10px)
+    rotate(-10deg);
+  background: linear-gradient(180deg, rgba(213,242,191,0.38), rgba(213,242,191,0.08) 56%, transparent 100%);
+  clip-path: polygon(38% 0, 60% 0, 100% 100%, 0 100%);
+  animation: ft-light-shift-right 12s ease-in-out infinite alternate;
+}
+
+.ft-atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  background:
+    radial-gradient(circle at 50% 56%, rgba(255,244,219,0.16), transparent 30%),
+    linear-gradient(180deg, transparent 0 56%, rgba(255,255,255,0.08) 100%);
+}
+
+.ft-sparkles {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+}
+
+/* Animation polish */
+@keyframes ft-pro-sun-pulse {
+  from { filter: blur(12px) brightness(0.98); opacity: 0.88; }
+  to { filter: blur(14px) brightness(1.06); opacity: 1; }
+}
+@keyframes ft-pro-cloud-back {
+  from { margin-left: -2vw; }
+  to { margin-left: 4vw; }
+}
+@keyframes ft-pro-cloud-mid {
+  from { margin-left: 4vw; }
+  to { margin-left: -4vw; }
+}
+@keyframes ft-pro-cloud-front {
+  from { margin-left: -5vw; }
+  to { margin-left: 5vw; }
+}
+@keyframes ft-road-glow {
+  from { filter: brightness(0.96); }
+  to { filter: brightness(1.05); }
+}
+@keyframes ft-palm-sway {
+  from { transform: translateX(-2px) rotate(-1deg); }
+  to { transform: translateX(3px) rotate(1.5deg); }
+}
+@keyframes ft-lamp-glow {
+  from { opacity: 0.52; }
+  to { opacity: 0.84; }
+}
+@keyframes ft-light-shift-left {
+  from { opacity: 0.06; filter: blur(7px); }
+  to { opacity: 0.14; filter: blur(4px); }
+}
+@keyframes ft-light-shift-right {
+  from { opacity: 0.05; filter: blur(8px); }
+  to { opacity: 0.12; filter: blur(5px); }
+}
+
+/* Mobile still clean */
+@media (max-width: 900px) {
+  .ft-left-blocks,
+  .ft-right-blocks {
+    width: 20vw;
+    min-width: 130px;
+  }
+  .ft-left-arcade,
+  .ft-right-arcade,
+  .ft-foreground-wing {
+    opacity: 0.18;
+  }
+  .ft-boulevard,
+  .ft-street-perspective {
+    left: -60vw;
+    right: -60vw;
+  }
+}
+
+@media (max-width: 700px) {
+  .fairytale-vr.pro-scene {
+    perspective: 980px;
+  }
+  .ft-left-blocks.near,
+  .ft-right-blocks.near {
+    opacity: 0.70;
+  }
+  .ft-flowers {
+    width: 16vw;
+    min-width: 90px;
+    opacity: 0.56;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .ft-clouds,
+  .ft-sun-glow,
+  .ft-street-perspective,
+  .ft-palms::after,
+  .ft-lamps::after,
+  .ft-volumetric-light {
+    animation: none !important;
+  }
+}

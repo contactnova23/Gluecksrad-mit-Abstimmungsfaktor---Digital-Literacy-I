@@ -6,7 +6,7 @@
 
   // Separate visual-only particle field.
   const colors = ['#f5c874', '#b9d98a', '#d6c6ff', '#fff4d7', '#ffc0cb'];
-  const particleCount = window.matchMedia('(max-width: 700px)').matches ? 18 : 30;
+  const particleCount = window.matchMedia('(max-width: 700px)').matches ? 20 : 36;
 
   for (let i = 0; i < particleCount; i += 1) {
     const particle = document.createElement('span');
@@ -37,12 +37,16 @@
   let currentX = 0;
   let currentY = 0;
 
+
+  const panel = document.querySelector('.card');
+
+
   const setTarget = (clientX, clientY) => {
     const x = (clientX / window.innerWidth - 0.5) * 2;
     const y = (clientY / window.innerHeight - 0.5) * 2;
 
-    targetX = Math.max(-1, Math.min(1, x)) * 18;
-    targetY = Math.max(-1, Math.min(1, y)) * 12;
+    targetX = Math.max(-1, Math.min(1, x)) * 24;
+    targetY = Math.max(-1, Math.min(1, y)) * 16;
   };
 
   window.addEventListener('pointermove', (event) => {
@@ -73,6 +77,12 @@
     root.style.setProperty('--vr-look-y', `${currentY.toFixed(2)}px`);
     root.style.setProperty('--vr-look-x-soft', `${(currentX * 0.62).toFixed(2)}px`);
     root.style.setProperty('--vr-look-y-soft', `${(currentY * 0.62).toFixed(2)}px`);
+
+    if (panel) {
+      const rotateY = (currentX / 24) * 1.6;
+      const rotateX = (-currentY / 16) * 1.4;
+      panel.style.transform = `translateY(-2px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg)`;
+    }
 
     requestAnimationFrame(animate);
   };
