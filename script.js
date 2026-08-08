@@ -7,7 +7,6 @@ const answersContainer = document.getElementById('answers-container');
 const addAnswerBtn = document.getElementById('add-answer-btn');
 const startBtn = document.getElementById('start-btn');
 const setupError = document.getElementById('setup-error');
-const simpleModeToggle = document.getElementById('simple-mode-toggle');
 const roomModeToggle = document.getElementById('room-mode-toggle');
 const onlineModeToggle = document.getElementById('online-mode-toggle');
 const joinRoomCodeInput = document.getElementById('join-room-code-input');
@@ -16,15 +15,15 @@ const joinError = document.getElementById('join-error');
 
 const entryChoice = document.getElementById('entry-choice');
 const createPanel = document.getElementById('create-panel');
+const modePanel = document.getElementById('mode-panel');
 const joinPanel = document.getElementById('join-panel');
 const showCreateBtn = document.getElementById('show-create-btn');
 const showJoinBtn = document.getElementById('show-join-btn');
 const backFromCreateBtn = document.getElementById('back-from-create-btn');
+const backToCreateBtn = document.getElementById('back-to-create-btn');
 const backFromJoinBtn = document.getElementById('back-from-join-btn');
-
-const progressStep1 = document.getElementById('progress-step-1');
-const progressStep2 = document.getElementById('progress-step-2');
-const progressStep3 = document.getElementById('progress-step-3');
+const continueToModeBtn = document.getElementById('continue-to-mode-btn');
+const createError = document.getElementById('create-error');
 
 
 const questionDisplay = document.getElementById('question-display');
@@ -67,38 +66,40 @@ let currentWinnerOption = '';
 let isOnlineModerator = false;
 let wheelSpinAnimation = null;
 
-function updateSetupProgress() {
-  const hasQuestion = questionInput.value.trim().length > 0;
-  const answerValues = Array.from(answersContainer.querySelectorAll('.answer-input'))
-    .map((input) => input.value.trim())
-    .filter(Boolean);
-  const hasAnswers = answerValues.length >= 2;
-  const hasMode = simpleModeToggle.checked || roomModeToggle.checked || onlineModeToggle.checked;
+function getSetupData() {
+  return {
+    question: questionInput.value.trim(),
+    answers: Array.from(answersContainer.querySelectorAll('.answer-input'))
+      .map((input) => input.value.trim())
+      .filter(Boolean),
+  };
+}
 
-  const steps = [progressStep1, progressStep2, progressStep3];
-  steps.forEach((step) => {
-    step.classList.remove('is-active', 'is-done');
-  });
+function validateSetupDetails(errorElement) {
+  const { question, answers } = getSetupData();
+  errorElement.textContent = '';
 
-  if (hasQuestion) {
-    progressStep1.classList.add('is-done');
-  } else {
-    progressStep1.classList.add('is-active');
-    return;
+  if (!question) {
+    errorElement.textContent = 'Bitte gib eine Abstimmungsfrage ein.';
+    questionInput.focus();
+    return null;
   }
 
-  if (hasAnswers) {
-    progressStep2.classList.add('is-done');
-  } else {
-    progressStep2.classList.add('is-active');
-    return;
+  if (answers.length < 2) {
+    errorElement.textContent = 'Bitte gib mindestens zwei Antwortmöglichkeiten ein.';
+    const firstEmptyAnswer = Array.from(answersContainer.querySelectorAll('.answer-input'))
+      .find((input) => !input.value.trim());
+    firstEmptyAnswer?.focus();
+    return null;
   }
 
-  if (hasMode) {
-    progressStep3.classList.add('is-done', 'is-active');
-  } else {
-    progressStep3.classList.add('is-active');
+  const normalizedAnswers = answers.map((answer) => answer.toLowerCase());
+  if (new Set(normalizedAnswers).size !== normalizedAnswers.length) {
+    errorElement.textContent = 'Bitte verwende jede Antwortmöglichkeit nur einmal.';
+    return null;
   }
+
+  return { question, answers };
 }
 
 function updateModeCards() {
@@ -157,7 +158,10 @@ function celebrateWinner() {
 function showSetupHome() {
   entryChoice.hidden = false;
   createPanel.hidden = true;
+  modePanel.hidden = true;
   joinPanel.hidden = true;
+  createError.textContent = '';
+  createError.textContent = '';
   setupError.textContent = '';
   joinError.textContent = '';
 }
@@ -165,16 +169,29 @@ function showSetupHome() {
 function showCreatePanel() {
   entryChoice.hidden = true;
   createPanel.hidden = false;
+  modePanel.hidden = true;
+  joinPanel.hidden = true;
+  createError.textContent = '';
+  setupError.textContent = '';
+  questionInput.focus();
+}
+
+function showModePanel() {
+  entryChoice.hidden = true;
+  createPanel.hidden = true;
+  modePanel.hidden = false;
   joinPanel.hidden = true;
   setupError.textContent = '';
-  updateSetupProgress();
   updateModeCards();
-  questionInput.focus();
+
+  const selectedMode = document.querySelector('input[name="voting-mode"]:checked');
+  (selectedMode || roomModeToggle).focus();
 }
 
 function showJoinPanel() {
   entryChoice.hidden = true;
   createPanel.hidden = true;
+  modePanel.hidden = true;
   joinPanel.hidden = false;
   joinError.textContent = '';
   joinRoomCodeInput.focus();
@@ -211,7 +228,7 @@ function createAnswerRow(value = '') {
   const input = document.createElement('input');
   input.className = 'answer-input';
   input.type = 'text';
-  input.placeholder = 'Antwortmöglichkeit';
+  input.placeholder = `Antwort ${answersContainer.querySelectorAll('.answer-input').length + 1}`;
   input.value = value;
 
   const removeButton = document.createElement('button');
@@ -224,7 +241,6 @@ function createAnswerRow(value = '') {
     if (rows.length > 2) {
       row.remove();
       updateRemoveButtons();
-      updateSetupProgress();
     } else {
       setupError.textContent = 'Mindestens zwei Antwortmöglichkeiten sind nötig.';
     }
@@ -234,7 +250,6 @@ function createAnswerRow(value = '') {
   row.appendChild(removeButton);
   answersContainer.appendChild(row);
   updateRemoveButtons();
-  updateSetupProgress();
 }
 
 function updateRemoveButtons() {
@@ -445,7 +460,6 @@ function resetApp() {
   answersContainer.innerHTML = '';
   createAnswerRow('');
   createAnswerRow('');
-  simpleModeToggle.checked = true;
   roomModeToggle.checked = false;
   onlineModeToggle.checked = false;
   joinRoomCodeInput.value = '';
@@ -569,6 +583,13 @@ function restoreSavedState() {
     votes = parsedState.votes || [];
     roomMode = Boolean(parsedState.roomMode);
     onlineMode = Boolean(parsedState.onlineMode);
+
+    // Alte gespeicherte Sitzungen aus dem entfernten Einfachen Modus nicht wiederherstellen.
+    if (currentPhase !== 'setup' && !roomMode && !onlineMode) {
+      clearSavedState();
+      return;
+    }
+
     isOnlineModerator = Boolean(parsedState.isOnlineModerator);
     currentRotation = parsedState.currentRotation || 0;
     targetRotation = parsedState.targetRotation || 0;
@@ -577,7 +598,6 @@ function restoreSavedState() {
     currentVoteCount = parsedState.currentVoteCount || 0;
     isVotingClosed = Boolean(parsedState.isVotingClosed);
     currentBrowserVoteKey = parsedState.currentBrowserVoteKey || '';
-    simpleModeToggle.checked = !roomMode && !onlineMode;
     roomModeToggle.checked = roomMode;
     onlineModeToggle.checked = onlineMode;
 
@@ -602,64 +622,42 @@ function restoreSavedState() {
 showCreateBtn.addEventListener('click', showCreatePanel);
 showJoinBtn.addEventListener('click', showJoinPanel);
 backFromCreateBtn.addEventListener('click', showSetupHome);
+backToCreateBtn.addEventListener('click', showCreatePanel);
 backFromJoinBtn.addEventListener('click', showSetupHome);
-
-questionInput.addEventListener('input', updateSetupProgress);
-answersContainer.addEventListener('input', updateSetupProgress);
 
 addAnswerBtn.addEventListener('click', () => {
   createAnswerRow('');
 });
 
-simpleModeToggle.addEventListener('change', () => {
-  if (simpleModeToggle.checked) {
-    roomModeToggle.checked = false;
-    onlineModeToggle.checked = false;
+continueToModeBtn.addEventListener('click', () => {
+  const setupData = validateSetupDetails(createError);
+  if (!setupData) {
+    return;
   }
-  updateModeCards();
-  updateSetupProgress();
+
+  showModePanel();
 });
 
-roomModeToggle.addEventListener('change', () => {
-  if (roomModeToggle.checked) {
-    onlineModeToggle.checked = false;
-  }
-  updateModeCards();
-  updateSetupProgress();
-});
-
-onlineModeToggle.addEventListener('change', () => {
-  if (onlineModeToggle.checked) {
-    roomModeToggle.checked = false;
-  }
-  updateModeCards();
-  updateSetupProgress();
-});
+roomModeToggle.addEventListener('change', updateModeCards);
+onlineModeToggle.addEventListener('change', updateModeCards);
 
 startBtn.addEventListener('click', async () => {
   setupError.textContent = '';
-  const question = questionInput.value.trim();
-  const answers = Array.from(answersContainer.querySelectorAll('.answer-input'))
-    .map((input) => input.value.trim())
-    .filter(Boolean);
 
-  if (!question) {
-    setupError.textContent = 'Bitte gib eine Frage ein.';
+  const setupData = validateSetupDetails(setupError);
+  if (!setupData) {
+    const validationMessage = setupError.textContent;
+    showCreatePanel();
+    createError.textContent = validationMessage;
     return;
   }
 
-  if (answers.length < 2) {
-    setupError.textContent = 'Bitte gib mindestens zwei Antwortmöglichkeiten ein.';
+  if (!roomModeToggle.checked && !onlineModeToggle.checked) {
+    setupError.textContent = 'Bitte wähle Raum-Modus oder Online-Modus aus.';
     return;
   }
 
-  const normalizedAnswers = answers.map((answer) => answer.toLowerCase());
-
-if (new Set(normalizedAnswers).size !== normalizedAnswers.length) {
-  setupError.textContent = 'Bitte verwende jede Antwortmöglichkeit nur einmal.';
-  return;
-}
-
+  const { question, answers } = setupData;
   roomMode = roomModeToggle.checked;
   onlineMode = onlineModeToggle.checked;
 
@@ -1029,5 +1027,4 @@ createAnswerRow('');
 createAnswerRow('');
 updateRemoveButtons();
 updateModeCards();
-updateSetupProgress();
 restoreSavedState();

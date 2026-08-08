@@ -11,7 +11,7 @@
       href="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
       crossorigin
     />
-    <link rel="stylesheet" href="style.css?v=optimized11" />
+    <link rel="stylesheet" href="style.css?v=wizard12" />
   </head>
   <body>
     <canvas id="vr-world-canvas" aria-hidden="true"></canvas>
@@ -23,40 +23,32 @@
         </p>
 
         <section id="setup-section">
-          <div id="entry-choice" class="entry-choice">
+          <div id="entry-choice" class="entry-choice wizard-screen">
+            <p class="wizard-kicker">Willkommen</p>
             <h2>Was möchtest du tun?</h2>
-            <p class="info">Erstelle eine neue Abstimmung oder tritt mit einem Raumcode einer Online-Abstimmung bei.</p>
+            <p class="info">
+              Erstelle eine neue Abstimmung oder tritt mit einem Raumcode einer Online-Abstimmung bei.
+            </p>
             <div class="entry-actions">
               <button id="show-create-btn" type="button">Neue Abstimmung erstellen</button>
               <button id="show-join-btn" type="button" class="secondary-choice-btn">Mit Raumcode teilnehmen</button>
             </div>
           </div>
 
-          <section id="create-panel" class="setup-panel" hidden>
+          <section id="create-panel" class="setup-panel wizard-screen" hidden>
             <div class="panel-header">
               <div>
-                <h2>Neue Abstimmung erstellen</h2>
-                <p class="info">Lege Frage, Antworten und die Abstimmungsart fest.</p>
+                <p class="wizard-kicker">Schritt 1 von 2</p>
+                <h2>Frage und Antworten festlegen</h2>
+                <p class="info">Formuliere zuerst die Abstimmungsfrage und mindestens zwei Antwortmöglichkeiten.</p>
               </div>
               <button id="back-from-create-btn" type="button" class="back-btn">Zurück</button>
             </div>
 
-
-            <div class="setup-progress" aria-label="Fortschritt beim Erstellen der Abstimmung">
-              <div id="progress-step-1" class="progress-step is-active">
-                <span class="progress-number">1</span>
-                <span>Frage</span>
-              </div>
-              <div class="progress-line"></div>
-              <div id="progress-step-2" class="progress-step">
-                <span class="progress-number">2</span>
-                <span>Antworten</span>
-              </div>
-              <div class="progress-line"></div>
-              <div id="progress-step-3" class="progress-step">
-                <span class="progress-number">3</span>
-                <span>Modus</span>
-              </div>
+            <div class="wizard-step-indicator" aria-label="Erstellung: Schritt 1 von 2">
+              <span class="wizard-dot is-current">1</span>
+              <span class="wizard-line"></span>
+              <span class="wizard-dot">2</span>
             </div>
 
             <label class="field">
@@ -66,29 +58,34 @@
 
             <div class="answers-box setup-block">
               <h3>2. Antwortmöglichkeiten</h3>
-              <div id="answers-container">
-                <div class="answer-row">
-                  <input class="answer-input" type="text" placeholder="Antwort 1" />
-                  <button class="remove-answer-btn" type="button">Entfernen</button>
-                </div>
-                <div class="answer-row">
-                  <input class="answer-input" type="text" placeholder="Antwort 2" />
-                  <button class="remove-answer-btn" type="button">Entfernen</button>
-                </div>
-              </div>
+              <div id="answers-container"></div>
               <button id="add-answer-btn" type="button">+ Weitere Antwort</button>
             </div>
 
-            <fieldset class="mode-fieldset">
-              <legend>3. Wie soll abgestimmt werden?</legend>
+            <p id="create-error" class="error"></p>
+            <div class="wizard-nav">
+              <button id="continue-to-mode-btn" type="button" class="primary-action">Weiter zur Abstimmungsart</button>
+            </div>
+          </section>
 
-              <label class="mode-option">
-                <input id="simple-mode-toggle" type="radio" name="voting-mode" value="simple" checked />
-                <span class="mode-copy">
-                  <strong>Einfacher Modus – dieses Gerät</strong>
-                  <small>Für eine einzelne Person oder zum Testen.</small>
-                </span>
-              </label>
+          <section id="mode-panel" class="setup-panel wizard-screen" hidden>
+            <div class="panel-header">
+              <div>
+                <p class="wizard-kicker">Schritt 2 von 2</p>
+                <h2>Abstimmungsart wählen</h2>
+                <p class="info">Wähle, wie die Teilnehmenden ihre Stimmen abgeben sollen.</p>
+              </div>
+              <button id="back-to-create-btn" type="button" class="back-btn">Zurück</button>
+            </div>
+
+            <div class="wizard-step-indicator" aria-label="Erstellung: Schritt 2 von 2">
+              <span class="wizard-dot is-done">✓</span>
+              <span class="wizard-line is-done"></span>
+              <span class="wizard-dot is-current">2</span>
+            </div>
+
+            <fieldset class="mode-fieldset mode-choice-grid">
+              <legend>3. Wie soll abgestimmt werden?</legend>
 
               <label class="mode-option">
                 <input id="room-mode-toggle" type="radio" name="voting-mode" value="room" />
@@ -108,12 +105,15 @@
             </fieldset>
 
             <p id="setup-error" class="error"></p>
-            <button id="start-btn" type="button" class="primary-action">Abstimmung starten</button>
+            <div class="wizard-nav">
+              <button id="start-btn" type="button" class="primary-action">Abstimmung starten</button>
+            </div>
           </section>
 
-          <section id="join-panel" class="setup-panel" hidden>
+          <section id="join-panel" class="setup-panel wizard-screen" hidden>
             <div class="panel-header">
               <div>
+                <p class="wizard-kicker">Online teilnehmen</p>
                 <h2>Mit Raumcode teilnehmen</h2>
                 <p class="info">Gib den Raumcode ein, den du von der moderierenden Person erhalten hast.</p>
               </div>
@@ -177,8 +177,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
-    <script src="script.js?v=18"></script>
+    <script src="script.js?v=19"></script>
     <script src="effects.js?v=optimized11"></script>
-    <script src="vr-scene.js?v=optimized11"></script>
+    <script src="vr-scene.js?v=wizard12"></script>
   </body>
 </html>

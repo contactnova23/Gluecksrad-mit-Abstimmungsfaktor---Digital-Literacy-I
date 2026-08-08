@@ -510,24 +510,15 @@
     // ---------- App progress detection ----------
     const entryChoice = document.getElementById('entry-choice');
     const createPanel = document.getElementById('create-panel');
+    const modePanel = document.getElementById('mode-panel');
     const joinPanel = document.getElementById('join-panel');
     const voteSection = document.getElementById('vote-section');
     const resultsSection = document.getElementById('results-section');
-    const questionInput = document.getElementById('question-input');
-    const answersContainer = document.getElementById('answers-container');
     const spinBtn = document.getElementById('spin-btn');
     const winnerDisplay = document.getElementById('winner-display');
 
     function isVisible(element) {
       return Boolean(element && !element.hidden);
-    }
-
-    function filledAnswers() {
-      if (!answersContainer) return 0;
-
-      return Array.from(
-        answersContainer.querySelectorAll('.answer-input')
-      ).filter((input) => input.value.trim()).length;
     }
 
     function detectStep() {
@@ -537,13 +528,9 @@
       }
 
       if (isVisible(voteSection)) return 4;
+      if (isVisible(modePanel)) return 3;
+      if (isVisible(createPanel)) return 2;
       if (isVisible(joinPanel)) return 1;
-
-      if (isVisible(createPanel)) {
-        if (!questionInput?.value.trim()) return 1;
-        if (filledAnswers() < 2) return 2;
-        return 3;
-      }
 
       return 0;
     }
@@ -555,6 +542,7 @@
     const watchedElements = [
       entryChoice,
       createPanel,
+      modePanel,
       joinPanel,
       voteSection,
       resultsSection,
@@ -574,8 +562,6 @@
       });
     });
 
-    questionInput?.addEventListener('input', refreshJourney);
-    answersContainer?.addEventListener('input', refreshJourney);
 
     // ---------- Pointer look ----------
     let pointerX = 0;

@@ -16,6 +16,7 @@ Die meistgewählte Antwort gewinnt jedoch nicht automatisch – das Ergebnis ble
 
 ## Funktionen
 
+- Schrittweise Einrichtung: Frage & Antworten zuerst, Abstimmungsart anschließend
 - Eigene Abstimmungsfrage erstellen
 - Beliebig viele Antwortmöglichkeiten hinzufügen
 - Doppelte Antwortmöglichkeiten werden verhindert
@@ -38,9 +39,7 @@ Auf Punkte, Badges, Streaks oder Leaderboards wird bewusst verzichtet. Die gehei
 
 ## Abstimmungsarten
 
-### Einfacher Modus
-
-Eine Abstimmung kann direkt auf einem Gerät durchgeführt und getestet werden.
+Die App bietet bewusst zwei klar getrennte Mehrpersonen-Modi:
 
 ### Raum-Modus
 
