@@ -1152,3 +1152,268 @@ select:focus {
     display: none;
   }
 }
+
+
+/* =========================================================
+   SPATIAL 3D ROOM
+   Rein dekorativ: kein Einfluss auf Abstimmungs-/Radlogik.
+   ========================================================= */
+
+body {
+  background: #050b13;
+  overflow-x: hidden;
+}
+
+/* Das bisherige flache Hintergrundraster wird zu einer Vignette,
+   damit der Raum nicht wieder wie eine 2D-Fläche wirkt. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 38%, transparent 0 34%, rgba(2, 6, 12, 0.14) 62%, rgba(2, 5, 10, 0.52) 100%),
+    linear-gradient(to bottom, rgba(255,255,255,0.015), transparent 18%, transparent 78%, rgba(0,0,0,0.22));
+  mask-image: none;
+}
+
+.spatial-room {
+  position: fixed;
+  inset: 0;
+  z-index: -4;
+  overflow: hidden;
+  pointer-events: none;
+  perspective: 1050px;
+  perspective-origin: 50% 42%;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(32, 83, 117, 0.19), transparent 30%),
+    linear-gradient(180deg, #07111d 0%, #050b13 70%, #03070c 100%);
+}
+
+/* Rückwand - bewusst weit hinten, damit Tiefe entsteht */
+.room-back-wall {
+  position: absolute;
+  left: 23vw;
+  right: 23vw;
+  top: 9vh;
+  height: 57vh;
+  transform: translateZ(-230px) scale(1.23);
+  transform-origin: center center;
+  border: 1px solid rgba(125, 211, 252, 0.09);
+  border-radius: 10px;
+  background:
+    linear-gradient(rgba(125, 211, 252, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(125, 211, 252, 0.035) 1px, transparent 1px),
+    radial-gradient(circle at 50% 42%, rgba(56, 189, 248, 0.07), transparent 48%),
+    linear-gradient(180deg, rgba(13, 28, 45, 0.86), rgba(6, 16, 28, 0.94));
+  background-size: 68px 68px, 68px 68px, auto, auto;
+  box-shadow:
+    inset 0 0 70px rgba(0, 0, 0, 0.34),
+    0 0 60px rgba(56, 189, 248, 0.035);
+}
+
+/* Horizontlinie, wie Lichtkante in einem virtuellen Raum */
+.room-horizon {
+  position: absolute;
+  left: 12vw;
+  right: 12vw;
+  top: 63vh;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(125, 211, 252, 0.18) 18%,
+    rgba(167, 139, 250, 0.24) 50%,
+    rgba(125, 211, 252, 0.18) 82%,
+    transparent
+  );
+  box-shadow:
+    0 0 18px rgba(125, 211, 252, 0.10),
+    0 0 42px rgba(167, 139, 250, 0.05);
+}
+
+/* Boden: perspektivisches Raster, das nach hinten zusammenläuft */
+.room-floor {
+  position: absolute;
+  left: -34vw;
+  right: -34vw;
+  top: 62vh;
+  height: 88vh;
+  transform-origin: 50% 0%;
+  transform: rotateX(69deg) translateZ(-10px);
+  background:
+    linear-gradient(rgba(125, 211, 252, 0.11) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(125, 211, 252, 0.11) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(14, 34, 53, 0.42), rgba(2, 7, 12, 0.95));
+  background-size: 58px 58px, 58px 58px, auto;
+  border-top: 1px solid rgba(125, 211, 252, 0.17);
+  box-shadow:
+    0 -18px 52px rgba(56, 189, 248, 0.035),
+    inset 0 36px 70px rgba(56, 189, 248, 0.025);
+  opacity: 0.72;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.96), rgba(0,0,0,0.55) 48%, transparent 100%);
+}
+
+/* Decke: nur feine perspektivische Struktur */
+.room-ceiling {
+  position: absolute;
+  left: -24vw;
+  right: -24vw;
+  bottom: 73vh;
+  height: 58vh;
+  transform-origin: 50% 100%;
+  transform: rotateX(-71deg) translateZ(-34px);
+  background:
+    linear-gradient(rgba(167, 139, 250, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(125, 211, 252, 0.045) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(12, 25, 41, 0.66), rgba(3, 9, 16, 0.94));
+  background-size: 72px 72px, 72px 72px, auto;
+  opacity: 0.45;
+  mask-image: linear-gradient(to top, rgba(0,0,0,0.82), transparent 94%);
+}
+
+/* Seitenwände als perspektivische Flächen */
+.room-left-wall,
+.room-right-wall {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 34vw;
+  opacity: 0.62;
+}
+
+.room-left-wall {
+  left: 0;
+  clip-path: polygon(0 0, 100% 11%, 100% 73%, 0 100%);
+  background:
+    linear-gradient(90deg, rgba(3, 9, 16, 0.96), rgba(13, 34, 54, 0.54)),
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 92px,
+      rgba(125, 211, 252, 0.055) 93px 94px
+    );
+  border-right: 1px solid rgba(125, 211, 252, 0.07);
+}
+
+.room-right-wall {
+  right: 0;
+  clip-path: polygon(0 11%, 100% 0, 100% 100%, 0 73%);
+  background:
+    linear-gradient(270deg, rgba(3, 9, 16, 0.96), rgba(28, 28, 60, 0.46)),
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 92px,
+      rgba(167, 139, 250, 0.05) 93px 94px
+    );
+  border-left: 1px solid rgba(167, 139, 250, 0.07);
+}
+
+/* Große indirekte Lichtquellen, wie in einer virtuellen Architektur */
+.room-ambient {
+  position: absolute;
+  width: 30vw;
+  height: 58vh;
+  top: 16vh;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.12;
+  animation: ambient-room-light 10s ease-in-out infinite alternate;
+}
+
+.room-ambient-left {
+  left: -9vw;
+  background: rgba(56, 189, 248, 0.78);
+}
+
+.room-ambient-right {
+  right: -9vw;
+  background: rgba(167, 139, 250, 0.72);
+  animation-delay: -4s;
+}
+
+@keyframes ambient-room-light {
+  from {
+    transform: translateY(-1.5vh) scale(0.96);
+    opacity: 0.09;
+  }
+  to {
+    transform: translateY(1.5vh) scale(1.05);
+    opacity: 0.15;
+  }
+}
+
+/* Die App wirkt nun wie ein schwebendes Interface im Raum */
+.app {
+  position: relative;
+  z-index: 1;
+}
+
+.card {
+  box-shadow:
+    0 34px 90px rgba(0, 0, 0, 0.52),
+    0 14px 38px rgba(0, 0, 0, 0.26),
+    0 0 0 1px rgba(125, 211, 252, 0.025) inset,
+    0 0 44px rgba(56, 189, 248, 0.055);
+}
+
+/* Auf großen Monitoren etwas mehr "Raum" um das Interface */
+@media (min-width: 1100px) {
+  body {
+    padding-top: 6vh;
+    padding-bottom: 7vh;
+  }
+
+  .spatial-room {
+    perspective: 1250px;
+  }
+
+  .room-back-wall {
+    left: 27vw;
+    right: 27vw;
+  }
+}
+
+@media (max-width: 700px) {
+  .spatial-room {
+    perspective-origin: 50% 38%;
+  }
+
+  .room-back-wall {
+    left: 10vw;
+    right: 10vw;
+    top: 8vh;
+    height: 55vh;
+  }
+
+  .room-left-wall,
+  .room-right-wall {
+    width: 26vw;
+    opacity: 0.44;
+  }
+
+  .room-floor {
+    left: -70vw;
+    right: -70vw;
+    top: 64vh;
+    background-size: 46px 46px, 46px 46px, auto;
+  }
+
+  .room-ceiling {
+    left: -60vw;
+    right: -60vw;
+    opacity: 0.30;
+  }
+
+  .room-horizon {
+    left: 4vw;
+    right: 4vw;
+    top: 64vh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .room-ambient {
+    animation: none !important;
+  }
+}
