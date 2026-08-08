@@ -140,10 +140,19 @@ function showVoteScreen(question) {
   }
 
   if (onlineMode) {
-    onlineStatus.hidden = false;
-    onlineStatus.textContent = currentRoomCode
-      ? `Online-Raum: ${currentRoomCode} • ${currentVoteCount} ${currentVoteCount === 1 ? 'Stimme' : 'Stimmen'} bisher abgegeben`
-      : 'Online-Abstimmung ist aktiv.';
+  onlineStatus.hidden = false;
+  onlineStatus.textContent = currentRoomCode
+    ? `Online-Raum: ${currentRoomCode} • ${currentVoteCount} ${currentVoteCount === 1 ? 'Stimme' : 'Stimmen'} bisher abgegeben`
+    : 'Online-Abstimmung ist aktiv.';
+
+  newVotingBtnVote.hidden = true;
+
+  if (isOnlineModerator) {
+    endVotingBtn.hidden = false;
+    endVotingBtn.textContent = 'Moderator: Abstimmung beenden';
+    endVotingBtn.classList.add('moderator-action');
+  } else {
+    endVotingBtn.hidden = true;
   }
 }
 
@@ -393,6 +402,7 @@ function restoreSavedState() {
     votes = parsedState.votes || [];
     roomMode = Boolean(parsedState.roomMode);
     onlineMode = Boolean(parsedState.onlineMode);
+    isOnlineModerator = Boolean(parsedState.isOnlineModerator);
     currentRotation = parsedState.currentRotation || 0;
     targetRotation = parsedState.targetRotation || 0;
     currentPollId = parsedState.currentPollId || null;
@@ -475,7 +485,7 @@ startBtn.addEventListener('click', async () => {
       setupError.textContent = 'Supabase ist nicht verfügbar. Bitte prüfe die Konfiguration.';
       return;
     }
-
+  isOnlineModerator = true;
     try {
       currentRoomCode = generateRoomCode();
       const { data, error } = await supabaseClient.from('polls').insert({
@@ -607,6 +617,11 @@ nextPersonBtn.addEventListener('click', () => {
 });
 
 endVotingBtn.addEventListener('click', async () => {
+if (onlineMode && !isOnlineModerator) {
+  voteConfirmation.textContent = 'Nur der Moderator kann die Online-Abstimmung beenden.';
+  return;
+}
+  
   if (roomMode || onlineMode) {
     const shouldEnd = window.confirm('Möchtest du die Abstimmung wirklich beenden?');
     if (!shouldEnd) {
@@ -729,6 +744,7 @@ joinOnlineBtn.addEventListener('click', async () => {
     isVotingClosed = false;
     onlineMode = true;
     roomMode = false;
+    isOnlineModerator = false;
     currentBrowserVoteKey = `${data.id}-${Math.random().toString(36).slice(2, 10)}`;
     const storedVoteKey = localStorage.getItem(`gluecksrad-vote-${data.id}`);
     if (storedVoteKey) {
