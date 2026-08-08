@@ -48,7 +48,6 @@ let currentRoomCode = '';
 let currentVoteCount = 0;
 let isVotingClosed = false;
 let currentBrowserVoteKey = '';
-let currentBrowserVoteKey = '';
 let onlineRefreshTimer = null;
 let currentWinnerOption = '';
 let isOnlineModerator = false;
