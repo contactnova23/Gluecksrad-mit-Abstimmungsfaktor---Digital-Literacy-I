@@ -359,7 +359,10 @@ async function refreshOnlineState() {
     saveState();
 
     if (currentPhase === 'vote' && onlineMode) {
-      showVoteScreen(currentQuestion);
+  onlineStatus.hidden = false;
+  onlineStatus.textContent = currentRoomCode
+    ? `Online-Raum: ${currentRoomCode} • ${currentVoteCount} ${currentVoteCount === 1 ? 'Stimme' : 'Stimmen'} bisher abgegeben`
+    : 'Online-Abstimmung ist aktiv.';
     }
   } catch (error) {
     console.error('Fehler beim Laden der Online-Stimmen:', error);
@@ -536,16 +539,13 @@ voteBtn.addEventListener('click', async () => {
       }
 
       localStorage.setItem(`gluecksrad-vote-${currentPollId}`, currentBrowserVoteKey);
-      await refreshOnlineState();
-      voteConfirmation.textContent = 'Danke! Deine Stimme wurde in der Online-Abstimmung gespeichert.';
-      saveState();
-      voteSelect.selectedIndex = 0;
-      showVoteScreen(currentQuestion);
-      return;
-    } catch (error) {
-      voteConfirmation.textContent = 'Die Stimme konnte nicht gespeichert werden.';
-      console.error(error);
-      return;
+
+await refreshOnlineState();
+
+voteConfirmation.textContent = `Danke! Deine Stimme für „${selectedOption}“ wurde gespeichert.`;
+
+saveState();
+return;
     }
   }
 
