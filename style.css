@@ -1216,3 +1216,331 @@ body {
     letter-spacing: 0.06em;
   }
 }
+
+
+/* =========================================================
+   GLÜCKSHAFEN BASEL · ATMOSPHERE & PERFORMANCE PASS
+   Keine externen Bild- oder Schriftdateien; alle Oberflächen
+   entstehen aus CSS und der prozeduralen Three.js-Szene.
+   ========================================================= */
+
+:root {
+  --ink: #342318;
+  --ink-soft: #66503a;
+  --ink-muted: #806a50;
+  --paper: #f2dfb8;
+  --paper-light: #fff7df;
+  --paper-deep: #d8b87e;
+  --wood: #754721;
+  --wood-dark: #432615;
+  --wood-light: #a66c36;
+  --blue: #355e78;
+  --blue-dark: #203e53;
+  --blue-light: #d5e1df;
+  --gold: #c69a47;
+  --gold-light: #efda9b;
+  --green: #5e7143;
+  --green-dark: #3f5231;
+  --wine: #7b3f3c;
+  --frame-shadow:
+    0 34px 88px rgba(34, 22, 13, 0.34),
+    0 8px 24px rgba(44, 27, 13, 0.18);
+}
+
+html {
+  background: #8f9b86;
+}
+
+body {
+  background:
+    radial-gradient(circle at 50% 9%, rgba(255, 229, 173, 0.18), transparent 31%),
+    linear-gradient(180deg, #a9b9b2 0%, #9da895 49%, #655f48 100%);
+}
+
+.scene-vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(34, 28, 20, 0.03), transparent 28%, rgba(35, 25, 16, 0.13)),
+    radial-gradient(ellipse at center, transparent 46%, rgba(34, 22, 13, 0.26) 100%);
+}
+
+.sound-toggle {
+  position: fixed;
+  top: max(14px, env(safe-area-inset-top));
+  right: max(14px, env(safe-area-inset-right));
+  z-index: 50;
+  width: 46px;
+  height: 46px;
+  min-height: 46px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 2px solid rgba(216, 178, 99, 0.72);
+  border-radius: 50%;
+  color: #f5e5bd;
+  background:
+    radial-gradient(circle at 34% 28%, #9a6437, #60381f 65%, #3f2415 100%);
+  box-shadow:
+    0 9px 22px rgba(37, 23, 13, 0.26),
+    inset 0 1px 0 rgba(255, 244, 210, 0.24);
+}
+
+.sound-toggle::before {
+  content: "♪";
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.34rem;
+  line-height: 1;
+  opacity: 0.48;
+}
+
+.sound-toggle[aria-pressed="true"]::before {
+  content: "♫";
+  opacity: 1;
+}
+
+.sound-toggle:hover:not(:disabled) {
+  transform: translateY(-1px) rotate(-2deg);
+}
+
+.app {
+  z-index: 3;
+  padding-top: 48px;
+}
+
+.card {
+  width: min(880px, 100%);
+  border-width: 12px;
+  border-radius: 14px;
+  background:
+    linear-gradient(90deg, rgba(92, 54, 26, 0.035) 1px, transparent 1px) 0 0 / 17px 100%,
+    radial-gradient(circle at 18% 11%, rgba(129, 83, 37, 0.10), transparent 23%),
+    radial-gradient(circle at 83% 82%, rgba(117, 72, 31, 0.09), transparent 27%),
+    linear-gradient(180deg, rgba(255, 248, 224, 0.985), rgba(236, 215, 172, 0.985)) padding-box,
+    linear-gradient(96deg, #402514 0%, #7e4a25 17%, #b5763a 48%, #70401f 79%, #3b2112 100%) border-box;
+  box-shadow:
+    var(--frame-shadow),
+    0 0 0 2px rgba(230, 194, 120, 0.82),
+    inset 0 0 0 1px rgba(104, 67, 31, 0.25),
+    inset 0 16px 48px rgba(255, 252, 232, 0.30);
+}
+
+.card::before {
+  inset: 10px;
+  border-radius: 7px;
+  border-color: rgba(159, 111, 48, 0.52);
+  box-shadow:
+    inset 0 0 36px rgba(83, 47, 21, 0.08),
+    0 0 0 1px rgba(255, 245, 214, 0.28);
+}
+
+.card::after {
+  top: -34px;
+  border-radius: 50% 50% 42% 42%;
+  color: #f0d68d;
+  background:
+    radial-gradient(circle at 36% 28%, #5f8090, #31566d 58%, #1d3546 100%);
+  border-color: #72431f;
+}
+
+h1, h2, h3, .mode-fieldset legend, #question-display, .winner {
+  color: #2f2117;
+  text-shadow: 0 1px 0 rgba(255, 250, 230, 0.54);
+}
+
+.screen-eyebrow,
+.market-welcome {
+  color: #6f4826;
+  letter-spacing: 0.15em;
+}
+
+input,
+select {
+  border-color: rgba(101, 67, 35, 0.46);
+  border-radius: 5px;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 239, 0.95), rgba(244, 229, 196, 0.95));
+}
+
+button {
+  border-radius: 5px;
+  background:
+    linear-gradient(180deg, #84542d, #542f19);
+}
+
+.primary-action,
+#show-create-btn,
+#vote-btn,
+#start-btn,
+#join-online-btn,
+#spin-btn {
+  background:
+    linear-gradient(180deg, #416d7f, #284b5f);
+  border-color: rgba(231, 199, 126, 0.64);
+}
+
+.secondary-choice-btn,
+.secondary-btn,
+.back-btn,
+#show-join-btn,
+#next-person-btn {
+  background:
+    linear-gradient(180deg, #fff4d4, #e5c992);
+}
+
+.answers-box,
+.mode-fieldset,
+.choice-card-button,
+.mode-option,
+.results-list li {
+  border-radius: 6px;
+}
+
+/* Realistischeres, langes Holzgestell für das sichtbare UI-Rad. */
+.wheel-area {
+  min-height: 535px;
+  margin-top: 18px;
+  padding-bottom: 105px;
+}
+
+.wheel-area::before {
+  z-index: 0;
+  bottom: 36px;
+  width: min(430px, 92vw);
+  height: 380px;
+  clip-path: none;
+  border-radius: 0;
+  background:
+    linear-gradient(76deg, transparent 0 44%, #5c351c 44.5% 50%, #8a572d 50.5% 54%, transparent 54.5%) left bottom / 50% 88% no-repeat,
+    linear-gradient(-76deg, transparent 0 44%, #5c351c 44.5% 50%, #8a572d 50.5% 54%, transparent 54.5%) right bottom / 50% 88% no-repeat,
+    linear-gradient(90deg, transparent 0 11%, #6c401f 11% 16%, transparent 16% 84%, #6c401f 84% 89%, transparent 89%) center bottom / 100% 33px no-repeat,
+    linear-gradient(180deg, #9b6735, #5a3219) center 82px / 72% 23px no-repeat;
+  box-shadow: none;
+  filter: drop-shadow(0 18px 18px rgba(48, 28, 13, 0.22));
+}
+
+.wheel-area::after {
+  bottom: 16px;
+  width: min(460px, 94vw);
+  height: 44px;
+  background: radial-gradient(ellipse, rgba(48, 30, 16, 0.34), transparent 69%);
+}
+
+.wheel {
+  width: min(76vw, 365px);
+  border-width: 20px;
+  border-color: #5e3419;
+  background: conic-gradient(#804337 0deg 120deg, #6f7d3d 120deg 240deg, #8d6a37 240deg 360deg);
+  box-shadow:
+    inset 0 0 0 5px #be8b45,
+    inset 0 0 0 12px #4b2915,
+    inset 0 0 35px rgba(43, 25, 12, 0.26),
+    0 24px 40px rgba(48, 28, 13, 0.30);
+}
+
+.wheel::before {
+  inset: 8px;
+  opacity: 0.72;
+  background:
+    repeating-conic-gradient(from -1deg, transparent 0deg 13deg, rgba(53, 29, 13, 0.18) 13deg 14deg),
+    repeating-radial-gradient(circle, rgba(255, 239, 191, 0.07) 0 9px, rgba(55, 31, 13, 0.07) 10px 18px);
+  mix-blend-mode: multiply;
+}
+
+.wheel::after {
+  width: 58px;
+  height: 58px;
+  background: radial-gradient(circle at 35% 30%, #ead196, #a87535 55%, #4e2a16 100%);
+  box-shadow:
+    0 0 0 11px rgba(73, 41, 20, 0.98),
+    0 0 0 17px rgba(188, 139, 69, 0.98);
+}
+
+.wheel-pointer {
+  top: 9px;
+  width: 39px;
+  height: 88px;
+  background: linear-gradient(90deg, #4b2a16, #c3954b 38%, #edcf86 52%, #8f5d2c 70%, #432414);
+  filter: drop-shadow(0 8px 8px rgba(45, 27, 14, 0.26));
+}
+
+.winner-ceremony-layer {
+  background: rgba(31, 27, 20, 0.48);
+  backdrop-filter: blur(4px) sepia(0.08);
+  -webkit-backdrop-filter: blur(4px) sepia(0.08);
+}
+
+.winner-ceremony-rays {
+  opacity: 0.12;
+  background: repeating-conic-gradient(from 0deg, rgba(236, 203, 127, 0.60) 0deg 2deg, transparent 2deg 23deg);
+}
+
+.winner-ceremony {
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 15% 16%, rgba(124, 77, 31, 0.08), transparent 26%),
+    linear-gradient(180deg, #fff4d7, #e4c78e) padding-box,
+    linear-gradient(100deg, #4d2a16, #a56c32, #4d2a16) border-box;
+}
+
+.winner-ceremony-particle {
+  border-radius: 50% 50% 45% 45%;
+}
+
+@media (max-width: 720px) {
+  .sound-toggle {
+    width: 42px;
+    height: 42px;
+    min-height: 42px;
+  }
+
+  .app {
+    padding-top: 46px;
+  }
+
+  .wheel-area {
+    min-height: 450px;
+    padding-bottom: 84px;
+  }
+
+  .wheel-area::before {
+    height: 315px;
+    bottom: 28px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene-vignette {
+    background: radial-gradient(ellipse at center, transparent 48%, rgba(34, 22, 13, 0.22) 100%);
+  }
+}
+
+/* Mobile Langwort-Schutz: verhindert horizontales Überlaufen der Tafel. */
+.card,
+.wizard-screen,
+.welcome-screen {
+  min-width: 0;
+  max-width: 100%;
+}
+
+h1,
+h2,
+#question-display,
+.winner-ceremony-name {
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
+@media (max-width: 720px) {
+  .welcome-screen {
+    padding-inline: 4px;
+  }
+
+  .welcome-screen h1 {
+    max-width: 100%;
+    font-size: clamp(2rem, 8.8vw, 2.6rem);
+    line-height: 1.04;
+  }
+}

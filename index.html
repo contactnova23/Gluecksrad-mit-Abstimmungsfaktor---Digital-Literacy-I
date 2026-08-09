@@ -4,17 +4,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Glücksrad mit Abstimmungsfaktor</title>
-    <meta name="theme-color" content="#d8e9ff" />
+    <meta name="theme-color" content="#5b3b24" />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link
       rel="modulepreload"
       href="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
       crossorigin
     />
-    <link rel="stylesheet" href="style.css?v=glueckshafen1" />
+    <link rel="stylesheet" href="style.css?v=glueckshafen2" />
   </head>
   <body>
     <canvas id="vr-world-canvas" aria-hidden="true"></canvas>
+    <div class="scene-vignette" aria-hidden="true"></div>
+    <button
+      id="sound-toggle"
+      class="sound-toggle"
+      type="button"
+      aria-label="Marktgeräusche einschalten"
+      aria-pressed="false"
+      title="Marktgeräusche umschalten"
+    ></button>
 
     <main class="app">
       <section class="card">
@@ -207,8 +216,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
-    <script src="script.js?v=23"></script>
-    <script src="effects.js?v=glueckshafen1"></script>
-    <script src="vr-scene.js?v=glueckshafen1"></script>
+    <script src="medieval-atmosphere.js?v=1"></script>
+    <script src="script.js?v=24"></script>
+    <script src="effects.js?v=glueckshafen2"></script>
+    <script src="vr-scene.js?v=glueckshafen2"></script>
   </body>
 </html>

@@ -1,16 +1,52 @@
-# Glücksrad mit Abstimmungsfaktor – Digital Literacy I
+# Glücksrad mit Abstimmungsfaktor – Mittelalterlicher Glückshafen Basel
 
 Web-App-Prototyp für die Prüfungsleistung in Digital Literacy I.
 
-Live-Version:
+Live-Version des bisherigen Projekts:
 https://contactnova23.github.io/Gluecksrad-mit-Abstimmungsfaktor---Digital-Literacy-I/
+
+## Wichtig vor dem Upload
+
+Die Datei `config.js` enthält bewusst Platzhalter. Übertrage dort die **Project URL** und den **Publishable Key** aus deiner bisherigen funktionierenden `config.js`.
+
+Verwende im Browser ausschließlich einen öffentlichen Publishable-/Anon-Key. Ein `service_role`- oder Secret-Key darf niemals in GitHub Pages veröffentlicht werden.
+
+Wenn du die bestehende `config.js` im Repository beibehältst, kannst du stattdessen alle übrigen Dateien aus diesem Paket hochladen und `config.js` beim Ersetzen auslassen.
+
+## Unveränderte Texte
+
+Die sichtbaren Texte der sechs App-Fenster wurden nicht umformuliert. Der Ablauf bleibt:
+
+1. Start
+2. Auswahl
+3. Frage und Antworten
+4. Abstimmungsort
+5. Stimmabgabe
+6. Glücksrad und Gewinnerverkündung
+
+Geändert wurden ausschließlich Gestaltung, 3D-Szenerie, Inszenierung, Performance und Klangkulisse.
+
+## Inhalt dieser Version
+
+- spätmittelalterlich inspirierter Basler Markt- und Festplatz
+- Marktbuden, Pflaster, Brunnen, Banner, Waren, Schießscheiben und Publikum
+- Glückshafen-Stand mit Lostopf und ausgestellten Gaben
+- großes hölzernes Glücksrad mit langem, sichtbar auf dem Boden stehendem A-Gestell
+- separates Podest für die Gewinnerverkündung
+- Basler Stadtmauer-/Torsilhouette statt eines märchenhaften Schlosses
+- szenenabhängige Kamera- und Kulissenabschnitte
+- prozedurale Marktklänge ohne fremde Audiodateien
+- Sound-Schalter oben rechts
+- adaptive Qualitätsstufen für Desktop, Mobilgeräte und schwächere Hardware
+- pausierte 3D- und Audioverarbeitung bei inaktivem Browser-Tab
+- statische Schatten und reduzierte Pixel-Dichte auf leistungsschwächeren Geräten
+- vollständig nutzbare App auch dann, wenn WebGL nicht geladen werden kann
 
 ## Idee
 
 Die App verbindet eine Abstimmung mit einem Glücksrad.
 
-Die abgegebenen Stimmen beeinflussen die Wahrscheinlichkeit auf dem Glücksrad:
-Eine Antwort mit mehr Stimmen erhält einen größeren Anteil am Rad und damit eine höhere Gewinnchance.
+Die abgegebenen Stimmen beeinflussen die Wahrscheinlichkeit auf dem Glücksrad: Eine Antwort mit mehr Stimmen erhält einen größeren Anteil am Rad und damit eine höhere Gewinnchance.
 
 Die meistgewählte Antwort gewinnt jedoch nicht automatisch – das Ergebnis bleibt zufallsbasiert.
 
@@ -24,97 +60,68 @@ Die meistgewählte Antwort gewinnt jedoch nicht automatisch – das Ergebnis ble
 - Gewichtetes Glücksrad
 - Glücksrad starten und manuell stoppen
 - Gewinner anzeigen
-
-
-## Dezente Gamification
-
-Die App nutzt bewusst nur wenige spielerische Elemente, damit die Abstimmung einfach und verständlich bleibt:
-
-- direktes visuelles Feedback nach einer abgegebenen Stimme
-- eine deutlich hervorgehobene Auswahl des Abstimmungsmodus
-- eine inszenierte Gewinnerverkündung mit animierter Zeremonie
-
-Auf Punkte, Badges, Streaks oder Leaderboards wird bewusst verzichtet. Die geheime Abstimmung und die eigentliche Entscheidung durch das gewichtete Glücksrad bleiben im Mittelpunkt.
-
-## Benutzerführung
-
-Die Oberfläche ist bewusst in einzelne, klar abgegrenzte Fenster aufgeteilt:
-
-1. Start mit Titel und Start-Button
-2. Auswahl zwischen neuer Abstimmung und Teilnahme per Raumcode
-3. Eingabe von Abstimmungsfrage und Antwortmöglichkeiten
-4. Auswahl zwischen Raum-Modus und Online-Modus
-5. Abgabe der Stimmen
-6. Glücksrad mit gewichteten Segmenten und anschließender Gewinnerverkündung
-
-Die 3D-Fairytale-Stadt bewegt sich passend zum Fortschritt der Nutzerinnen und Nutzer weiter.
+- Raum-Modus auf einem gemeinsamen Gerät
+- Online-Modus über Supabase und Raumcode
 
 ## Historisch inspirierte Atmosphäre
 
-Die visuelle Welt ist als helle, märchenhafte Interpretation einer spätmittelalterlichen Messe bzw. eines Schützenfestes gestaltet. Der Begriff **Glückshafen** bezeichnete historische Lotterie- bzw. Losveranstaltungen, die im Umfeld von Messen und Schützenfesten auftreten konnten.
+Der historische Glückshafen war vor allem ein Losgefäß beziehungsweise ein Stand, an dem Lose gezogen und Warenpreise vergeben wurden. Das digitale Glücksrad bleibt als verständliche Visualisierung der gewichteten Abstimmung erhalten, wird aber als vormodernes Marktgerät aus Holz inszeniert.
 
-Für die App wird diese historische Idee bewusst modernisiert: Der Glückshafen bildet die erzählerische Rahmung, während das gewichtete Glücksrad die digitale Entscheidungsmechanik sichtbar macht. Die Sprache ist mittelalterlich angehaucht, bleibt aber absichtlich verständlich und benutzerfreundlich.
+Die historische Einordnung und Quellen sind in `HISTORISCHE-GRUNDLAGE.md` dokumentiert.
 
-Die 3D-Welt greift dazu Marktbuden, Banner, Schießscheiben, einen Glückshafen-Lostopf, ausgestellte Gaben und eine helle europäische Altstadt auf.
+## Urheberrecht und Medien
 
-## Abstimmungsarten
+Für diese Fassung wurden keine fremden Fotos, Illustrationen, 3D-Modelle, Musikstücke oder Geräuschdateien eingebunden.
 
-Die App bietet bewusst zwei klar getrennte Mehrpersonen-Modi:
+- Pflaster und Oberflächen werden zur Laufzeit prozedural erzeugt.
+- Die komplette 3D-Welt besteht aus selbst erzeugten Three.js-Grundformen.
+- Wind, Marktgemurmel, Holzklappern und Glocken werden mit der Web Audio API synthetisiert.
+- Es werden keine Audiodateien heruntergeladen oder weiterverbreitet.
 
-### Raum-Modus
+Weitere Hinweise stehen in `ASSET-NACHWEISE.md` und `THIRD-PARTY-NOTICES.md`.
 
-Mehrere Personen stimmen nacheinander auf demselben Gerät ab.
+## Dateien
 
-Die bisherigen Ergebnisse und die Anzahl der abgegebenen Stimmen werden während der Abstimmung nicht angezeigt.
+| Datei | Aufgabe |
+|---|---|
+| `index.html` | Struktur der App; sichtbare Fenstertexte unverändert |
+| `style.css` | Oberfläche, Holz-/Pergamentgestaltung und realistischeres UI-Rad |
+| `script.js` | Abstimmungslogik, gewichtete Ziehung und Szenenereignisse |
+| `effects.js` | ressourcenschonende Mausneigung der Tafel |
+| `vr-scene.js` | prozedurale 3D-Welt, Szenenwechsel und 3D-Glücksrad |
+| `medieval-atmosphere.js` | prozedurale, urheberrechtsfreie Klangkulisse |
+| `config.js` | Supabase-Zugang mit einzutragender Project URL und Publishable Key |
+| `config.example.js` | Sicherheitskopie der Konfigurationsvorlage |
+| `.nojekyll` | sorgt für unveränderte Auslieferung über GitHub Pages |
 
-Erst nach dem Beenden der Abstimmung werden die Ergebnisse sichtbar.
+## Veröffentlichung über GitHub Pages
 
-### Online-Modus
+1. `config.js` prüfen beziehungsweise die bisher funktionierenden Supabase-Werte übertragen.
+2. Alle Dateien in das Stammverzeichnis des GitHub-Repositories hochladen.
+3. In GitHub unter **Settings → Pages** die Veröffentlichung aus dem Branch `main` und dem Ordner `/ (root)` aktivieren.
+4. Nach dem Deployment die Seite einmal mit geleertem Cache oder in einem privaten Browserfenster öffnen.
+5. Raum-Modus, Online-Modus, Radstart, Radstopp, Gewinnerdialog und Sound-Schalter testen.
 
-Eine moderierende Person erstellt eine Online-Abstimmung.
+## Lokaler Test
 
-Die App erzeugt einen Raumcode.
+Im Projektordner:
 
-Andere Personen können die veröffentlichte Webseite auf ihrem eigenen Smartphone oder Computer öffnen, den Raumcode eingeben und der Abstimmung beitreten.
+```bash
+python3 -m http.server 8000
+```
 
-Die moderierende Person kann die Abstimmung anschließend beenden und das Glücksrad starten.
+Danach im Browser öffnen:
 
-## Datenbank und Sicherheit
-
-Für den Online-Modus wird Supabase verwendet.
-
-Die App verwendet einen öffentlichen Supabase Publishable Key. Dieser ist für die Verwendung im Browser vorgesehen und kein geheimer Administrator-Schlüssel.
-
-Für die Zugriffskontrolle werden verwendet:
-
-- Supabase Anonymous Sign-In
-- Row Level Security (RLS)
-- eingeschränkte Datenbank-Policies
-
-Teilnehmende erhalten dabei automatisch eine anonyme Supabase-Identität.
-
-Die Datenbankregeln sorgen unter anderem dafür, dass:
-
-- Teilnehmende nur an offenen Abstimmungen teilnehmen können
-- nur die moderierende Person ihre Abstimmung beenden kann
-- Teilnehmende nicht die Einzelstimmen anderer Personen auslesen können
-- eine anonyme Identität pro Abstimmung nur einmal abstimmen kann
-
-Hinweis:
-Bei einer anonymen Anmeldung kann durch ein anderes Gerät oder das Löschen von Browserdaten eine neue Identität entstehen. Für eine vollständig manipulationssichere Anwendung wäre eine stärkere Authentifizierung erforderlich.
+```text
+http://localhost:8000
+```
 
 ## Technik
-
-Die Web-App wurde umgesetzt mit:
 
 - HTML
 - CSS
 - JavaScript
+- Three.js über jsDelivr
+- Web Audio API
 - Supabase
 - GitHub Pages
-
-## Veröffentlichung
-
-Die Anwendung ist über GitHub Pages erreichbar:
-
-https://contactnova23.github.io/Gluecksrad-mit-Abstimmungsfaktor---Digital-Literacy-I/

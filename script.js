@@ -69,6 +69,21 @@ let currentWinnerOption = '';
 let isOnlineModerator = false;
 let wheelSpinAnimation = null;
 
+
+function emitAtmosphere(stage, detail = {}) {
+  document.dispatchEvent(new CustomEvent('glueckshafen:stage', {
+    detail: { stage, ...detail },
+  }));
+}
+
+function hasOnlineBackend() {
+  return Boolean(
+    window.supabase
+    && typeof supabaseClient !== 'undefined'
+    && supabaseClient
+  );
+}
+
 function getSetupData() {
   return {
     question: questionInput.value.trim(),
@@ -270,6 +285,7 @@ function showWelcome() {
   createError.textContent = '';
   setupError.textContent = '';
   joinError.textContent = '';
+  emitAtmosphere('welcome');
   window.setTimeout(() => experienceStartBtn.focus(), 120);
 }
 
@@ -280,6 +296,7 @@ function showSetupHome() {
   createError.textContent = '';
   setupError.textContent = '';
   joinError.textContent = '';
+  emitAtmosphere('market-entry');
   window.setTimeout(() => showCreateBtn.focus(), 120);
 }
 
@@ -289,6 +306,7 @@ function showCreatePanel() {
   createPanel.hidden = false;
   createError.textContent = '';
   setupError.textContent = '';
+  emitAtmosphere('scribe-stall');
   window.setTimeout(() => questionInput.focus(), 120);
 }
 
@@ -298,6 +316,7 @@ function showModePanel() {
   modePanel.hidden = false;
   setupError.textContent = '';
   updateModeCards();
+  emitAtmosphere('assembly');
 
   const selectedMode = document.querySelector('input[name="voting-mode"]:checked');
   window.setTimeout(() => (selectedMode || roomModeToggle).focus(), 120);
@@ -308,6 +327,7 @@ function showJoinPanel() {
   hideSetupPanels();
   joinPanel.hidden = false;
   joinError.textContent = '';
+  emitAtmosphere('town-caller');
   window.setTimeout(() => joinRoomCodeInput.focus(), 120);
 }
 
@@ -398,6 +418,7 @@ function showVoteScreen(question) {
   onlineStatus.textContent = '';
   voteBtn.hidden = false;
   nextPersonBtn.hidden = true;
+  emitAtmosphere('voting');
 
   if (roomMode) {
   roomStatus.hidden = true;
@@ -458,6 +479,7 @@ function showResultsScreen() {
   setupSection.hidden = true;
   voteSection.hidden = true;
   resultsSection.hidden = false;
+  emitAtmosphere('results');
 }
 
 function buildResultsList(summary) {
@@ -634,7 +656,7 @@ newVotingBtnVote.hidden = false;
 }
 
 async function refreshOnlineState() {
-  if (!onlineMode || !currentPollId) {
+  if (!onlineMode || !currentPollId || !hasOnlineBackend()) {
     return;
   }
 
@@ -804,7 +826,7 @@ startBtn.addEventListener('click', async () => {
   currentPhase = 'vote';
 
   if (onlineMode) {
-    if (!window.supabase) {
+    if (!hasOnlineBackend()) {
       setupError.textContent = 'Supabase ist nicht verfügbar. Bitte prüfe die Konfiguration.';
       return;
     }
@@ -1014,6 +1036,7 @@ spinBtn.addEventListener('click', () => {
 
   winnerDisplay.classList.remove('winner-announced');
   winnerDisplay.textContent = '🎡 Das Rad läuft. Haltet es an, wenn das Los fallen soll.';
+  emitAtmosphere('wheel-spin');
 
   wheelSpinAnimation = wheel.animate(
     [
@@ -1038,6 +1061,7 @@ stopBtn.addEventListener('click', () => {
   }
 
   const visibleAngle = getCurrentWheelAngle();
+  emitAtmosphere('wheel-stop');
 
   if (wheelSpinAnimation) {
     wheelSpinAnimation.cancel();
@@ -1084,6 +1108,7 @@ wheel.addEventListener('transitionend', () => {
   winnerDisplay.textContent = `Das Los fällt auf: ${currentWinnerOption}`;
   winnerDisplay.classList.add('winner-announced');
   celebrateWinner();
+  emitAtmosphere('winner', { winner: currentWinnerOption });
   saveState();
 });
 
@@ -1104,7 +1129,7 @@ joinOnlineBtn.addEventListener('click', async () => {
     return;
   }
 
-  if (!window.supabase) {
+  if (!hasOnlineBackend()) {
     joinError.textContent = 'Supabase ist nicht verfügbar. Bitte prüfe die Konfiguration.';
     return;
   }

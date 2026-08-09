@@ -10,522 +10,1051 @@
     } catch (error) {
       console.warn('3D-Welt konnte nicht geladen werden. Die App bleibt vollständig nutzbar.', error);
       canvas.style.display = 'none';
+      document.body.classList.add('webgl-unavailable');
       return;
     }
 
+    // ---------- Geräteleistung ----------
     const mobile = window.matchMedia('(max-width: 700px)').matches;
-    const lowPower = (navigator.hardwareConcurrency || 8) <= 4;
+    const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const saveData = Boolean(navigator.connection?.saveData);
+    const hardwareThreads = navigator.hardwareConcurrency || 8;
+    const deviceMemory = navigator.deviceMemory || 8;
 
+    const quality = (
+      reducedMotion || saveData || hardwareThreads <= 4 || deviceMemory <= 4
+        ? 'low'
+        : mobile || hardwareThreads <= 8 || deviceMemory <= 8
+          ? 'balanced'
+          : 'high'
+    );
+
+    const shadowsEnabled = quality === 'high' && !mobile;
+    const pixelRatioCap = quality === 'high' ? 1.25 : quality === 'balanced' ? 1.0 : 0.85;
+    const targetFps = reducedMotion ? 15 : quality === 'high' ? 50 : quality === 'balanced' ? 32 : 24;
+    const frameInterval = 1000 / targetFps;
+
+    // ---------- Renderer, Szene, Kamera ----------
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0xf2eee0, mobile ? 0.0155 : 0.0128);
+    scene.fog = new THREE.FogExp2(0xb8b19c, quality === 'low' ? 0.0165 : 0.0138);
 
     const renderer = new THREE.WebGLRenderer({
       canvas,
-      antialias: !mobile,
+      antialias: quality === 'high',
       alpha: false,
       powerPreference: 'high-performance',
     });
 
-    renderer.setSize(window.innerWidth, window.innerHeight, false);
-    renderer.setPixelRatio(
-      Math.min(
-        window.devicePixelRatio || 1,
-        mobile ? 1.0 : 1.25
-      )
-    );
+    function applyRendererSize() {
+      renderer.setSize(window.innerWidth, window.innerHeight, false);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, pixelRatioCap));
+    }
+
+    applyRendererSize();
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.18;
-
-    const shadowsEnabled = !mobile && !lowPower;
+    renderer.toneMappingExposure = 1.06;
     renderer.shadowMap.enabled = shadowsEnabled;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.shadowMap.autoUpdate = false;
 
     const camera = new THREE.PerspectiveCamera(
-      48,
+      47,
       window.innerWidth / window.innerHeight,
       0.1,
-      150
+      140
     );
     scene.add(camera);
 
-    // ---------- Shared materials ----------
-    const plasterMaterials = [
-      new THREE.MeshStandardMaterial({ color: 0xf3e9d3, roughness: 0.88 }),
-      new THREE.MeshStandardMaterial({ color: 0xfff4df, roughness: 0.88 }),
-      new THREE.MeshStandardMaterial({ color: 0xeadbc0, roughness: 0.90 }),
-    ];
+    // ---------- Geteilte Geometrien und Materialien ----------
+    const unitBox = new THREE.BoxGeometry(1, 1, 1);
+    const unitCylinder8 = new THREE.CylinderGeometry(1, 1, 1, 8);
+    const yAxis = new THREE.Vector3(0, 1, 0);
 
-    const roofMaterials = [
-      new THREE.MeshStandardMaterial({ color: 0xb8774d, roughness: 0.90 }),
-      new THREE.MeshStandardMaterial({ color: 0x627b99, roughness: 0.88 }),
-      new THREE.MeshStandardMaterial({ color: 0xa86642, roughness: 0.90 }),
-    ];
+    const materials = {
+      plaster: [
+        new THREE.MeshStandardMaterial({ color: 0xd8c29b, roughness: 0.95 }),
+        new THREE.MeshStandardMaterial({ color: 0xe4d1aa, roughness: 0.94 }),
+        new THREE.MeshStandardMaterial({ color: 0xcdb486, roughness: 0.96 }),
+        new THREE.MeshStandardMaterial({ color: 0xe8d7b6, roughness: 0.94 }),
+      ],
+      sandstone: new THREE.MeshStandardMaterial({ color: 0xb26d4a, roughness: 0.91 }),
+      paleStone: new THREE.MeshStandardMaterial({ color: 0xcbbd9e, roughness: 0.94 }),
+      darkStone: new THREE.MeshStandardMaterial({ color: 0x61594b, roughness: 0.96 }),
+      timber: new THREE.MeshStandardMaterial({ color: 0x5a351d, roughness: 0.96 }),
+      wood: new THREE.MeshStandardMaterial({ color: 0x83552d, roughness: 0.91 }),
+      lightWood: new THREE.MeshStandardMaterial({ color: 0xa87843, roughness: 0.90 }),
+      darkWood: new THREE.MeshStandardMaterial({ color: 0x462716, roughness: 0.96 }),
+      iron: new THREE.MeshStandardMaterial({ color: 0x4e4b45, roughness: 0.64, metalness: 0.28 }),
+      bronze: new THREE.MeshStandardMaterial({ color: 0xad8246, roughness: 0.58, metalness: 0.18 }),
+      grass: new THREE.MeshStandardMaterial({ color: 0x657451, roughness: 1 }),
+      mud: new THREE.MeshStandardMaterial({ color: 0x76644c, roughness: 1 }),
+      water: new THREE.MeshStandardMaterial({
+        color: 0x6f9ca3,
+        roughness: 0.28,
+        metalness: 0.03,
+        transparent: true,
+        opacity: 0.78,
+      }),
+      window: new THREE.MeshStandardMaterial({
+        color: 0x8fa7aa,
+        emissive: 0x3f4d4a,
+        emissiveIntensity: 0.12,
+        roughness: 0.42,
+      }),
+      warmWindow: new THREE.MeshStandardMaterial({
+        color: 0xe1b96f,
+        emissive: 0x8e5c24,
+        emissiveIntensity: 0.25,
+        roughness: 0.48,
+      }),
+      roof: [
+        new THREE.MeshStandardMaterial({ color: 0x7c4936, roughness: 0.96 }),
+        new THREE.MeshStandardMaterial({ color: 0x5c6260, roughness: 0.96 }),
+        new THREE.MeshStandardMaterial({ color: 0x90553b, roughness: 0.96 }),
+        new THREE.MeshStandardMaterial({ color: 0x6f4937, roughness: 0.96 }),
+      ],
+      cloth: [
+        new THREE.MeshStandardMaterial({ color: 0x315a72, roughness: 0.90, side: THREE.DoubleSide }),
+        new THREE.MeshStandardMaterial({ color: 0x774139, roughness: 0.92, side: THREE.DoubleSide }),
+        new THREE.MeshStandardMaterial({ color: 0x5f7143, roughness: 0.92, side: THREE.DoubleSide }),
+        new THREE.MeshStandardMaterial({ color: 0xa3783f, roughness: 0.91, side: THREE.DoubleSide }),
+        new THREE.MeshStandardMaterial({ color: 0xd8c18c, roughness: 0.94, side: THREE.DoubleSide }),
+      ],
+    };
 
-    const stoneMaterial = new THREE.MeshStandardMaterial({
-      color: 0xe2d3b4,
-      roughness: 0.88,
-    });
+    function makeBox(width, height, depth, material) {
+      const mesh = new THREE.Mesh(unitBox, material);
+      mesh.scale.set(width, height, depth);
+      mesh.castShadow = shadowsEnabled;
+      mesh.receiveShadow = shadowsEnabled;
+      return mesh;
+    }
 
-    const greenMaterial = new THREE.MeshStandardMaterial({
-      color: 0x83a66f,
-      roughness: 0.96,
-    });
+    function makeCylinder(radiusTop, radiusBottom, height, segments, material) {
+      const mesh = new THREE.Mesh(
+        new THREE.CylinderGeometry(radiusTop, radiusBottom, height, segments),
+        material
+      );
+      mesh.castShadow = shadowsEnabled;
+      mesh.receiveShadow = shadowsEnabled;
+      return mesh;
+    }
 
-    const darkGreenMaterial = new THREE.MeshStandardMaterial({
-      color: 0x5f8758,
-      roughness: 0.92,
-    });
+    function beamBetween(start, end, thickness, material, depth = thickness) {
+      const direction = new THREE.Vector3().subVectors(end, start);
+      const length = direction.length();
+      const mesh = makeBox(thickness, length, depth, material);
+      mesh.position.copy(start).add(end).multiplyScalar(0.5);
+      mesh.quaternion.setFromUnitVectors(yAxis, direction.normalize());
+      return mesh;
+    }
 
-    const woodMaterial = new THREE.MeshStandardMaterial({
-      color: 0x9a6d45,
-      roughness: 0.90,
-    });
+    function gableRoofGeometry() {
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.Float32BufferAttribute([
+        -0.5, 0.0, -0.5,
+         0.5, 0.0, -0.5,
+         0.0, 0.62, -0.5,
+        -0.5, 0.0,  0.5,
+         0.5, 0.0,  0.5,
+         0.0, 0.62,  0.5,
+      ], 3));
+      geometry.setIndex([
+        0, 1, 2,
+        4, 3, 5,
+        0, 2, 5, 0, 5, 3,
+        2, 1, 4, 2, 4, 5,
+        0, 3, 4, 0, 4, 1,
+      ]);
+      geometry.computeVertexNormals();
+      return geometry;
+    }
 
-    const timberMaterial = new THREE.MeshStandardMaterial({
-      color: 0x80502e,
-      roughness: 0.94,
-    });
+    const sharedGableRoof = gableRoofGeometry();
 
-    // ---------- Sky ----------
+    // ---------- Himmel ----------
     const sky = new THREE.Mesh(
-      new THREE.SphereGeometry(100, 24, 14),
+      new THREE.SphereGeometry(96, quality === 'low' ? 18 : 26, quality === 'low' ? 10 : 14),
       new THREE.ShaderMaterial({
         side: THREE.BackSide,
         uniforms: {
-          topColor: { value: new THREE.Color(0x87c7ff) },
-          midColor: { value: new THREE.Color(0xeaf6ff) },
-          bottomColor: { value: new THREE.Color(0xfff0d3) },
+          topColor: { value: new THREE.Color(0x738e9b) },
+          middleColor: { value: new THREE.Color(0xb8c6bd) },
+          horizonColor: { value: new THREE.Color(0xe2c99a) },
         },
         vertexShader: `
-          varying vec3 vPos;
+          varying vec3 vWorldPosition;
           void main() {
-            vPos = (modelMatrix * vec4(position, 1.0)).xyz;
+            vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+            vWorldPosition = worldPosition.xyz;
             gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
           }
         `,
         fragmentShader: `
           uniform vec3 topColor;
-          uniform vec3 midColor;
-          uniform vec3 bottomColor;
-          varying vec3 vPos;
+          uniform vec3 middleColor;
+          uniform vec3 horizonColor;
+          varying vec3 vWorldPosition;
           void main() {
-            float h = normalize(vPos + vec3(0.0, 16.0, 0.0)).y * 0.5 + 0.5;
-            vec3 c = mix(bottomColor, midColor, smoothstep(0.0, 0.58, h));
-            c = mix(c, topColor, smoothstep(0.58, 1.0, h));
-            gl_FragColor = vec4(c, 1.0);
+            float heightValue = normalize(vWorldPosition + vec3(0.0, 14.0, 0.0)).y * 0.5 + 0.5;
+            vec3 color = mix(horizonColor, middleColor, smoothstep(0.05, 0.58, heightValue));
+            color = mix(color, topColor, smoothstep(0.58, 1.0, heightValue));
+            gl_FragColor = vec4(color, 1.0);
           }
         `,
       })
     );
     scene.add(sky);
 
-    // ---------- Lighting ----------
-    scene.add(new THREE.HemisphereLight(0xf1f8ff, 0x79936a, 2.05));
+    // ---------- Licht ----------
+    scene.add(new THREE.HemisphereLight(0xd9e0d4, 0x504630, 1.72));
 
-    const sun = new THREE.DirectionalLight(0xffdfa9, 3.65);
-    sun.position.set(13, 22, 10);
+    const sun = new THREE.DirectionalLight(0xf4ca83, 2.62);
+    sun.position.set(13, 22, 8);
     sun.castShadow = shadowsEnabled;
 
     if (shadowsEnabled) {
-      sun.shadow.mapSize.set(512, 512);
-      sun.shadow.camera.left = -24;
-      sun.shadow.camera.right = 24;
-      sun.shadow.camera.top = 24;
-      sun.shadow.camera.bottom = -24;
+      sun.shadow.mapSize.set(768, 768);
+      sun.shadow.camera.left = -22;
+      sun.shadow.camera.right = 22;
+      sun.shadow.camera.top = 22;
+      sun.shadow.camera.bottom = -22;
       sun.shadow.camera.near = 1;
-      sun.shadow.camera.far = 72;
-      sun.shadow.bias = -0.0004;
+      sun.shadow.camera.far = 70;
+      sun.shadow.bias = -0.00035;
     }
 
     scene.add(sun);
 
-    const fill = new THREE.DirectionalLight(0xd8eeff, 0.92);
-    fill.position.set(-14, 10, 6);
+    const fill = new THREE.DirectionalLight(0xaac1c8, 0.56);
+    fill.position.set(-12, 8, 5);
     scene.add(fill);
 
-    // ---------- Procedural cobblestone texture ----------
-    function cobbleTexture() {
-      const c = document.createElement('canvas');
-      c.width = c.height = 256;
-      const ctx = c.getContext('2d');
+    // ---------- Prozedurales Pflaster ----------
+    function createCobbleTexture() {
+      const size = quality === 'low' ? 256 : 384;
+      const textureCanvas = document.createElement('canvas');
+      textureCanvas.width = size;
+      textureCanvas.height = size;
+      const context = textureCanvas.getContext('2d');
+      const scale = size / 256;
 
-      const grad = ctx.createLinearGradient(0, 0, 0, 256);
-      grad.addColorStop(0, '#e3d0ad');
-      grad.addColorStop(1, '#c2ad8c');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 256, 256);
+      const gradient = context.createLinearGradient(0, 0, 0, size);
+      gradient.addColorStop(0, '#a39278');
+      gradient.addColorStop(1, '#786d5c');
+      context.fillStyle = gradient;
+      context.fillRect(0, 0, size, size);
 
-      const w = 38;
-      const h = 23;
+      const stoneWidth = 38 * scale;
+      const stoneHeight = 24 * scale;
 
       for (let row = 0; row < 13; row += 1) {
-        const offset = row % 2 ? w / 2 : 0;
+        const offset = row % 2 ? stoneWidth / 2 : 0;
+        for (let column = -1; column < 9; column += 1) {
+          const x = column * stoneWidth + offset;
+          const y = row * stoneHeight - 5 * scale;
+          const tone = (row * 7 + column * 3) % 4;
+          const colors = ['#a5957d', '#94836c', '#ae9c81', '#887966'];
 
-        for (let col = -1; col < 9; col += 1) {
-          const x = col * w + offset;
-          const y = row * h - 5;
+          context.beginPath();
+          context.roundRect(
+            x + 2 * scale,
+            y + 2 * scale,
+            stoneWidth - 4 * scale,
+            stoneHeight - 4 * scale,
+            5 * scale
+          );
+          context.fillStyle = colors[tone];
+          context.fill();
+          context.strokeStyle = 'rgba(52,42,31,0.33)';
+          context.lineWidth = 1.15 * scale;
+          context.stroke();
 
-          ctx.beginPath();
-          ctx.roundRect(x + 2, y + 2, w - 4, h - 4, 6);
-          ctx.fillStyle =
-            row % 3 === 0 ? '#d8c4a2' :
-            row % 3 === 1 ? '#e3cfad' :
-            '#ccb793';
-          ctx.fill();
-
-          ctx.strokeStyle = 'rgba(94,76,53,0.18)';
-          ctx.lineWidth = 1.3;
-          ctx.stroke();
+          context.fillStyle = 'rgba(255,238,199,0.06)';
+          context.fillRect(x + 7 * scale, y + 5 * scale, stoneWidth * 0.42, 1.2 * scale);
         }
       }
 
-      const texture = new THREE.CanvasTexture(c);
+      const texture = new THREE.CanvasTexture(textureCanvas);
       texture.colorSpace = THREE.SRGBColorSpace;
       texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-      texture.repeat.set(1.6, 13);
+      texture.repeat.set(1.5, 13.5);
       texture.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
       return texture;
     }
 
-    // ---------- Ground ----------
-    const lawn = new THREE.Mesh(
-      new THREE.PlaneGeometry(72, 88),
-      new THREE.MeshStandardMaterial({ color: 0x93b57b, roughness: 0.98 })
-    );
-    lawn.rotation.x = -Math.PI / 2;
-    lawn.position.set(0, -0.04, -13);
-    lawn.receiveShadow = shadowsEnabled;
-    scene.add(lawn);
-
-    const street = new THREE.Mesh(
-      new THREE.PlaneGeometry(8.2, 86),
-      new THREE.MeshStandardMaterial({
-        map: cobbleTexture(),
-        roughness: 0.90,
-      })
-    );
-    street.rotation.x = -Math.PI / 2;
-    street.position.set(0, 0.01, -12);
-    street.receiveShadow = shadowsEnabled;
-    scene.add(street);
-
-    const sidewalkGeometry = new THREE.PlaneGeometry(1.7, 84);
-    for (const x of [-5.05, 5.05]) {
-      const walk = new THREE.Mesh(sidewalkGeometry, stoneMaterial);
-      walk.rotation.x = -Math.PI / 2;
-      walk.position.set(x, 0.025, -12);
-      walk.receiveShadow = shadowsEnabled;
-      scene.add(walk);
-    }
-
-    // ---------- Shared low-cost building geometry ----------
-    const bodyGeometry = new THREE.BoxGeometry(1, 1, 1);
-
-    function roofGeometry() {
-      const geometry = new THREE.BufferGeometry();
-
-      const positions = new Float32Array([
-        -0.5, 0, -0.5,
-         0.5, 0, -0.5,
-         0.0, 0.58, -0.5,
-
-        -0.5, 0,  0.5,
-         0.5, 0,  0.5,
-         0.0, 0.58,  0.5,
-      ]);
-
-      const indices = [
-        0, 1, 2,
-        4, 3, 5,
-        0, 2, 5, 0, 5, 3,
-        2, 1, 4, 2, 4, 5,
-        0, 3, 4, 0, 4, 1,
-      ];
-
-      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-      geometry.setIndex(indices);
-      geometry.computeVertexNormals();
-
-      return geometry;
-    }
-
-    const sharedRoofGeometry = roofGeometry();
-    const awningGeometry = new THREE.BoxGeometry(1, 0.09, 0.55);
-
-    const buildingSpecs = [];
-    const zList = [10.5, 5.0, -0.5, -6.0, -11.5, -17.0];
-
-    zList.forEach((z, index) => {
-      for (const side of [-1, 1]) {
-        buildingSpecs.push({
-          side,
-          z,
-          height: 4.1 + ((index + (side > 0 ? 1 : 0)) % 3) * 0.58,
-          depthX: 3.0 + (index % 2) * 0.34,
-          widthZ: 4.25,
-          materialIndex: (index + (side > 0 ? 1 : 0)) % plasterMaterials.length,
-          roofIndex: (index + (side > 0 ? 2 : 0)) % roofMaterials.length,
-          awningColor: [
-            0x5278a3,
-            0xc7855d,
-            0x739060,
-            0x6e82a9,
-          ][(index + (side > 0 ? 1 : 0)) % 4],
-        });
-      }
+    const cobbleMaterial = new THREE.MeshStandardMaterial({
+      map: createCobbleTexture(),
+      roughness: 0.98,
     });
 
-    const buildingGroups = [];
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(72, 92), materials.grass);
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.set(0, -0.08, -14);
+    ground.receiveShadow = shadowsEnabled;
+    scene.add(ground);
 
-    for (const spec of buildingSpecs) {
-      const group = new THREE.Group();
-      const x = spec.side * 7.1;
+    const road = new THREE.Mesh(new THREE.PlaneGeometry(9.2, 88), cobbleMaterial);
+    road.rotation.x = -Math.PI / 2;
+    road.position.set(0, 0.005, -13);
+    road.receiveShadow = shadowsEnabled;
+    scene.add(road);
 
-      const body = new THREE.Mesh(
-        bodyGeometry,
-        plasterMaterials[spec.materialIndex]
-      );
-      body.scale.set(spec.depthX, spec.height, spec.widthZ);
-      body.position.y = spec.height / 2;
-      body.castShadow = shadowsEnabled;
-      body.receiveShadow = shadowsEnabled;
-      group.add(body);
+    const marketSquare = new THREE.Mesh(
+      new THREE.PlaneGeometry(19.5, 17.2),
+      new THREE.MeshStandardMaterial({ map: cobbleMaterial.map, roughness: 0.99 })
+    );
+    marketSquare.material.map = cobbleMaterial.map.clone();
+    marketSquare.material.map.needsUpdate = true;
+    marketSquare.material.map.repeat.set(3.2, 3.0);
+    marketSquare.rotation.x = -Math.PI / 2;
+    marketSquare.position.set(0, 0.012, -23.2);
+    marketSquare.receiveShadow = shadowsEnabled;
+    scene.add(marketSquare);
 
-      const cornice = new THREE.Mesh(
-        bodyGeometry,
-        stoneMaterial
-      );
-      cornice.scale.set(spec.depthX + 0.15, 0.18, spec.widthZ + 0.12);
-      cornice.position.y = spec.height - 0.22;
-      cornice.castShadow = shadowsEnabled;
-      group.add(cornice);
+    for (const x of [-5.25, 5.25]) {
+      const edge = new THREE.Mesh(new THREE.PlaneGeometry(1.25, 84), materials.mud);
+      edge.rotation.x = -Math.PI / 2;
+      edge.position.set(x, -0.01, -12.5);
+      edge.receiveShadow = shadowsEnabled;
+      scene.add(edge);
+    }
 
-      const roof = new THREE.Mesh(
-        sharedRoofGeometry,
-        roofMaterials[spec.roofIndex]
-      );
-      roof.scale.set(spec.depthX * 1.08, 1.35, spec.widthZ * 1.08);
-      roof.position.y = spec.height;
-      roof.castShadow = shadowsEnabled;
-      group.add(roof);
+    // ---------- Stadthäuser ----------
+    function addFacadeDetails(group, side, height, depthX, widthZ, index) {
+      const streetX = side * -(depthX / 2 + 0.018);
+      const facadeRotation = side > 0 ? -Math.PI / 2 : Math.PI / 2;
 
-      if (((Math.round(spec.z * 10) + (spec.side > 0 ? 1 : 0)) % 2) === 0) {
-        const upperStorey = new THREE.Mesh(
-          bodyGeometry,
-          plasterMaterials[(spec.materialIndex + 1) % plasterMaterials.length]
-        );
-        upperStorey.scale.set(spec.depthX * 0.96, Math.max(1.1, spec.height * 0.34), spec.widthZ * 0.92);
-        upperStorey.position.set(spec.side * -0.18, spec.height * 0.72, 0);
-        upperStorey.castShadow = shadowsEnabled;
-        upperStorey.receiveShadow = shadowsEnabled;
-        group.add(upperStorey);
+      const verticalOffsets = [-widthZ * 0.32, 0, widthZ * 0.32];
+      verticalOffsets.forEach((zOffset) => {
+        const beam = makeBox(0.09, height - 0.34, 0.10, materials.timber);
+        beam.position.set(streetX + side * -0.025, height / 2, zOffset);
+        group.add(beam);
+      });
+
+      for (const y of [1.12, 2.20, Math.min(height - 0.52, 3.35)]) {
+        if (y > height - 0.35) continue;
+        const beam = makeBox(0.09, 0.11, widthZ - 0.34, materials.timber);
+        beam.position.set(streetX + side * -0.03, y, 0);
+        group.add(beam);
       }
 
-      const chimney = new THREE.Mesh(
-        new THREE.BoxGeometry(0.32, 0.9, 0.32),
-        stoneMaterial
-      );
-      chimney.position.set(spec.side * 0.48, spec.height + 0.7, spec.z % 2 === 0 ? -0.75 : 0.75);
-      chimney.castShadow = shadowsEnabled;
-      group.add(chimney);
+      const windowRows = height > 4.8 ? [1.65, 2.75, 3.72] : [1.58, 2.68];
+      windowRows.forEach((y, row) => {
+        [-0.92, 0.92].forEach((zOffset, column) => {
+          const windowMesh = new THREE.Mesh(
+            new THREE.PlaneGeometry(0.42, 0.56),
+            (index + row + column) % 5 === 0 ? materials.warmWindow : materials.window
+          );
+          windowMesh.position.set(streetX + side * -0.072, y, zOffset);
+          windowMesh.rotation.y = facadeRotation;
+          group.add(windowMesh);
 
-      const awning = new THREE.Mesh(
-        awningGeometry,
-        new THREE.MeshStandardMaterial({
-          color: spec.awningColor,
-          roughness: 0.78,
-        })
-      );
-      awning.scale.set(1.0, 1.0, 2.0);
-      awning.position.set(
-        spec.side * -(spec.depthX / 2 + 0.28),
-        1.12,
-        0
-      );
-      awning.rotation.z = spec.side * 0.10;
-      awning.castShadow = shadowsEnabled;
-      group.add(awning);
+          for (const shutterOffset of [-0.28, 0.28]) {
+            const shutter = makeBox(0.055, 0.53, 0.16, materials.wood);
+            shutter.position.set(streetX + side * -0.047, y, zOffset + shutterOffset);
+            group.add(shutter);
+          }
+        });
+      });
 
-      // broad balcony: only every other building; no expensive rail bars
-      if ((Math.abs(spec.z) * 10) % 11 < 6) {
-        const balcony = new THREE.Mesh(
-          new THREE.BoxGeometry(0.42, 0.10, 2.3),
-          stoneMaterial
-        );
-        balcony.position.set(
-          spec.side * -(spec.depthX / 2 + 0.18),
-          Math.min(2.35, spec.height - 1.2),
-          0
-        );
-        balcony.castShadow = shadowsEnabled;
-        group.add(balcony);
+      const door = makeBox(0.10, 1.05, 0.56, materials.darkWood);
+      door.position.set(streetX + side * -0.045, 0.53, 0);
+      group.add(door);
+    }
 
-        const rail = new THREE.Mesh(
-          new THREE.BoxGeometry(0.06, 0.42, 2.15),
+    const buildingZ = [10.5, 5.0, -0.5, -6.0, -11.5, -17.0];
+    buildingZ.forEach((z, rowIndex) => {
+      [-1, 1].forEach((side) => {
+        const group = new THREE.Group();
+        const height = 4.0 + ((rowIndex + (side > 0 ? 1 : 0)) % 3) * 0.62;
+        const depthX = 3.15 + (rowIndex % 2) * 0.38;
+        const widthZ = 4.35;
+
+        const body = makeBox(depthX, height, widthZ, materials.plaster[(rowIndex + (side > 0 ? 1 : 0)) % materials.plaster.length]);
+        body.position.y = height / 2;
+        group.add(body);
+
+        const stoneFoot = makeBox(depthX + 0.08, 0.34, widthZ + 0.04, materials.paleStone);
+        stoneFoot.position.y = 0.17;
+        group.add(stoneFoot);
+
+        const roof = new THREE.Mesh(sharedGableRoof, materials.roof[(rowIndex + (side > 0 ? 2 : 0)) % materials.roof.length]);
+        roof.scale.set(depthX * 1.12, 1.35, widthZ * 1.10);
+        roof.position.y = height;
+        roof.castShadow = shadowsEnabled;
+        group.add(roof);
+
+        if (rowIndex % 2 === 0) {
+          const overhang = makeBox(0.55, 0.13, 2.45, materials.wood);
+          overhang.position.set(side * -(depthX / 2 + 0.26), 1.18, 0);
+          overhang.rotation.z = side * 0.10;
+          group.add(overhang);
+        }
+
+        const chimney = makeBox(0.34, 0.92, 0.34, materials.paleStone);
+        chimney.position.set(side * 0.45, height + 0.72, rowIndex % 2 ? 0.72 : -0.72);
+        group.add(chimney);
+
+        addFacadeDetails(group, side, height, depthX, widthZ, rowIndex * 2 + (side > 0 ? 1 : 0));
+        group.position.set(side * 7.15, 0, z);
+        scene.add(group);
+      });
+    });
+
+    // ---------- Basler Stadttor-Silhouette statt Märchenschloss ----------
+    function archShape(width, height) {
+      const radius = width / 2;
+      const shape = new THREE.Shape();
+      shape.moveTo(-radius, 0);
+      shape.lineTo(-radius, height - radius);
+      shape.absarc(0, height - radius, radius, Math.PI, 0, false);
+      shape.lineTo(radius, 0);
+      shape.closePath();
+      return shape;
+    }
+
+    const cityGate = new THREE.Group();
+
+    const wallLeft = makeBox(12.0, 3.8, 2.1, materials.sandstone);
+    wallLeft.position.set(-8.3, 1.9, 0);
+    cityGate.add(wallLeft);
+
+    const wallRight = wallLeft.clone();
+    wallRight.position.x = 8.3;
+    cityGate.add(wallRight);
+
+    const gatehouse = makeBox(5.3, 5.6, 2.6, materials.sandstone);
+    gatehouse.position.y = 2.8;
+    cityGate.add(gatehouse);
+
+    const arch = new THREE.Mesh(
+      new THREE.ShapeGeometry(archShape(1.85, 2.85)),
+      new THREE.MeshStandardMaterial({ color: 0x2b2620, roughness: 1, side: THREE.DoubleSide })
+    );
+    arch.position.set(0, 0.01, 1.315);
+    cityGate.add(arch);
+
+    for (const x of [-3.5, 3.5]) {
+      const tower = makeCylinder(1.10, 1.22, 6.15, quality === 'low' ? 10 : 14, materials.sandstone);
+      tower.position.set(x, 3.08, 0);
+      cityGate.add(tower);
+
+      const roof = new THREE.Mesh(
+        new THREE.ConeGeometry(1.42, 2.05, quality === 'low' ? 10 : 14),
+        materials.roof[1]
+      );
+      roof.position.set(x, 7.14, 0);
+      roof.castShadow = shadowsEnabled;
+      cityGate.add(roof);
+    }
+
+    const gateRoof = new THREE.Mesh(sharedGableRoof, materials.roof[0]);
+    gateRoof.scale.set(5.75, 1.7, 2.95);
+    gateRoof.position.y = 5.58;
+    gateRoof.castShadow = shadowsEnabled;
+    cityGate.add(gateRoof);
+
+    for (let index = 0; index < 8; index += 1) {
+      const merlon = makeBox(0.42, 0.46, 0.42, materials.paleStone);
+      merlon.position.set(-2.15 + index * 0.62, 5.86, 1.02);
+      cityGate.add(merlon);
+    }
+
+    cityGate.position.set(0, 0, -38.2);
+    scene.add(cityGate);
+
+    // Kirchturm als Basler Stadt-Silhouette.
+    const church = new THREE.Group();
+    const churchBody = makeBox(2.2, 6.2, 2.2, materials.plaster[2]);
+    churchBody.position.y = 3.1;
+    church.add(churchBody);
+    const churchRoof = new THREE.Mesh(new THREE.ConeGeometry(1.65, 4.1, 4), materials.roof[0]);
+    churchRoof.rotation.y = Math.PI / 4;
+    churchRoof.position.y = 8.05;
+    church.add(churchRoof);
+    const churchCrossVertical = makeBox(0.09, 0.88, 0.09, materials.iron);
+    churchCrossVertical.position.y = 10.4;
+    church.add(churchCrossVertical);
+    const churchCrossHorizontal = makeBox(0.48, 0.08, 0.08, materials.iron);
+    churchCrossHorizontal.position.y = 10.48;
+    church.add(churchCrossHorizontal);
+    church.position.set(-10.8, 0, -42.5);
+    scene.add(church);
+
+    // ---------- Szenengruppen ----------
+    const approachScene = new THREE.Group();
+    const assemblyScene = new THREE.Group();
+    const resultsScene = new THREE.Group();
+    scene.add(approachScene, assemblyScene, resultsScene);
+
+    let activeStep = 0;
+    let detailsBuilt = false;
+    let fortuneRotor = null;
+    let fortuneClacker = null;
+    let fortuneWheelMode = 'idle';
+    let fortuneWheelSpeed = 0;
+    const swayItems = [];
+    const cloudSprites = [];
+
+    function setStageVisibility(step) {
+      activeStep = step;
+      approachScene.visible = step <= 2;
+      assemblyScene.visible = step >= 2 && step <= 4;
+      resultsScene.visible = step >= 5;
+    }
+
+    setStageVisibility(0);
+
+    // ---------- Marktobjekte ----------
+    function createStall(x, z, clothIndex, rotationY = 0, parent = approachScene) {
+      const stall = new THREE.Group();
+
+      for (const px of [-0.72, 0.72]) {
+        for (const pz of [-0.46, 0.46]) {
+          const post = makeCylinder(0.052, 0.062, 2.18, 8, materials.wood);
+          post.position.set(px, 1.09, pz);
+          stall.add(post);
+        }
+      }
+
+      const counter = makeBox(1.58, 0.16, 0.78, materials.lightWood);
+      counter.position.y = 0.91;
+      stall.add(counter);
+
+      const counterFront = makeBox(1.48, 0.72, 0.10, materials.wood);
+      counterFront.position.set(0, 0.48, 0.39);
+      stall.add(counterFront);
+
+      const canopy = makeBox(1.82, 0.11, 1.22, materials.cloth[clothIndex % 4]);
+      canopy.position.y = 2.18;
+      canopy.rotation.z = 0.015;
+      stall.add(canopy);
+
+      for (const stripeX of [-0.55, 0, 0.55]) {
+        const stripe = makeBox(0.18, 0.025, 1.23, materials.cloth[4]);
+        stripe.position.set(stripeX, 2.245, 0);
+        stall.add(stripe);
+      }
+
+      for (let index = 0; index < 5; index += 1) {
+        const good = new THREE.Mesh(
+          new THREE.SphereGeometry(0.11 + (index % 2) * 0.025, 7, 5),
           new THREE.MeshStandardMaterial({
-            color: 0x776f5d,
-            roughness: 0.70,
+            color: [0x8b4635, 0x6a7543, 0xb18842, 0x7e5937, 0x9a6d43][index],
+            roughness: 1,
           })
         );
-        rail.position.set(
-          spec.side * -(spec.depthX / 2 + 0.39),
-          balcony.position.y + 0.22,
-          0
+        good.position.set(-0.50 + index * 0.25, 1.09, 0.05 + (index % 2) * 0.09);
+        stall.add(good);
+      }
+
+      stall.position.set(x, 0, z);
+      stall.rotation.y = rotationY;
+      parent.add(stall);
+      return stall;
+    }
+
+    function createBarrel(x, z, scale = 1, parent = approachScene) {
+      const group = new THREE.Group();
+      const body = makeCylinder(0.31, 0.31, 0.72, 12, materials.wood);
+      body.scale.set(1, 1, 0.92);
+      body.position.y = 0.36;
+      group.add(body);
+
+      for (const y of [0.10, 0.36, 0.62]) {
+        const hoop = new THREE.Mesh(new THREE.TorusGeometry(0.315, 0.022, 6, 14), materials.iron);
+        hoop.rotation.x = Math.PI / 2;
+        hoop.position.y = y;
+        group.add(hoop);
+      }
+
+      group.scale.setScalar(scale);
+      group.position.set(x, 0, z);
+      parent.add(group);
+      return group;
+    }
+
+    function createCrate(x, z, scale = 1, parent = approachScene) {
+      const group = new THREE.Group();
+      const box = makeBox(0.72, 0.54, 0.64, materials.lightWood);
+      box.position.y = 0.27;
+      group.add(box);
+
+      for (const y of [0.08, 0.46]) {
+        const slat = makeBox(0.76, 0.07, 0.68, materials.darkWood);
+        slat.position.y = y;
+        group.add(slat);
+      }
+
+      group.scale.setScalar(scale);
+      group.position.set(x, 0, z);
+      parent.add(group);
+      return group;
+    }
+
+    function createSack(x, z, scale = 1, parent = approachScene) {
+      const sack = new THREE.Mesh(
+        new THREE.SphereGeometry(0.34, 9, 7),
+        new THREE.MeshStandardMaterial({ color: 0xb29a70, roughness: 1 })
+      );
+      sack.scale.set(0.82 * scale, 1.08 * scale, 0.72 * scale);
+      sack.position.set(x, 0.32 * scale, z);
+      sack.castShadow = shadowsEnabled;
+      parent.add(sack);
+      return sack;
+    }
+
+    function createBanner(x, z, clothIndex, side, parent) {
+      const group = new THREE.Group();
+      const pole = makeCylinder(0.042, 0.052, 3.65, 8, materials.wood);
+      pole.position.y = 1.825;
+      group.add(pole);
+
+      const crossbar = makeCylinder(0.026, 0.026, 1.05, 8, materials.wood);
+      crossbar.rotation.z = Math.PI / 2;
+      crossbar.position.set(side * 0.47, 3.28, 0);
+      group.add(crossbar);
+
+      const cloth = new THREE.Mesh(new THREE.PlaneGeometry(0.76, 1.02, 1, 3), materials.cloth[clothIndex % 4]);
+      cloth.position.set(side * 0.44, 2.75, 0.01);
+      group.add(cloth);
+
+      const stripe = new THREE.Mesh(new THREE.PlaneGeometry(0.14, 0.92), materials.cloth[4]);
+      stripe.position.set(side * 0.44, 2.75, 0.02);
+      group.add(stripe);
+
+      group.position.set(x, 0, z);
+      parent.add(group);
+      swayItems.push({ object: group, base: 0, amplitude: 0.018, speed: 0.8 + clothIndex * 0.1 });
+      return group;
+    }
+
+    function createTargetStand(x, z, rotationY, parent) {
+      const group = new THREE.Group();
+      const leftLeg = makeBox(0.11, 1.82, 0.11, materials.wood);
+      leftLeg.position.set(-0.46, 0.91, 0);
+      group.add(leftLeg);
+      const rightLeg = leftLeg.clone();
+      rightLeg.position.x = 0.46;
+      group.add(rightLeg);
+
+      const bar = makeBox(1.14, 0.12, 0.12, materials.wood);
+      bar.position.y = 1.66;
+      group.add(bar);
+
+      const disk = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.48, 0.48, 0.09, 20),
+        materials.cloth[4]
+      );
+      disk.rotation.x = Math.PI / 2;
+      disk.position.set(0, 1.62, 0.02);
+      group.add(disk);
+
+      const outer = new THREE.Mesh(new THREE.CylinderGeometry(0.30, 0.30, 0.095, 20), materials.cloth[0]);
+      outer.rotation.x = Math.PI / 2;
+      outer.position.set(0, 1.62, 0.07);
+      group.add(outer);
+
+      const center = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.10, 18), materials.cloth[1]);
+      center.rotation.x = Math.PI / 2;
+      center.position.set(0, 1.62, 0.12);
+      group.add(center);
+
+      group.position.set(x, 0, z);
+      group.rotation.y = rotationY;
+      parent.add(group);
+      return group;
+    }
+
+    function createCrowd(parent, entries) {
+      if (!entries.length) return;
+
+      const bodyGeometry = new THREE.CylinderGeometry(0.15, 0.24, 0.82, 8);
+      const headGeometry = new THREE.SphereGeometry(0.16, 8, 6);
+      const bodyMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.96 });
+      const headMaterial = new THREE.MeshStandardMaterial({ color: 0xb98965, roughness: 0.98 });
+      const bodies = new THREE.InstancedMesh(bodyGeometry, bodyMaterial, entries.length);
+      const heads = new THREE.InstancedMesh(headGeometry, headMaterial, entries.length);
+      const dummy = new THREE.Object3D();
+      const colors = [0x6f4035, 0x546342, 0x7f6336, 0x445c67, 0x69506a, 0x8a593c, 0x565042];
+
+      entries.forEach((entry, index) => {
+        dummy.position.set(entry[0], 0.48, entry[1]);
+        dummy.rotation.set(0, entry[2] || 0, 0);
+        dummy.scale.set(1, 1, 1);
+        dummy.updateMatrix();
+        bodies.setMatrixAt(index, dummy.matrix);
+        bodies.setColorAt(index, new THREE.Color(colors[index % colors.length]));
+
+        dummy.position.y = 1.03;
+        dummy.scale.set(1, 1, 1);
+        dummy.updateMatrix();
+        heads.setMatrixAt(index, dummy.matrix);
+      });
+
+      bodies.instanceMatrix.needsUpdate = true;
+      heads.instanceMatrix.needsUpdate = true;
+      if (bodies.instanceColor) bodies.instanceColor.needsUpdate = true;
+      parent.add(bodies, heads);
+    }
+
+    function createFountain(parent) {
+      const fountain = new THREE.Group();
+      const base = makeCylinder(1.34, 1.50, 0.28, 24, materials.paleStone);
+      base.position.y = 0.14;
+      fountain.add(base);
+      const basin = makeCylinder(0.98, 1.14, 0.26, 24, materials.paleStone);
+      basin.position.y = 0.47;
+      fountain.add(basin);
+      const water = makeCylinder(0.93, 0.93, 0.025, 24, materials.water);
+      water.position.y = 0.62;
+      fountain.add(water);
+      const pillar = makeCylinder(0.15, 0.23, 1.18, 12, materials.paleStone);
+      pillar.position.y = 1.08;
+      fountain.add(pillar);
+      const finial = new THREE.Mesh(new THREE.ConeGeometry(0.27, 0.48, 8), materials.bronze);
+      finial.position.y = 1.88;
+      fountain.add(finial);
+      fountain.position.set(-0.4, 0, -14.2);
+      parent.add(fountain);
+    }
+
+    function createLuckHarbor(parent) {
+      const booth = new THREE.Group();
+      const table = makeBox(2.45, 0.20, 0.95, materials.lightWood);
+      table.position.y = 0.95;
+      booth.add(table);
+
+      for (const x of [-0.96, 0.96]) {
+        const leg = makeBox(0.13, 0.95, 0.13, materials.wood);
+        leg.position.set(x, 0.46, 0);
+        booth.add(leg);
+      }
+
+      const back = makeBox(2.35, 1.42, 0.12, materials.cloth[0]);
+      back.position.set(0, 1.72, -0.38);
+      booth.add(back);
+
+      const trimTop = makeBox(2.50, 0.10, 0.16, materials.bronze);
+      trimTop.position.set(0, 2.47, -0.36);
+      booth.add(trimTop);
+      const trimBottom = trimTop.clone();
+      trimBottom.position.y = 1.00;
+      booth.add(trimBottom);
+
+      const urn = makeCylinder(0.30, 0.40, 0.72, 14, materials.darkWood);
+      urn.position.set(0, 1.37, 0);
+      booth.add(urn);
+      const urnRim = new THREE.Mesh(new THREE.TorusGeometry(0.31, 0.055, 8, 18), materials.bronze);
+      urnRim.rotation.x = Math.PI / 2;
+      urnRim.position.set(0, 1.75, 0);
+      booth.add(urnRim);
+
+      for (let index = 0; index < 4; index += 1) {
+        const prize = makeCylinder(0.09 + index * 0.01, 0.12, 0.25 + index * 0.03, 10, index % 2 ? materials.bronze : materials.iron);
+        prize.position.set(-0.78 + index * 0.52, 1.19, -0.02);
+        booth.add(prize);
+      }
+
+      booth.position.set(-5.1, 0, -24.0);
+      booth.rotation.y = 0.10;
+      parent.add(booth);
+      return booth;
+    }
+
+    function createHeraldStage(parent) {
+      const stage = new THREE.Group();
+      const platform = makeBox(2.7, 0.26, 1.75, materials.darkWood);
+      platform.position.y = 0.13;
+      stage.add(platform);
+
+      for (const x of [-0.9, 0, 0.9]) {
+        const plank = makeBox(0.08, 0.29, 1.78, materials.lightWood);
+        plank.position.set(x, 0.15, 0);
+        stage.add(plank);
+      }
+
+      const lecternBody = makeBox(0.62, 0.92, 0.42, materials.wood);
+      lecternBody.position.set(0, 0.73, -0.12);
+      stage.add(lecternBody);
+      const lecternTop = makeBox(0.76, 0.12, 0.56, materials.lightWood);
+      lecternTop.position.set(0, 1.22, -0.07);
+      lecternTop.rotation.x = -0.16;
+      stage.add(lecternTop);
+
+      const pole = makeCylinder(0.04, 0.05, 2.85, 8, materials.wood);
+      pole.position.set(1.0, 1.43, -0.55);
+      stage.add(pole);
+      const flag = new THREE.Mesh(new THREE.PlaneGeometry(0.70, 1.05, 1, 3), materials.cloth[1]);
+      flag.position.set(0.65, 2.02, -0.54);
+      stage.add(flag);
+
+      stage.position.set(-0.8, 0, -24.9);
+      parent.add(stage);
+      swayItems.push({ object: flag, base: 0, amplitude: 0.028, speed: 0.86, local: true });
+      return stage;
+    }
+
+    function createFortuneWheel(parent) {
+      const frame = new THREE.Group();
+      const centerY = 2.72;
+      const wheelRadius = 1.42;
+
+      const base = makeBox(3.6, 0.16, 1.52, materials.darkWood);
+      base.position.y = 0.08;
+      frame.add(base);
+
+      const footLeft = makeBox(1.05, 0.20, 1.70, materials.lightWood);
+      footLeft.position.set(-1.18, 0.18, 0);
+      frame.add(footLeft);
+      const footRight = footLeft.clone();
+      footRight.position.x = 1.18;
+      frame.add(footRight);
+
+      const legCoordinates = [
+        [new THREE.Vector3(-1.55, 0.18, 0.58), new THREE.Vector3(-0.74, 3.73, 0.18)],
+        [new THREE.Vector3( 1.55, 0.18, 0.58), new THREE.Vector3( 0.74, 3.73, 0.18)],
+        [new THREE.Vector3(-1.55, 0.18,-0.58), new THREE.Vector3(-0.74, 3.73,-0.18)],
+        [new THREE.Vector3( 1.55, 0.18,-0.58), new THREE.Vector3( 0.74, 3.73,-0.18)],
+      ];
+
+      legCoordinates.forEach(([start, end]) => {
+        frame.add(beamBetween(start, end, 0.18, materials.wood, 0.18));
+      });
+
+      const crossbeam = makeBox(2.10, 0.23, 0.30, materials.lightWood);
+      crossbeam.position.set(0, 3.62, 0);
+      frame.add(crossbeam);
+
+      const axle = makeCylinder(0.12, 0.12, 0.70, 16, materials.iron);
+      axle.rotation.x = Math.PI / 2;
+      axle.position.set(0, centerY, 0);
+      frame.add(axle);
+
+      const rotor = new THREE.Group();
+      rotor.position.set(0, centerY, 0.06);
+
+      const backDisk = new THREE.Mesh(
+        new THREE.CylinderGeometry(1.20, 1.20, 0.08, 32),
+        materials.darkWood
+      );
+      backDisk.rotation.x = Math.PI / 2;
+      backDisk.position.z = -0.03;
+      rotor.add(backDisk);
+
+      const wedgeColors = [
+        0x76413a, 0x667746, 0x9b743e, 0x4f6874,
+        0x72566f, 0x9d633d, 0x536955, 0x864b4f,
+        0x5b6b76, 0x82673c, 0x6c4a35, 0x4f6f66,
+      ];
+
+      wedgeColors.forEach((color, index) => {
+        const wedge = new THREE.Mesh(
+          new THREE.CylinderGeometry(
+            1.16,
+            1.16,
+            0.09,
+            30,
+            1,
+            false,
+            index * (Math.PI * 2 / wedgeColors.length),
+            (Math.PI * 2 / wedgeColors.length) - 0.025
+          ),
+          new THREE.MeshStandardMaterial({ color, roughness: 0.91 })
         );
-        group.add(rail);
+        wedge.rotation.x = Math.PI / 2;
+        wedge.position.z = 0.02;
+        rotor.add(wedge);
+      });
+
+      const outerRim = new THREE.Mesh(new THREE.TorusGeometry(wheelRadius, 0.14, 12, 44), materials.darkWood);
+      outerRim.position.z = 0.08;
+      rotor.add(outerRim);
+
+      const bronzeBand = new THREE.Mesh(new THREE.TorusGeometry(1.28, 0.045, 8, 40), materials.bronze);
+      bronzeBand.position.z = 0.13;
+      rotor.add(bronzeBand);
+
+      for (let index = 0; index < 12; index += 1) {
+        const angle = index * Math.PI / 6;
+        const spoke = makeBox(0.07, 1.17, 0.07, materials.lightWood);
+        spoke.position.set(Math.sin(angle) * 0.58, Math.cos(angle) * 0.58, 0.13);
+        spoke.rotation.z = -angle;
+        rotor.add(spoke);
       }
 
-      group.position.set(x, 0, spec.z);
-      scene.add(group);
-      buildingGroups.push({ group, spec });
+      const pegGeometry = new THREE.CylinderGeometry(0.035, 0.035, 0.20, 8);
+      const pegs = new THREE.InstancedMesh(pegGeometry, materials.iron, 24);
+      const pegDummy = new THREE.Object3D();
+      for (let index = 0; index < 24; index += 1) {
+        const angle = index * Math.PI * 2 / 24;
+        pegDummy.position.set(Math.sin(angle) * 1.42, Math.cos(angle) * 1.42, 0.17);
+        pegDummy.rotation.set(Math.PI / 2, 0, 0);
+        pegDummy.updateMatrix();
+        pegs.setMatrixAt(index, pegDummy.matrix);
+      }
+      pegs.instanceMatrix.needsUpdate = true;
+      rotor.add(pegs);
+
+      const hub = makeCylinder(0.19, 0.19, 0.42, 18, materials.bronze);
+      hub.rotation.x = Math.PI / 2;
+      hub.position.z = 0.18;
+      rotor.add(hub);
+
+      frame.add(rotor);
+      fortuneRotor = rotor;
+
+      const clackerPivot = new THREE.Group();
+      clackerPivot.position.set(0, centerY + wheelRadius + 0.24, 0.27);
+      const clackerMount = makeBox(0.44, 0.15, 0.20, materials.darkWood);
+      clackerMount.position.y = 0.06;
+      clackerPivot.add(clackerMount);
+      const clacker = makeBox(0.10, 0.52, 0.10, materials.iron);
+      clacker.position.set(0, -0.25, 0.02);
+      clackerPivot.add(clacker);
+      frame.add(clackerPivot);
+      fortuneClacker = clackerPivot;
+
+      frame.position.set(4.25, 0, -23.1);
+      frame.rotation.y = -0.10;
+      parent.add(frame);
+      return frame;
     }
 
-    // ---------- Castle ----------
-    const castle = new THREE.Group();
-    const ivory = new THREE.MeshStandardMaterial({
-      color: 0xf4ead5,
-      roughness: 0.84,
-    });
-    const castleRoof = new THREE.MeshStandardMaterial({
-      color: 0x607a9a,
-      roughness: 0.86,
-    });
+    function createPennantLine(parent) {
+      const group = new THREE.Group();
+      const cord = makeBox(11.5, 0.025, 0.025, materials.darkWood);
+      cord.position.y = 4.45;
+      group.add(cord);
 
-    const castleCore = new THREE.Mesh(
-      bodyGeometry,
-      ivory
-    );
-    castleCore.scale.set(5.2, 4.1, 3.6);
-    castleCore.position.y = 2.45;
-    castleCore.castShadow = shadowsEnabled;
-    castle.add(castleCore);
+      const triangle = new THREE.Shape();
+      triangle.moveTo(-0.20, 0.0);
+      triangle.lineTo(0.20, 0.0);
+      triangle.lineTo(0, -0.55);
+      triangle.closePath();
+      const geometry = new THREE.ShapeGeometry(triangle);
 
-    const keep = new THREE.Mesh(
-      bodyGeometry,
-      ivory
-    );
-    keep.scale.set(2.4, 5.5, 2.5);
-    keep.position.set(0, 4.1, 0.1);
-    keep.castShadow = shadowsEnabled;
-    castle.add(keep);
+      for (let index = 0; index < 13; index += 1) {
+        const flag = new THREE.Mesh(geometry, materials.cloth[index % 4]);
+        flag.position.set(-5.4 + index * 0.9, 4.42, 0);
+        flag.rotation.y = index % 2 ? 0.08 : -0.08;
+        group.add(flag);
+      }
 
-    for (const [x, z, taller] of [
-      [-3.2, 0.2, false],
-      [ 3.2, 0.2, false],
-      [-1.9,-0.3, true ],
-      [ 1.9,-0.3, true ],
-    ]) {
-      const height = taller ? 6.1 : 5.0;
-
-      const tower = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.78, 0.88, height, 14),
-        ivory
-      );
-      tower.position.set(x, height / 2, z);
-      tower.castShadow = shadowsEnabled;
-      castle.add(tower);
-
-      const roof = new THREE.Mesh(
-        new THREE.ConeGeometry(1.02, 1.85, 14),
-        castleRoof
-      );
-      roof.position.set(x, height + 0.92, z);
-      roof.castShadow = shadowsEnabled;
-      castle.add(roof);
+      group.position.set(0, 0, -17.3);
+      parent.add(group);
+      swayItems.push({ object: group, base: 0, amplitude: 0.012, speed: 0.62 });
     }
 
-    function addBattlements(parent, width, depth, y, countFrontBack, countSides) {
-      const merlonGeo = new THREE.BoxGeometry(0.34, 0.42, 0.34);
-      for (let i = 0; i < countFrontBack; i += 1) {
-        const z = -depth / 2 + 0.35 + (i / Math.max(1, countFrontBack - 1)) * Math.max(0.01, depth - 0.7);
-        for (const x of [-width / 2, width / 2]) {
-          const merlon = new THREE.Mesh(merlonGeo, stoneMaterial);
-          merlon.position.set(x, y, z);
-          parent.add(merlon);
+    function buildDetails() {
+      if (detailsBuilt) return;
+      detailsBuilt = true;
+
+      // Ankunft am Markt.
+      createStall(-5.7, 7.7, 0, 0.10, approachScene);
+      createStall(5.7, 4.0, 2, -0.10, approachScene);
+      createStall(-5.8, -1.0, 1, 0.08, approachScene);
+      createBarrel(-4.8, 5.4, 0.86, approachScene);
+      createBarrel(4.9, 1.6, 0.78, approachScene);
+      createCrate(-4.9, -3.0, 0.92, approachScene);
+      createSack(4.7, 6.4, 0.95, approachScene);
+      createSack(5.15, 6.6, 0.72, approachScene);
+      createBanner(-5.8, 2.2, 0, 1, approachScene);
+      createBanner(5.8, -4.0, 1, -1, approachScene);
+      createCrowd(approachScene, [
+        [-3.7, 6.0, 0.2], [3.8, 3.1, -0.3], [-4.0, 0.2, 0.5],
+        [4.1, -2.2, -0.5], [-3.6, -4.7, 0.1],
+      ]);
+
+      // Versammlung, Schieß- und Geschicklichkeitsspiele.
+      createFountain(assemblyScene);
+      createStall(-5.9, -10.4, 3, 0.12, assemblyScene);
+      createStall(5.9, -12.1, 0, -0.10, assemblyScene);
+      createTargetStand(-4.8, -17.8, 0.12, assemblyScene);
+      createTargetStand(4.8, -17.8, -0.12, assemblyScene);
+      createCrate(-4.2, -13.2, 0.82, assemblyScene);
+      createBarrel(4.0, -15.0, 0.76, assemblyScene);
+      createBanner(-5.7, -15.2, 2, 1, assemblyScene);
+      createBanner(5.7, -15.6, 3, -1, assemblyScene);
+      createPennantLine(assemblyScene);
+      createCrowd(assemblyScene, [
+        [-3.5, -11.3, 0.4], [3.7, -12.8, -0.3], [-2.9, -15.8, 0.1],
+        [2.8, -16.0, -0.2], [-4.0, -18.9, 0.4], [4.0, -19.0, -0.4],
+      ]);
+
+      // Glückshafen und Gewinnerausruf.
+      createLuckHarbor(resultsScene);
+      createHeraldStage(resultsScene);
+      createFortuneWheel(resultsScene);
+      createStall(-6.0, -20.6, 2, 0.10, resultsScene);
+      createBarrel(-6.2, -26.5, 0.86, resultsScene);
+      createCrate(-4.4, -27.0, 0.86, resultsScene);
+      createSack(1.6, -26.7, 0.86, resultsScene);
+      createBanner(-6.2, -27.4, 0, 1, resultsScene);
+      createBanner(6.2, -27.0, 1, -1, resultsScene);
+      createCrowd(resultsScene, [
+        [-3.8, -21.0, 0.4], [-2.6, -20.5, 0.2], [1.4, -20.6, -0.1],
+        [2.3, -21.5, -0.2], [-3.6, -26.3, 0.5], [-2.1, -27.0, 0.2],
+        [1.1, -27.0, -0.2], [2.5, -26.2, -0.4],
+      ]);
+
+      // Wolken nur auf ausreichender Hardware.
+      if (quality !== 'low') {
+        const cloudCanvas = document.createElement('canvas');
+        cloudCanvas.width = 192;
+        cloudCanvas.height = 96;
+        const cloudContext = cloudCanvas.getContext('2d');
+        [[50, 55, 32], [86, 42, 40], [125, 57, 34], [101, 64, 43]].forEach(([x, y, radius]) => {
+          const gradient = cloudContext.createRadialGradient(x, y, 0, x, y, radius);
+          gradient.addColorStop(0, 'rgba(244,239,220,0.74)');
+          gradient.addColorStop(0.58, 'rgba(238,235,219,0.38)');
+          gradient.addColorStop(1, 'rgba(238,235,219,0)');
+          cloudContext.fillStyle = gradient;
+          cloudContext.beginPath();
+          cloudContext.arc(x, y, radius, 0, Math.PI * 2);
+          cloudContext.fill();
+        });
+
+        const cloudTexture = new THREE.CanvasTexture(cloudCanvas);
+        cloudTexture.colorSpace = THREE.SRGBColorSpace;
+        const count = quality === 'high' ? 6 : 4;
+
+        for (let index = 0; index < count; index += 1) {
+          const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+            map: cloudTexture,
+            transparent: true,
+            depthWrite: false,
+            opacity: 0.26 + (index % 2) * 0.05,
+          }));
+          sprite.position.set(-30 + index * 11.5, 12 + (index % 3) * 2.0, -28 - (index % 3) * 7);
+          const size = 6.0 + (index % 3) * 1.7;
+          sprite.scale.set(size * 1.8, size, 1);
+          scene.add(sprite);
+          cloudSprites.push(sprite);
         }
       }
-      for (let i = 0; i < countSides; i += 1) {
-        const x = -width / 2 + 0.35 + (i / Math.max(1, countSides - 1)) * Math.max(0.01, width - 0.7);
-        for (const z of [-depth / 2, depth / 2]) {
-          const merlon = new THREE.Mesh(merlonGeo, stoneMaterial);
-          merlon.position.set(x, y, z);
-          parent.add(merlon);
-        }
-      }
+
+      setStageVisibility(activeStep);
+      if (shadowsEnabled) renderer.shadowMap.needsUpdate = true;
     }
 
-    addBattlements(castle, 5.0, 3.35, 4.72, 8, 10);
-    addBattlements(castle, 2.15, 2.25, 7.02, 4, 5);
+    const scheduleIdle = window.requestIdleCallback
+      ? (callback) => window.requestIdleCallback(callback, { timeout: 500 })
+      : (callback) => window.setTimeout(callback, 110);
+    scheduleIdle(buildDetails);
 
-    for (const [x, z, color] of [
-      [-0.9, 0.55, 0x7b4137],
-      [0.9, 0.55, 0x5f7a4d],
-    ]) {
-      const pole = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.035, 0.035, 1.3, 8),
-        woodMaterial
-      );
-      pole.position.set(x, 8.0, z);
-      castle.add(pole);
-
-      const flag = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.72, 0.44),
-        new THREE.MeshStandardMaterial({ color, side: THREE.DoubleSide, roughness: 0.86 })
-      );
-      flag.position.set(x + 0.34, 8.18, z);
-      castle.add(flag);
-    }
-
-    const hill = new THREE.Mesh(
-      new THREE.SphereGeometry(8.5, 24, 12),
-      greenMaterial
-    );
-    hill.scale.set(1.45, 0.34, 0.72);
-    hill.position.y = -1.35;
-    hill.receiveShadow = shadowsEnabled;
-    castle.add(hill);
-
-    castle.position.set(0, 1.55, -34);
-    scene.add(castle);
-
-    // ---------- Mountains ----------
-    const mountainGeometry = new THREE.IcosahedronGeometry(1, 1);
-    const mountainMaterials = [
-      new THREE.MeshStandardMaterial({ color: 0x8aa681, roughness: 1 }),
-      new THREE.MeshStandardMaterial({ color: 0xa1b99a, roughness: 1 }),
-    ];
-
-    for (let i = 0; i < 8; i += 1) {
-      const mountain = new THREE.Mesh(
-        mountainGeometry,
-        mountainMaterials[i % 2]
-      );
-
-      mountain.scale.set(
-        9.0 + (i % 3) * 1.7,
-        5.0 + (i % 3) * 1.0,
-        5.0
-      );
-      mountain.position.set(
-        -31 + i * 8.7,
-        1.8 + (i % 2) * 1.0,
-        -48 - (i % 3) * 3
-      );
-      scene.add(mountain);
-    }
-
-    // ---------- First visible frame immediately ----------
+    // ---------- Kameraweg ----------
     const stops = [
-      { x:  0.00, y: 3.05, z: 16.2, lookX:  0.00, lookY: 2.10, lookZ:  2.0, fov: 48.0 },
-      { x: -0.32, y: 3.00, z: 12.2, lookX: -0.10, lookY: 2.08, lookZ: -2.5, fov: 47.3 },
-      { x:  0.22, y: 2.96, z:  8.5, lookX:  0.10, lookY: 2.04, lookZ: -6.0, fov: 46.8 },
-      { x: -0.16, y: 2.93, z:  4.8, lookX:  0.00, lookY: 2.02, lookZ: -9.8, fov: 46.3 },
-      { x:  0.28, y: 2.90, z:  1.0, lookX:  0.12, lookY: 2.02, lookZ:-13.5, fov: 45.8 },
-      { x: -0.22, y: 2.91, z: -2.7, lookX: -0.08, lookY: 2.12, lookZ:-18.0, fov: 45.3 },
-      { x:  0.10, y: 2.96, z: -6.0, lookX:  0.00, lookY: 2.30, lookZ:-23.0, fov: 44.8 },
+      { x: 0.00, y: 3.02, z: 16.5, lookX: 0.00, lookY: 2.00, lookZ: 2.0, fov: 47.0 },
+      { x: -0.28, y: 2.98, z: 12.1, lookX: -0.12, lookY: 2.02, lookZ: -2.7, fov: 46.5 },
+      { x: 0.24, y: 2.94, z: 8.2, lookX: 0.10, lookY: 2.02, lookZ: -6.6, fov: 46.0 },
+      { x: -0.18, y: 2.91, z: 4.2, lookX: -0.10, lookY: 2.00, lookZ: -10.8, fov: 45.4 },
+      { x: 0.26, y: 2.88, z: 0.2, lookX: 0.06, lookY: 2.02, lookZ: -15.3, fov: 44.8 },
+      { x: -0.10, y: 2.94, z: -5.7, lookX: 1.65, lookY: 2.18, lookZ: -22.8, fov: 43.8 },
+      { x: 0.80, y: 2.93, z: -8.8, lookX: 2.65, lookY: 2.42, lookZ: -23.2, fov: 41.8 },
     ];
 
     const currentPose = { ...stops[0] };
@@ -533,16 +1062,16 @@
     let targetPose = { ...stops[0] };
     let targetStep = 0;
     let journeyStartedAt = performance.now();
-    const journeyDuration = reducedMotion ? 1 : 900;
+    const journeyDuration = reducedMotion ? 1 : 940;
 
-    function easeInOutCubic(t) {
-      return t < 0.5
-        ? 4 * t * t * t
-        : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    function easeInOutCubic(value) {
+      return value < 0.5
+        ? 4 * value * value * value
+        : 1 - Math.pow(-2 * value + 2, 3) / 2;
     }
 
-    function lerp(a, b, t) {
-      return a + (b - a) * t;
+    function lerp(start, end, amount) {
+      return start + (end - start) * amount;
     }
 
     function snapshotPose() {
@@ -559,22 +1088,19 @@
 
     function setJourney(step) {
       const next = Math.max(0, Math.min(stops.length - 1, step));
+      setStageVisibility(next);
 
       if (next === targetStep) return;
-
       startPose = snapshotPose();
       targetPose = { ...stops[next] };
       targetStep = next;
       journeyStartedAt = performance.now();
 
       document.body.classList.add('vr-walking');
-      window.setTimeout(
-        () => document.body.classList.remove('vr-walking'),
-        journeyDuration + 120
-      );
+      window.setTimeout(() => document.body.classList.remove('vr-walking'), journeyDuration + 120);
     }
 
-    // ---------- App progress detection ----------
+    // ---------- App-Fortschritt erkennen ----------
     const welcomePanel = document.getElementById('welcome-panel');
     const entryChoice = document.getElementById('entry-choice');
     const createPanel = document.getElementById('create-panel');
@@ -582,7 +1108,6 @@
     const joinPanel = document.getElementById('join-panel');
     const voteSection = document.getElementById('vote-section');
     const resultsSection = document.getElementById('results-section');
-    const spinBtn = document.getElementById('spin-btn');
     const winnerDisplay = document.getElementById('winner-display');
 
     function isVisible(element) {
@@ -591,17 +1116,14 @@
 
     function detectStep() {
       if (isVisible(resultsSection)) {
-        if ((winnerDisplay?.textContent || '').includes('Gewinner:')) return 6;
+        if ((winnerDisplay?.textContent || '').includes('Das Los fällt auf:')) return 6;
         return 5;
       }
-
       if (isVisible(voteSection)) return 4;
       if (isVisible(modePanel)) return 3;
-      if (isVisible(createPanel)) return 2;
-      if (isVisible(joinPanel)) return 2;
+      if (isVisible(createPanel) || isVisible(joinPanel)) return 2;
       if (isVisible(entryChoice)) return 1;
       if (isVisible(welcomePanel)) return 0;
-
       return 0;
     }
 
@@ -617,12 +1139,10 @@
       joinPanel,
       voteSection,
       resultsSection,
-      spinBtn,
       winnerDisplay,
     ].filter(Boolean);
 
     const observer = new MutationObserver(refreshJourney);
-
     watchedElements.forEach((element) => {
       observer.observe(element, {
         attributes: true,
@@ -633,885 +1153,193 @@
       });
     });
 
+    document.addEventListener('glueckshafen:stage', (event) => {
+      const stage = event.detail?.stage;
+      const stageSteps = {
+        welcome: 0,
+        'market-entry': 1,
+        'scribe-stall': 2,
+        'town-caller': 2,
+        assembly: 3,
+        voting: 4,
+        results: 5,
+        'wheel-spin': 5,
+        'wheel-stop': 5,
+        winner: 6,
+      };
 
-    // ---------- Pointer look ----------
+      if (stage in stageSteps) setJourney(stageSteps[stage]);
+
+      if (stage === 'wheel-spin') {
+        fortuneWheelMode = 'spinning';
+        fortuneWheelSpeed = Math.max(fortuneWheelSpeed, 5.8);
+      } else if (stage === 'wheel-stop') {
+        fortuneWheelMode = 'stopping';
+        fortuneWheelSpeed = Math.max(fortuneWheelSpeed, 5.2);
+      } else if (stage === 'winner') {
+        fortuneWheelMode = 'stopping';
+        fortuneWheelSpeed = Math.max(fortuneWheelSpeed, 1.2);
+      }
+    });
+
+    // ---------- Dezente Blickbewegung ----------
     let pointerX = 0;
     let pointerY = 0;
     let smoothPointerX = 0;
     let smoothPointerY = 0;
 
-    window.addEventListener('pointermove', (event) => {
-      pointerX = (event.clientX / window.innerWidth - 0.5) * 2;
-      pointerY = (event.clientY / window.innerHeight - 0.5) * 2;
-    }, { passive: true });
+    if (!coarsePointer && !reducedMotion) {
+      window.addEventListener('pointermove', (event) => {
+        pointerX = (event.clientX / window.innerWidth - 0.5) * 2;
+        pointerY = (event.clientY / window.innerHeight - 0.5) * 2;
+      }, { passive: true });
 
-    window.addEventListener('pointerleave', () => {
-      pointerX = 0;
-      pointerY = 0;
-    });
+      window.addEventListener('pointerleave', () => {
+        pointerX = 0;
+        pointerY = 0;
+      });
+    }
 
-    // ---------- Render first frame NOW ----------
+    // ---------- Erste sichtbare Darstellung ----------
     camera.position.set(stops[0].x, stops[0].y, stops[0].z);
-    camera.lookAt(
-      new THREE.Vector3(
-        stops[0].lookX,
-        stops[0].lookY,
-        stops[0].lookZ
-      )
-    );
-
-    renderer.shadowMap.needsUpdate = shadowsEnabled;
+    camera.lookAt(new THREE.Vector3(stops[0].lookX, stops[0].lookY, stops[0].lookZ));
     renderer.render(scene, camera);
     document.body.classList.add('webgl-ready');
 
-    // ---------- Deferred details ----------
-    let cloudSprites = [];
-    let particleGeometry = null;
-    let particlePhases = null;
-    let particleCount = 0;
-    const swayingTrees = [];
-    const animatedDecorations = [];
-    const lanternLights = [];
+    // ---------- Animation ----------
+    const lookTarget = new THREE.Vector3();
+    let lastFrame = performance.now();
+    let lastRenderedFov = camera.fov;
+    let animationFrame = 0;
+    let running = false;
 
-    function buildDeferredDetails() {
-      // ----- Instanced medieval facade details -----
-      const windowInstances = [];
-      const trimInstances = [];
-      const timberInstances = [];
-      const shutterInstances = [];
+    function updateFortuneWheel(delta, now) {
+      if (!fortuneRotor || !resultsScene.visible) return;
 
-      for (const { group, spec } of buildingGroups) {
-        const baseX = group.position.x;
-        const streetFaceX =
-          baseX - spec.side * (spec.depthX / 2 + 0.012);
-        const timberX = streetFaceX + spec.side * 0.055;
-
-        timberInstances.push(
-          { x: timberX, y: spec.height / 2, z: spec.z - 1.45, sx: 0.09, sy: spec.height - 0.42, sz: 0.12 },
-          { x: timberX, y: spec.height / 2, z: spec.z, sx: 0.09, sy: spec.height - 0.42, sz: 0.12 },
-          { x: timberX, y: spec.height / 2, z: spec.z + 1.45, sx: 0.09, sy: spec.height - 0.42, sz: 0.12 },
-          { x: timberX, y: 1.10, z: spec.z, sx: 0.09, sy: 0.12, sz: spec.widthZ - 0.45 },
-          { x: timberX, y: 2.18, z: spec.z, sx: 0.09, sy: 0.12, sz: spec.widthZ - 0.55 },
-          { x: timberX, y: spec.height - 0.56, z: spec.z, sx: 0.09, sy: 0.12, sz: spec.widthZ - 0.35 },
-        );
-
-        const rows = spec.height > 4.9 ? [1.55, 2.65, 3.75] : [1.55, 2.65];
-
-        for (const y of rows) {
-          for (const zOffset of [-1.10, 0, 1.10]) {
-            if (Math.abs(zOffset) > spec.widthZ / 2 - 0.28) continue;
-
-            windowInstances.push({
-              x: streetFaceX,
-              y,
-              z: spec.z + zOffset,
-              rotationY: spec.side > 0 ? -Math.PI / 2 : Math.PI / 2,
-              warm: ((Math.round(spec.z * 10) + Math.round(y * 10)) % 5) === 0,
-            });
-
-            shutterInstances.push(
-              {
-                x: streetFaceX + spec.side * 0.03,
-                y,
-                z: spec.z + zOffset - 0.25,
-                rotationY: spec.side > 0 ? -Math.PI / 2 : Math.PI / 2,
-              },
-              {
-                x: streetFaceX + spec.side * 0.03,
-                y,
-                z: spec.z + zOffset + 0.25,
-                rotationY: spec.side > 0 ? -Math.PI / 2 : Math.PI / 2,
-              }
-            );
-
-            trimInstances.push({
-              x: streetFaceX + spec.side * 0.007,
-              y,
-              z: spec.z + zOffset,
-              rotationY: spec.side > 0 ? -Math.PI / 2 : Math.PI / 2,
-            });
-          }
+      if (fortuneWheelMode === 'spinning') {
+        fortuneWheelSpeed += (7.2 - fortuneWheelSpeed) * Math.min(1, delta * 2.8);
+      } else if (fortuneWheelMode === 'stopping') {
+        fortuneWheelSpeed *= Math.exp(-1.52 * delta);
+        if (fortuneWheelSpeed < 0.06) {
+          fortuneWheelSpeed = 0;
+          fortuneWheelMode = 'idle';
         }
+      } else {
+        fortuneWheelSpeed *= Math.exp(-3.8 * delta);
       }
 
-      const timberMesh = new THREE.InstancedMesh(
-        new THREE.BoxGeometry(1, 1, 1),
-        timberMaterial,
-        timberInstances.length
-      );
-
-      const trimGeo = new THREE.PlaneGeometry(0.50, 0.67);
-      const trimMat = new THREE.MeshStandardMaterial({
-        color: 0xd0b88f,
-        roughness: 0.78,
-        side: THREE.DoubleSide,
-      });
-      const trims = new THREE.InstancedMesh(
-        trimGeo,
-        trimMat,
-        trimInstances.length
-      );
-
-      const shutterMesh = new THREE.InstancedMesh(
-        new THREE.BoxGeometry(0.045, 0.48, 0.12),
-        new THREE.MeshStandardMaterial({ color: 0x557044, roughness: 0.92 }),
-        shutterInstances.length
-      );
-
-      const windowGeo = new THREE.PlaneGeometry(0.38, 0.54);
-      const windowMat = new THREE.MeshStandardMaterial({
-        color: 0xffffff,
-        roughness: 0.30,
-        emissive: 0x637981,
-        emissiveIntensity: 0.08,
-        side: THREE.DoubleSide,
-      });
-      const windows = new THREE.InstancedMesh(
-        windowGeo,
-        windowMat,
-        windowInstances.length
-      );
-
-      const object = new THREE.Object3D();
-
-      timberInstances.forEach((item, index) => {
-        object.position.set(item.x, item.y, item.z);
-        object.rotation.set(0, 0, 0);
-        object.scale.set(item.sx, item.sy, item.sz);
-        object.updateMatrix();
-        timberMesh.setMatrixAt(index, object.matrix);
-        object.scale.set(1, 1, 1);
-      });
-
-      trimInstances.forEach((item, index) => {
-        object.position.set(item.x, item.y, item.z);
-        object.rotation.set(0, item.rotationY, 0);
-        object.updateMatrix();
-        trims.setMatrixAt(index, object.matrix);
-      });
-
-      shutterInstances.forEach((item, index) => {
-        object.position.set(item.x, item.y, item.z);
-        object.rotation.set(0, item.rotationY, 0);
-        object.updateMatrix();
-        shutterMesh.setMatrixAt(index, object.matrix);
-      });
-
-      windowInstances.forEach((item, index) => {
-        object.position.set(
-          item.x - Math.sign(item.x) * 0.006,
-          item.y,
-          item.z
-        );
-        object.rotation.set(0, item.rotationY, 0);
-        object.updateMatrix();
-        windows.setMatrixAt(index, object.matrix);
-
-        windows.setColorAt(
-          index,
-          new THREE.Color(
-            item.warm ? 0xf6cf82 : 0x9bc3d8
-          )
-        );
-      });
-
-      timberMesh.instanceMatrix.needsUpdate = true;
-      trims.instanceMatrix.needsUpdate = true;
-      shutterMesh.instanceMatrix.needsUpdate = true;
-      windows.instanceMatrix.needsUpdate = true;
-      if (windows.instanceColor) windows.instanceColor.needsUpdate = true;
-
-      scene.add(timberMesh, trims, shutterMesh, windows);
-
-      // ----- Instanced street lamps -----
-      const lampZ = [8, 2.5, -3, -8.5, -14, -19.5];
-      const lampPositions = [];
-
-      for (const z of lampZ) {
-        lampPositions.push([-4.15, z], [4.15, z]);
+      if (fortuneWheelSpeed > 0.001) {
+        fortuneRotor.rotation.z -= fortuneWheelSpeed * delta;
       }
 
-      const postMesh = new THREE.InstancedMesh(
-        new THREE.CylinderGeometry(0.065, 0.085, 2.68, 8),
-        woodMaterial,
-        lampPositions.length
-      );
-
-      const armMesh = new THREE.InstancedMesh(
-        new THREE.BoxGeometry(0.58, 0.07, 0.07),
-        timberMaterial,
-        lampPositions.length
-      );
-
-      const lanternMesh = new THREE.InstancedMesh(
-        new THREE.BoxGeometry(0.24, 0.32, 0.24),
-        new THREE.MeshStandardMaterial({
-          color: 0xffe7b5,
-          emissive: 0xffcf72,
-          emissiveIntensity: 0.72,
-          roughness: 0.36,
-        }),
-        lampPositions.length
-      );
-
-      const lanternCapMesh = new THREE.InstancedMesh(
-        new THREE.ConeGeometry(0.15, 0.16, 4),
-        new THREE.MeshStandardMaterial({ color: 0x59473c, roughness: 0.72 }),
-        lampPositions.length
-      );
-
-      lampPositions.forEach(([x, z], index) => {
-        object.position.set(x, 1.34, z);
-        object.rotation.set(0, 0, 0);
-        object.updateMatrix();
-        postMesh.setMatrixAt(index, object.matrix);
-
-        object.position.set(x - Math.sign(x) * 0.22, 2.38, z);
-        object.updateMatrix();
-        armMesh.setMatrixAt(index, object.matrix);
-
-        object.position.set(x - Math.sign(x) * 0.45, 2.18, z);
-        object.updateMatrix();
-        lanternMesh.setMatrixAt(index, object.matrix);
-
-        object.position.set(x - Math.sign(x) * 0.45, 2.42, z);
-        object.rotation.set(Math.PI, 0, 0);
-        object.updateMatrix();
-        lanternCapMesh.setMatrixAt(index, object.matrix);
-        object.rotation.set(0, 0, 0);
-      });
-
-      postMesh.instanceMatrix.needsUpdate = true;
-      armMesh.instanceMatrix.needsUpdate = true;
-      lanternMesh.instanceMatrix.needsUpdate = true;
-      lanternCapMesh.instanceMatrix.needsUpdate = true;
-      scene.add(postMesh, armMesh, lanternMesh, lanternCapMesh);
-
-      // Only three real lights, not one per lantern.
-      for (const [x, z] of [
-        [-4.15, 5.2],
-        [ 4.15,-5.8],
-        [-4.15,-16.8],
-      ]) {
-        const light = new THREE.PointLight(
-          0xffcf86,
-          0.65,
-          5.4,
-          2
-        );
-        light.position.set(x, 2.7, z);
-        scene.add(light);
-        lanternLights.push(light);
+      if (fortuneClacker) {
+        const tick = Math.sin(fortuneRotor.rotation.z * 12) * Math.min(0.22, fortuneWheelSpeed * 0.035);
+        fortuneClacker.rotation.z = tick;
       }
 
-      // ----- Instanced ornamental trees -----
-      const treePositions = [];
-      for (const z of [7.0, 0.8, -5.4, -11.6, -17.8]) {
-        treePositions.push([-5.5, z], [5.5, z]);
-      }
-
-      const trunkMesh = new THREE.InstancedMesh(
-        new THREE.CylinderGeometry(0.10, 0.15, 2.6, 9),
-        woodMaterial,
-        treePositions.length
-      );
-
-      const canopyMesh = new THREE.InstancedMesh(
-        new THREE.SphereGeometry(0.82, 12, 8),
-        darkGreenMaterial,
-        treePositions.length * 3
-      );
-
-      treePositions.forEach(([x, z], index) => {
-        object.position.set(x, 1.3, z);
-        object.rotation.set(0, 0, 0);
-        object.updateMatrix();
-        trunkMesh.setMatrixAt(index, object.matrix);
-
-        for (let part = 0; part < 3; part += 1) {
-          object.position.set(
-            x + (part - 1) * 0.42,
-            2.85 + (part === 1 ? 0.34 : 0),
-            z + (part === 1 ? 0 : (part === 0 ? -0.18 : 0.18))
-          );
-          object.scale.set(
-            part === 1 ? 1.05 : 0.88,
-            part === 1 ? 1.02 : 0.84,
-            part === 1 ? 1.02 : 0.88
-          );
-          object.updateMatrix();
-          canopyMesh.setMatrixAt(index * 3 + part, object.matrix);
-          object.scale.set(1, 1, 1);
-        }
-      });
-
-      trunkMesh.instanceMatrix.needsUpdate = true;
-      canopyMesh.instanceMatrix.needsUpdate = true;
-      scene.add(trunkMesh, canopyMesh);
-
-      // ----- Fountain near destination -----
-      const fountain = new THREE.Group();
-
-      const base = new THREE.Mesh(
-        new THREE.CylinderGeometry(1.55, 1.70, 0.32, 24),
-        stoneMaterial
-      );
-      base.position.y = 0.16;
-      fountain.add(base);
-
-      const bowl = new THREE.Mesh(
-        new THREE.CylinderGeometry(1.1, 1.28, 0.28, 24),
-        stoneMaterial
-      );
-      bowl.position.y = 0.52;
-      fountain.add(bowl);
-
-      const water = new THREE.Mesh(
-        new THREE.CylinderGeometry(1.04, 1.04, 0.03, 24),
-        new THREE.MeshStandardMaterial({
-          color: 0x8dccdd,
-          roughness: 0.20,
-          metalness: 0.02,
-          transparent: true,
-          opacity: 0.84,
-        })
-      );
-      water.position.y = 0.68;
-      fountain.add(water);
-
-      const pillar = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.18, 0.25, 1.25, 14),
-        stoneMaterial
-      );
-      pillar.position.y = 1.14;
-      fountain.add(pillar);
-
-      fountain.position.set(0, 0, -25.0);
-      scene.add(fountain);
-
-      // ----- Medieval plaza details -----
-      function createBanner(colorHex, accentHex) {
-        const group = new THREE.Group();
-
-        const bar = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.025, 0.025, 1.25, 8),
-          new THREE.MeshStandardMaterial({ color: 0x7f5731, roughness: 0.78 })
-        );
-        bar.rotation.z = Math.PI / 2;
-        group.add(bar);
-
-        const cloth = new THREE.Mesh(
-          new THREE.PlaneGeometry(0.86, 1.15, 1, 4),
-          new THREE.MeshStandardMaterial({
-            color: colorHex,
-            roughness: 0.88,
-            side: THREE.DoubleSide,
-          })
-        );
-        cloth.position.set(0.34, -0.56, 0);
-        group.add(cloth);
-
-        const stripe = new THREE.Mesh(
-          new THREE.PlaneGeometry(0.18, 1.05),
-          new THREE.MeshStandardMaterial({
-            color: accentHex,
-            roughness: 0.86,
-            side: THREE.DoubleSide,
-          })
-        );
-        stripe.position.set(0.34, -0.56, 0.006);
-        group.add(stripe);
-
-        return { group, cloth };
-      }
-
-      [
-        { x: -6.1, y: 3.8, z: -17.0, side: 1, colors: [0x315f93, 0xe3bd68] },
-        { x:  6.1, y: 3.8, z: -13.0, side: -1, colors: [0x315f93, 0xf0d78e] },
-        { x: -6.1, y: 3.8, z:  -6.3, side: 1, colors: [0x5d7599, 0xe3bd68] },
-        { x:  6.1, y: 3.8, z:  -1.2, side: -1, colors: [0x315f93, 0xf4dc9e] },
-      ].forEach((item, index) => {
-        const pole = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.05, 0.065, 4.2, 10),
-          woodMaterial
-        );
-        pole.position.set(item.x, 2.1, item.z);
-        scene.add(pole);
-
-        const banner = createBanner(item.colors[0], item.colors[1]);
-        banner.group.position.set(item.x + item.side * 0.06, 3.75, item.z);
-        banner.group.rotation.y = item.side > 0 ? Math.PI / 2 : -Math.PI / 2;
-        scene.add(banner.group);
-
-        animatedDecorations.push({
-          mesh: banner.group,
-          baseRotationZ: 0,
-          amplitude: 0.035 + index * 0.006,
-          speed: 0.8 + index * 0.18,
-          axis: 'z',
-        });
-      });
-
-      function createMarketStall(x, z, mainColor, canopyColor) {
-        const stall = new THREE.Group();
-
-        const top = new THREE.Mesh(
-          new THREE.BoxGeometry(1.65, 0.1, 1.12),
-          new THREE.MeshStandardMaterial({ color: canopyColor, roughness: 0.82 })
-        );
-        top.position.y = 1.9;
-        stall.add(top);
-
-        const fabricStripe = new THREE.Mesh(
-          new THREE.BoxGeometry(1.65, 0.03, 0.18),
-          new THREE.MeshStandardMaterial({ color: 0xf4e4bf, roughness: 0.7 })
-        );
-        fabricStripe.position.set(0, 1.92, 0.28);
-        stall.add(fabricStripe);
-        const fabricStripe2 = fabricStripe.clone();
-        fabricStripe2.position.z = -0.28;
-        stall.add(fabricStripe2);
-
-        for (const px of [-0.65, 0.65]) {
-          for (const pz of [-0.42, 0.42]) {
-            const leg = new THREE.Mesh(
-              new THREE.CylinderGeometry(0.05, 0.05, 1.9, 8),
-              woodMaterial
-            );
-            leg.position.set(px, 0.95, pz);
-            stall.add(leg);
-          }
-        }
-
-        const counter = new THREE.Mesh(
-          new THREE.BoxGeometry(1.4, 0.68, 0.75),
-          new THREE.MeshStandardMaterial({ color: mainColor, roughness: 0.84 })
-        );
-        counter.position.set(0, 0.38, 0);
-        stall.add(counter);
-
-        stall.position.set(x, 0, z);
-        scene.add(stall);
-      }
-
-      createMarketStall(-6.6, -23.6, 0xb78656, 0x5f7ea4);
-      createMarketStall(6.8, -22.8, 0xb07b50, 0x6f8a5e);
-      createMarketStall(-6.45, -14.9, 0xc09462, 0x8b5d51);
-      createMarketStall(6.55, -10.2, 0xa98457, 0x4f7197);
-
-      // ----- Shooting-festival targets: historically inspired, low-poly -----
-      function createTargetStand(x, z, rotationY = 0) {
-        const group = new THREE.Group();
-
-        const targetWood = new THREE.MeshStandardMaterial({ color: 0x8d6238, roughness: 0.92 });
-        const targetCream = new THREE.MeshStandardMaterial({ color: 0xf3e4bf, roughness: 0.92 });
-        const targetBlue = new THREE.MeshStandardMaterial({ color: 0x3f6f9d, roughness: 0.84 });
-        const targetRed = new THREE.MeshStandardMaterial({ color: 0x8f4b45, roughness: 0.88 });
-
-        for (const px of [-0.42, 0.42]) {
-          const leg = new THREE.Mesh(new THREE.BoxGeometry(0.10, 1.7, 0.10), targetWood);
-          leg.position.set(px, 0.85, 0);
-          group.add(leg);
-        }
-
-        const crossbar = new THREE.Mesh(new THREE.BoxGeometry(1.12, 0.12, 0.12), targetWood);
-        crossbar.position.set(0, 1.55, 0);
-        group.add(crossbar);
-
-        const disk = new THREE.Mesh(new THREE.CylinderGeometry(0.46, 0.46, 0.08, 18), targetCream);
-        disk.rotation.x = Math.PI / 2;
-        disk.position.set(0, 1.52, 0.03);
-        group.add(disk);
-
-        const ring = new THREE.Mesh(new THREE.CylinderGeometry(0.29, 0.29, 0.085, 18), targetBlue);
-        ring.rotation.x = Math.PI / 2;
-        ring.position.set(0, 1.52, 0.075);
-        group.add(ring);
-
-        const center = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.09, 18), targetRed);
-        center.rotation.x = Math.PI / 2;
-        center.position.set(0, 1.52, 0.12);
-        group.add(center);
-
-        group.position.set(x, 0, z);
-        group.rotation.y = rotationY;
-        scene.add(group);
-      }
-
-      createTargetStand(-5.85, -18.2, 0.10);
-      createTargetStand(5.85, -18.2, -0.10);
-
-      // ----- The actual "Glückshafen": urn + prize table -----
-      const luckBooth = new THREE.Group();
-      const boothWood = new THREE.MeshStandardMaterial({ color: 0x8a5c32, roughness: 0.92 });
-      const boothBlue = new THREE.MeshStandardMaterial({ color: 0x315f93, roughness: 0.84 });
-      const boothGold = new THREE.MeshStandardMaterial({ color: 0xd7b363, roughness: 0.72 });
-      const silver = new THREE.MeshStandardMaterial({ color: 0xd5d9d7, roughness: 0.42, metalness: 0.22 });
-
-      const luckTable = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.18, 0.85), boothWood);
-      luckTable.position.set(0, 0.95, 0);
-      luckBooth.add(luckTable);
-
-      for (const x of [-0.82, 0.82]) {
-        const leg = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.0, 0.12), boothWood);
-        leg.position.set(x, 0.45, 0);
-        luckBooth.add(leg);
-      }
-
-      const sign = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.42, 0.10), boothBlue);
-      sign.position.set(0, 2.25, 0);
-      luckBooth.add(sign);
-
-      const signTrim = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.07, 0.13), boothGold);
-      signTrim.position.set(0, 2.49, 0);
-      luckBooth.add(signTrim);
-      const signTrim2 = signTrim.clone();
-      signTrim2.position.y = 2.01;
-      luckBooth.add(signTrim2);
-
-      const urnBody = new THREE.Mesh(new THREE.CylinderGeometry(0.30, 0.38, 0.62, 14), boothWood);
-      urnBody.position.set(0, 1.37, 0);
-      luckBooth.add(urnBody);
-
-      const urnRim = new THREE.Mesh(new THREE.TorusGeometry(0.31, 0.055, 8, 16), boothGold);
-      urnRim.rotation.x = Math.PI / 2;
-      urnRim.position.set(0, 1.70, 0);
-      luckBooth.add(urnRim);
-
-      for (let i = 0; i < 3; i += 1) {
-        const cup = new THREE.Mesh(new THREE.CylinderGeometry(0.10, 0.13, 0.26, 10), silver);
-        cup.position.set(-0.55 + i * 0.55, 1.18, -0.06);
-        luckBooth.add(cup);
-      }
-
-      luckBooth.position.set(-4.55, 0, -25.2);
-      luckBooth.rotation.y = 0.10;
-      scene.add(luckBooth);
-
-      // ----- Wooden fortune wheel at the town square -----
-      const squareWheel = new THREE.Group();
-
-      const wheelStand = new THREE.Mesh(
-        new THREE.BoxGeometry(0.32, 2.1, 0.32),
-        woodMaterial
-      );
-      wheelStand.position.set(0, 1.05, 0);
-      squareWheel.add(wheelStand);
-
-      const crossBeam = new THREE.Mesh(
-        new THREE.BoxGeometry(2.4, 0.22, 0.22),
-        woodMaterial
-      );
-      crossBeam.position.set(0, 2.15, 0);
-      squareWheel.add(crossBeam);
-
-      for (const offset of [-0.95, 0.95]) {
-        const brace = new THREE.Mesh(
-          new THREE.BoxGeometry(0.18, 2.0, 0.18),
-          woodMaterial
-        );
-        brace.position.set(offset, 1.0, 0);
-        brace.rotation.z = offset < 0 ? 0.44 : -0.44;
-        squareWheel.add(brace);
-      }
-
-      const ring = new THREE.Mesh(
-        new THREE.TorusGeometry(1.25, 0.12, 12, 36),
-        new THREE.MeshStandardMaterial({ color: 0x704523, roughness: 0.86 })
-      );
-      ring.position.set(0, 2.15, 0);
-      squareWheel.add(ring);
-
-      const hub = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.18, 0.18, 0.34, 18),
-        new THREE.MeshStandardMaterial({ color: 0xc7a068, roughness: 0.58, metalness: 0.08 })
-      );
-      hub.rotation.x = Math.PI / 2;
-      hub.position.set(0, 2.15, 0);
-      squareWheel.add(hub);
-
-      const spokeMaterial = new THREE.MeshStandardMaterial({ color: 0x8c6235, roughness: 0.84 });
-      for (let i = 0; i < 8; i += 1) {
-        const spoke = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.04, 0.04, 2.15, 8),
-          spokeMaterial
-        );
-        spoke.position.set(0, 2.15, 0);
-        spoke.rotation.z = (Math.PI / 8) + (i * Math.PI / 4);
-        squareWheel.add(spoke);
-      }
-
-      const wedgeColors = [0x7f4d43, 0x708557, 0xa07a43, 0x5e7e9c, 0x806280, 0xae704b];
-      wedgeColors.forEach((color, index) => {
-        const wedge = new THREE.Mesh(
-          new THREE.CylinderGeometry(1.10, 1.10, 0.08, 24, 1, false, index * (Math.PI * 2 / wedgeColors.length), (Math.PI * 2 / wedgeColors.length) - 0.035),
-          new THREE.MeshStandardMaterial({ color, roughness: 0.9 })
-        );
-        wedge.rotation.x = Math.PI / 2;
-        wedge.position.set(0, 2.15, -0.02);
-        squareWheel.add(wedge);
-      });
-
-      const pointer = new THREE.Mesh(
-        new THREE.ConeGeometry(0.12, 0.35, 5),
-        new THREE.MeshStandardMaterial({ color: 0xf0d291, roughness: 0.56, metalness: 0.08 })
-      );
-      pointer.position.set(0, 3.65, 0.08);
-      pointer.rotation.z = Math.PI;
-      squareWheel.add(pointer);
-
-      squareWheel.position.set(0, 0, -20.8);
-      scene.add(squareWheel);
-      animatedDecorations.push({
-        mesh: squareWheel,
-        baseRotationZ: 0,
-        amplitude: 0.012,
-        speed: 0.55,
-        axis: 'y',
-        originY: squareWheel.rotation.y,
-      });
-
-      // ----- Clouds -----
-      function cloudTexture() {
-        const c = document.createElement('canvas');
-        c.width = 192;
-        c.height = 96;
-        const ctx = c.getContext('2d');
-
-        for (const [x, y, radius] of [
-          [50, 55, 34],
-          [86, 43, 42],
-          [124, 56, 35],
-          [102, 63, 45],
-        ]) {
-          const g = ctx.createRadialGradient(
-            x, y, 0,
-            x, y, radius
-          );
-          g.addColorStop(0, 'rgba(255,255,255,0.90)');
-          g.addColorStop(0.58, 'rgba(255,255,255,0.58)');
-          g.addColorStop(1, 'rgba(255,255,255,0)');
-          ctx.fillStyle = g;
-          ctx.beginPath();
-          ctx.arc(x, y, radius, 0, Math.PI * 2);
-          ctx.fill();
-        }
-
-        const texture = new THREE.CanvasTexture(c);
-        texture.colorSpace = THREE.SRGBColorSpace;
-        return texture;
-      }
-
-      const cloudMap = cloudTexture();
-      const cloudCount = mobile ? 4 : 6;
-
-      for (let index = 0; index < cloudCount; index += 1) {
-        const sprite = new THREE.Sprite(
-          new THREE.SpriteMaterial({
-            map: cloudMap,
-            transparent: true,
-            depthWrite: false,
-            opacity: 0.34 + (index % 3) * 0.05,
-          })
-        );
-
-        sprite.position.set(
-          -32 + (index * 8.2) % 64,
-          12 + (index % 3) * 2.3,
-          -29 - (index % 4) * 7
-        );
-
-        const scale = 6.3 + (index % 3) * 2.0;
-        sprite.scale.set(scale * 1.75, scale, 1);
-        scene.add(sprite);
-        cloudSprites.push(sprite);
-      }
-
-      // ----- Tiny light particles -----
-      particleCount = mobile ? 30 : 50;
-      const positions = new Float32Array(particleCount * 3);
-      particlePhases = new Float32Array(particleCount);
-
-      for (let index = 0; index < particleCount; index += 1) {
-        positions[index * 3] = -9 + Math.random() * 18;
-        positions[index * 3 + 1] = 0.6 + Math.random() * 6.8;
-        positions[index * 3 + 2] = 12 - Math.random() * 44;
-        particlePhases[index] = Math.random() * Math.PI * 2;
-      }
-
-      particleGeometry = new THREE.BufferGeometry();
-      particleGeometry.setAttribute(
-        'position',
-        new THREE.BufferAttribute(positions, 3)
-      );
-
-      const points = new THREE.Points(
-        particleGeometry,
-        new THREE.PointsMaterial({
-          color: 0xffd98f,
-          size: mobile ? 0.055 : 0.065,
-          transparent: true,
-          opacity: 0.62,
-          depthWrite: false,
-        })
-      );
-
-      scene.add(points);
-
-      // Static geometry only: one final shadow-map render.
-      if (shadowsEnabled) {
-        renderer.shadowMap.needsUpdate = true;
+      if (fortuneWheelMode === 'idle' && activeStep === 6 && !reducedMotion) {
+        fortuneRotor.rotation.z += Math.sin(now * 0.0011) * delta * 0.012;
       }
     }
 
-    const scheduleDeferred =
-      window.requestIdleCallback
-        ? (fn) => window.requestIdleCallback(fn, { timeout: 450 })
-        : (fn) => window.setTimeout(fn, 100);
-
-    scheduleDeferred(buildDeferredDetails);
-
-    // ---------- Animation ----------
-    const lookTarget = new THREE.Vector3();
-
-    let lastFrame = 0;
-    const frameInterval =
-      reducedMotion ? 1000 / 15 :
-      mobile ? 1000 / 30 :
-      1000 / 50;
-
     function animate(now) {
-      requestAnimationFrame(animate);
-
+      if (!running) return;
+      animationFrame = requestAnimationFrame(animate);
       if (now - lastFrame < frameInterval) return;
-      const dt = Math.min((now - lastFrame) / 1000, 0.05);
+
+      const delta = Math.min((now - lastFrame) / 1000, 0.055);
       lastFrame = now;
 
-      const rawT =
-        journeyDuration <= 1
-          ? 1
-          : Math.min(
-              1,
-              (now - journeyStartedAt) / journeyDuration
-            );
+      const rawProgress = journeyDuration <= 1
+        ? 1
+        : Math.min(1, (now - journeyStartedAt) / journeyDuration);
+      const progress = easeInOutCubic(rawProgress);
 
-      const t = easeInOutCubic(rawT);
+      currentPose.x = lerp(startPose.x, targetPose.x, progress);
+      currentPose.y = lerp(startPose.y, targetPose.y, progress);
+      currentPose.z = lerp(startPose.z, targetPose.z, progress);
+      currentPose.lookX = lerp(startPose.lookX, targetPose.lookX, progress);
+      currentPose.lookY = lerp(startPose.lookY, targetPose.lookY, progress);
+      currentPose.lookZ = lerp(startPose.lookZ, targetPose.lookZ, progress);
+      currentPose.fov = lerp(startPose.fov, targetPose.fov, progress);
 
-      currentPose.x = lerp(startPose.x, targetPose.x, t);
-      currentPose.y = lerp(startPose.y, targetPose.y, t);
-      currentPose.z = lerp(startPose.z, targetPose.z, t);
-      currentPose.lookX = lerp(startPose.lookX, targetPose.lookX, t);
-      currentPose.lookY = lerp(startPose.lookY, targetPose.lookY, t);
-      currentPose.lookZ = lerp(startPose.lookZ, targetPose.lookZ, t);
-      currentPose.fov = lerp(startPose.fov, targetPose.fov, t);
+      smoothPointerX += (pointerX - smoothPointerX) * 0.075;
+      smoothPointerY += (pointerY - smoothPointerY) * 0.075;
 
-      smoothPointerX +=
-        (pointerX - smoothPointerX) * 0.07;
-      smoothPointerY +=
-        (pointerY - smoothPointerY) * 0.07;
-
-      const walkFade =
-        rawT < 1
-          ? Math.sin(Math.PI * rawT)
-          : 0;
-
-      const walkBob =
-        reducedMotion
-          ? 0
-          : Math.sin(rawT * Math.PI * 8) *
-            0.028 *
-            walkFade;
+      const walking = rawProgress < 1 ? Math.sin(Math.PI * rawProgress) : 0;
+      const walkBob = reducedMotion ? 0 : Math.sin(rawProgress * Math.PI * 8) * 0.024 * walking;
 
       camera.position.set(
-        currentPose.x + smoothPointerX * 0.16,
-        currentPose.y -
-          smoothPointerY * 0.09 +
-          walkBob,
+        currentPose.x + smoothPointerX * 0.14,
+        currentPose.y - smoothPointerY * 0.075 + walkBob,
         currentPose.z
       );
 
-      camera.fov =
-        currentPose.fov +
-        (reducedMotion ? 0 : walkFade * 0.85);
-      camera.updateProjectionMatrix();
+      const nextFov = currentPose.fov + (reducedMotion ? 0 : walking * 0.58);
+      if (Math.abs(nextFov - lastRenderedFov) > 0.015) {
+        camera.fov = nextFov;
+        camera.updateProjectionMatrix();
+        lastRenderedFov = nextFov;
+      }
 
       lookTarget.set(
-        currentPose.lookX + smoothPointerX * 0.34,
-        currentPose.lookY - smoothPointerY * 0.18,
+        currentPose.lookX + smoothPointerX * 0.28,
+        currentPose.lookY - smoothPointerY * 0.14,
         currentPose.lookZ
       );
       camera.lookAt(lookTarget);
 
-      // Very light continuous animation only.
-      for (let index = 0; index < cloudSprites.length; index += 1) {
-        const cloud = cloudSprites[index];
-        cloud.position.x += dt * (0.18 + (index % 3) * 0.025);
+      if (!reducedMotion) {
+        swayItems.forEach((item, index) => {
+          const sway = Math.sin(now * 0.001 * item.speed + index * 0.73) * item.amplitude;
+          item.object.rotation.z = item.base + sway;
+        });
 
-        if (cloud.position.x > 36) {
-          cloud.position.x = -36;
-        }
+        cloudSprites.forEach((cloud, index) => {
+          cloud.position.x += delta * (0.13 + index * 0.012);
+          if (cloud.position.x > 36) cloud.position.x = -36;
+        });
       }
 
-      for (let index = 0; index < animatedDecorations.length; index += 1) {
-        const item = animatedDecorations[index];
-        const sway = Math.sin(now * 0.001 * item.speed + index) * item.amplitude;
-
-        if (item.axis === 'z') {
-          item.mesh.rotation.z = (item.baseRotationZ || 0) + sway;
-        } else if (item.axis === 'y') {
-          item.mesh.rotation.y = (item.originY || 0) + sway;
-        }
-      }
-
-      for (let index = 0; index < lanternLights.length; index += 1) {
-        const light = lanternLights[index];
-        light.intensity = 0.58 + Math.sin(now * 0.0024 + index * 1.7) * 0.06;
-      }
-
-      if (particleGeometry && particlePhases) {
-        const positions =
-          particleGeometry.attributes.position.array;
-
-        for (let index = 0; index < particleCount; index += 1) {
-          positions[index * 3 + 1] +=
-            dt * 0.045;
-
-          positions[index * 3] +=
-            Math.cos(now * 0.00055 + particlePhases[index]) *
-            dt *
-            0.012;
-
-          if (positions[index * 3 + 1] > 7.8) {
-            positions[index * 3 + 1] = 0.6;
-          }
-        }
-
-        particleGeometry.attributes.position.needsUpdate = true;
-      }
-
+      updateFortuneWheel(delta, now);
       renderer.render(scene, camera);
     }
 
-    requestAnimationFrame(animate);
+    function startAnimation() {
+      if (running) return;
+      running = true;
+      lastFrame = performance.now() - frameInterval;
+      animationFrame = requestAnimationFrame(animate);
+    }
 
-    window.addEventListener('resize', () => {
-      camera.aspect =
-        window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
+    function stopAnimation() {
+      running = false;
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+      animationFrame = 0;
+    }
 
-      renderer.setSize(
-        window.innerWidth,
-        window.innerHeight,
-        false
-      );
-
-      renderer.setPixelRatio(
-        Math.min(
-          window.devicePixelRatio || 1,
-          window.innerWidth <= 700 ? 1.0 : 1.25
-        )
-      );
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        stopAnimation();
+      } else {
+        startAnimation();
+      }
     });
+
+    let resizeFrame = 0;
+    window.addEventListener('resize', () => {
+      if (resizeFrame) cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(() => {
+        resizeFrame = 0;
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        applyRendererSize();
+        renderer.render(scene, camera);
+      });
+    }, { passive: true });
+
+    refreshJourney();
+    startAnimation();
   }
 
   boot();
