@@ -3011,3 +3011,464 @@ body.is-wheel-spinning .wheel-pointer {
     width: 90px;
   }
 }
+
+/* --- Fixpack v5: echtes Brieffenster und sauber ausgerichtetes Bodenrad --- */
+.wizard-screen,
+#vote-section,
+#results-section {
+  isolation: isolate;
+  background: #ead5ac !important;
+}
+
+.wizard-screen::before,
+#vote-section::before,
+#results-section::before {
+  display: block !important;
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: 0 !important;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(250, 241, 219, 0.35), rgba(236, 219, 180, 0.18)),
+    url('assets/parchment-window.png') center/100% 100% no-repeat !important;
+  box-shadow: 0 26px 46px rgba(72, 63, 42, 0.12);
+}
+
+.wizard-screen > *,
+#vote-section > *,
+#results-section > * {
+  position: relative;
+  z-index: 1;
+}
+
+.wizard-screen::after,
+#vote-section::after,
+#results-section::after {
+  display: none !important;
+}
+
+/* Typografie und Layout feinjustieren */
+body,
+button,
+input,
+select,
+textarea,
+.info,
+small,
+span,
+label,
+.results-list li,
+.confirm,
+.error,
+.winner,
+.room-status {
+  font-family: var(--font-body-v4);
+  letter-spacing: 0.003em;
+}
+
+h1,
+h2,
+h3,
+.step-label,
+.field > span,
+.market-welcome,
+.screen-eyebrow,
+.mode-fieldset legend,
+.choice-card-button strong,
+.mode-copy strong,
+.winner-ceremony-title,
+.winner-ceremony-name {
+  font-family: var(--font-heading-v4);
+  font-weight: 600;
+}
+
+h1 {
+  max-width: 9.5ch;
+  margin-bottom: 20px;
+}
+
+.welcome-copy {
+  max-width: 460px;
+}
+
+.welcome-proclamation {
+  margin: 0 0 16px;
+  max-width: 34ch;
+}
+
+.welcome-actions {
+  margin-top: 28px;
+}
+
+.welcome-start-btn {
+  min-width: 275px;
+  padding-inline: 30px;
+}
+
+.panel-header,
+.vote-heading,
+.wheel-heading {
+  max-width: 620px;
+}
+
+.choice-actions {
+  align-items: stretch;
+}
+
+.choice-card-button,
+.mode-option {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.action-row,
+.wizard-nav,
+.wheel-controls {
+  align-items: center;
+}
+
+/* Neues, konsistentes Schaurad auf Boden mit langem Gestell */
+.show-wheel,
+.wheel-area {
+  --wheel-size: 270px;
+  --wheel-top: 78px;
+  --wheel-mid: calc(var(--wheel-top) + (var(--wheel-size) / 2));
+  --ground-y: 356px;
+  position: relative;
+  width: min(100%, 430px);
+  margin-inline: auto;
+}
+
+.show-wheel {
+  min-height: 410px;
+}
+
+.show-wheel__wheel,
+.wheel {
+  position: absolute;
+  left: 50%;
+  top: var(--wheel-top);
+  width: var(--wheel-size);
+  height: var(--wheel-size);
+  transform: translateX(-50%);
+  z-index: 3;
+}
+
+.show-wheel__crossbar,
+.wheel-crossbar {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--wheel-mid) - 7px);
+  width: 164px;
+  height: 14px;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.show-wheel__post,
+.wheel-post {
+  position: absolute;
+  left: 50%;
+  bottom: calc(410px - var(--ground-y));
+  width: 18px;
+  height: calc(var(--wheel-mid) - (410px - var(--ground-y)));
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.show-wheel__leg,
+.wheel-leg {
+  position: absolute;
+  bottom: calc(410px - var(--ground-y));
+  width: 20px;
+  height: 220px;
+  z-index: 1;
+}
+
+.show-wheel__leg--left,
+.wheel-leg--left {
+  left: calc(50% - 67px);
+  transform-origin: bottom center;
+  transform: rotate(31deg);
+}
+
+.show-wheel__leg--right,
+.wheel-leg--right {
+  right: calc(50% - 67px);
+  transform-origin: bottom center;
+  transform: rotate(-31deg);
+}
+
+.show-wheel__base,
+.wheel-base {
+  position: absolute;
+  bottom: calc(410px - var(--ground-y) - 4px);
+  width: 110px;
+  height: 18px;
+  z-index: 0;
+}
+
+.show-wheel__base--left,
+.wheel-base--left {
+  left: calc(50% - 108px);
+  transform: rotate(-5deg);
+}
+
+.show-wheel__base--right,
+.wheel-base--right {
+  right: calc(50% - 108px);
+  transform: rotate(5deg);
+}
+
+.show-wheel__base,
+.show-wheel__leg,
+.show-wheel__post,
+.show-wheel__crossbar,
+.wheel-base,
+.wheel-leg,
+.wheel-post,
+.wheel-crossbar {
+  border-radius: 8px;
+  background: linear-gradient(180deg, #a77a4f 0%, #835a38 60%, #6d4a2f 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 4px 8px rgba(88, 66, 40, 0.10);
+}
+
+.show-wheel__pointer,
+.wheel-pointer {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--wheel-top) - 30px);
+  transform: translateX(-50%);
+  z-index: 4;
+}
+
+.show-wheel__pointer {
+  width: 30px;
+  height: 46px;
+}
+
+.show-wheel__wheel {
+  border: 12px solid #5a402b;
+}
+
+.wheel-area {
+  min-height: 430px;
+  --wheel-size: 320px;
+  --wheel-top: 52px;
+  --ground-y: 415px;
+  --wheel-mid: calc(var(--wheel-top) + (var(--wheel-size) / 2));
+  padding-bottom: 8px;
+}
+
+.wheel-floor {
+  bottom: 0;
+  width: 400px;
+  height: 28px;
+  z-index: 0;
+}
+
+.wheel-stand {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.wheel-crossbar {
+  width: 192px;
+}
+
+.wheel-post {
+  bottom: calc(430px - var(--ground-y));
+  height: calc(var(--wheel-mid) - (430px - var(--ground-y)));
+}
+
+.wheel-leg {
+  bottom: calc(430px - var(--ground-y));
+  height: 252px;
+}
+
+.wheel-leg--left {
+  left: calc(50% - 82px);
+}
+
+.wheel-leg--right {
+  right: calc(50% - 82px);
+}
+
+.wheel-base {
+  bottom: calc(430px - var(--ground-y) - 6px);
+  width: 132px;
+}
+
+.wheel-base--left {
+  left: calc(50% - 122px);
+}
+
+.wheel-base--right {
+  right: calc(50% - 122px);
+}
+
+.wheel {
+  border: 14px solid #533c28;
+  background: conic-gradient(#d9c49b 0deg 120deg, #cfe2df 120deg 240deg, #e5d1ac 240deg 360deg);
+}
+
+.wheel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    repeating-conic-gradient(from 0deg, rgba(0,0,0,0) 0 28deg, rgba(83, 60, 38, 0.22) 28deg 30deg),
+    repeating-radial-gradient(circle, rgba(0,0,0,0) 0 80px, rgba(83, 60, 38, 0.11) 80px 83px);
+  opacity: 0.95;
+}
+
+.wheel-pointer {
+  width: 34px;
+  height: 56px;
+}
+
+@media (max-width: 900px) {
+  .wizard-screen,
+  #vote-section,
+  #results-section {
+    padding: 74px 56px 86px;
+  }
+
+  .show-wheel,
+  .wheel-area {
+    width: min(100%, 390px);
+  }
+}
+
+@media (max-width: 720px) {
+  .wizard-screen,
+  #vote-section,
+  #results-section {
+    padding: 52px 30px 64px;
+  }
+
+  .show-wheel {
+    --wheel-size: 228px;
+    --wheel-top: 74px;
+    --ground-y: 332px;
+    min-height: 368px;
+  }
+
+  .show-wheel__post {
+    bottom: calc(368px - var(--ground-y));
+    height: calc(var(--wheel-mid) - (368px - var(--ground-y)));
+  }
+
+  .show-wheel__leg {
+    bottom: calc(368px - var(--ground-y));
+    height: 188px;
+  }
+
+  .show-wheel__base {
+    bottom: calc(368px - var(--ground-y) - 4px);
+    width: 94px;
+  }
+
+  .wheel-area {
+    --wheel-size: 270px;
+    --wheel-top: 54px;
+    --ground-y: 372px;
+    min-height: 390px;
+  }
+
+  .wheel-post {
+    bottom: calc(390px - var(--ground-y));
+    height: calc(var(--wheel-mid) - (390px - var(--ground-y)));
+  }
+
+  .wheel-leg {
+    bottom: calc(390px - var(--ground-y));
+    height: 214px;
+  }
+
+  .wheel-base {
+    bottom: calc(390px - var(--ground-y) - 5px);
+    width: 108px;
+  }
+
+  .wheel-base--left {
+    left: calc(50% - 102px);
+  }
+
+  .wheel-base--right {
+    right: calc(50% - 102px);
+  }
+
+  .wheel-leg--left {
+    left: calc(50% - 72px);
+  }
+
+  .wheel-leg--right {
+    right: calc(50% - 72px);
+  }
+}
+
+@media (max-width: 520px) {
+  .wizard-screen,
+  #vote-section,
+  #results-section {
+    padding: 44px 22px 54px;
+  }
+
+  .show-wheel {
+    width: 100%;
+    --wheel-size: 206px;
+    --wheel-top: 68px;
+    --ground-y: 316px;
+    min-height: 350px;
+  }
+
+  .show-wheel__crossbar {
+    width: 150px;
+  }
+
+  .show-wheel__post {
+    bottom: calc(350px - var(--ground-y));
+    height: calc(var(--wheel-mid) - (350px - var(--ground-y)));
+  }
+
+  .show-wheel__leg {
+    bottom: calc(350px - var(--ground-y));
+    height: 176px;
+  }
+
+  .show-wheel__base {
+    bottom: calc(350px - var(--ground-y) - 4px);
+    width: 84px;
+  }
+
+  .wheel-area {
+    --wheel-size: 236px;
+    --wheel-top: 54px;
+    --ground-y: 350px;
+    min-height: 364px;
+  }
+
+  .wheel-crossbar {
+    width: 166px;
+  }
+
+  .wheel-post {
+    bottom: calc(364px - var(--ground-y));
+    height: calc(var(--wheel-mid) - (364px - var(--ground-y)));
+  }
+
+  .wheel-leg {
+    bottom: calc(364px - var(--ground-y));
+    height: 198px;
+  }
+
+  .wheel-base {
+    bottom: calc(364px - var(--ground-y) - 4px);
+    width: 96px;
+  }
+}
