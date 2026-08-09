@@ -4182,71 +4182,120 @@ h1 {
   }
 }
 
-/* --- v15: einheitliche Buttonfarben mit dunkler Schrift --- */
+/* =========================================================
+   v16 BUTTON-COLOR SYSTEM
+   Einheitliche helle Schaltflaechen + dunkle blaugruene Schrift.
+   Betrifft bewusst ALLE echten <button>-Elemente, auch dynamische.
+   Form, Groesse und Position bleiben unveraendert.
+   ========================================================= */
+
+:root {
+  --button-ink-v16: #294b4a;
+  --button-bg-top-v16: #eef8fa;
+  --button-bg-bottom-v16: #dceef2;
+  --button-border-v16: rgba(123, 158, 168, 0.42);
+  --button-shadow-v16: 0 9px 20px rgba(84, 117, 126, 0.12), inset 0 1px 0 rgba(255,255,255,0.92);
+}
+
+/* Jeder Button bekommt dieselbe Farbwelt, unabhaengig von ID oder Klasse. */
 button,
-.primary-action,
-.secondary-choice-btn,
-.secondary-btn,
-.back-btn,
-.subtle-action,
-.remove-answer-btn,
-.moderator-action,
+button.primary-action,
+button.secondary-choice-btn,
+button.secondary-btn,
+button.back-btn,
+button.subtle-action,
+button.remove-answer-btn,
+button.moderator-action,
+button.winner-ceremony-close,
+button.sound-toggle,
+#experience-start-btn,
 #show-create-btn,
 #show-join-btn,
-#vote-btn,
+#back-to-welcome-btn,
+#back-from-create-btn,
+#add-answer-btn,
+#continue-to-mode-btn,
+#back-to-create-btn,
 #start-btn,
+#back-from-join-btn,
 #join-online-btn,
+#vote-btn,
+#next-person-btn,
+#end-voting-btn,
+#new-voting-btn-vote,
 #spin-btn,
 #stop-btn,
-#next-person-btn,
-#end-voting-btn {
-  color: #2f4f4b !important;
-  border-color: rgba(132, 166, 176, 0.34) !important;
-  background: linear-gradient(180deg, #eef7f8 0%, #dcecf1 100%) !important;
-  box-shadow:
-    0 10px 22px rgba(96, 129, 138, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.86) !important;
+#new-voting-btn-results {
+  color: var(--button-ink-v16) !important;
+  border-color: var(--button-border-v16) !important;
+  background: linear-gradient(180deg, var(--button-bg-top-v16) 0%, var(--button-bg-bottom-v16) 100%) !important;
+  box-shadow: var(--button-shadow-v16) !important;
+  text-shadow: none !important;
 }
 
+/* Auch Texte und Icons innerhalb von Karten-Buttons erben garantiert die dunkle Farbe. */
+button *,
+button strong,
+button small,
+button span,
+.choice-card-button strong,
+.choice-card-button small,
+.choice-card-button .choice-icon {
+  color: var(--button-ink-v16) !important;
+}
+
+/* Hover: nur leicht heller, Schrift bleibt identisch dunkel. */
 button:hover:not(:disabled),
-.primary-action:hover:not(:disabled),
-.secondary-choice-btn:hover:not(:disabled),
-.secondary-btn:hover:not(:disabled),
-.back-btn:hover:not(:disabled),
-.subtle-action:hover:not(:disabled),
-.remove-answer-btn:hover:not(:disabled),
-.moderator-action:hover:not(:disabled),
-#show-create-btn:hover:not(:disabled),
-#show-join-btn:hover:not(:disabled),
-#vote-btn:hover:not(:disabled),
-#start-btn:hover:not(:disabled),
-#join-online-btn:hover:not(:disabled),
-#spin-btn:hover:not(:disabled),
-#stop-btn:hover:not(:disabled),
-#next-person-btn:hover:not(:disabled),
-#end-voting-btn:hover:not(:disabled) {
-  color: #294640 !important;
-  background: linear-gradient(180deg, #f2fafb 0%, #e3f1f5 100%) !important;
+button.primary-action:hover:not(:disabled),
+button.secondary-choice-btn:hover:not(:disabled),
+button.secondary-btn:hover:not(:disabled),
+button.back-btn:hover:not(:disabled),
+button.subtle-action:hover:not(:disabled),
+button.remove-answer-btn:hover:not(:disabled),
+button.moderator-action:hover:not(:disabled),
+button.winner-ceremony-close:hover:not(:disabled) {
+  color: var(--button-ink-v16) !important;
+  background: linear-gradient(180deg, #f5fbfc 0%, #e5f2f5 100%) !important;
+  border-color: rgba(112, 151, 162, 0.50) !important;
+  filter: none !important;
 }
 
+button:hover:not(:disabled) *,
+button:hover:not(:disabled) strong,
+button:hover:not(:disabled) small,
+button:hover:not(:disabled) span {
+  color: var(--button-ink-v16) !important;
+}
+
+/* Disabled: weiterhin klar dunkel lesbar; nur Flaeche signalisiert den Zustand. */
 button:disabled,
-.primary-action:disabled,
-.secondary-choice-btn:disabled,
-.secondary-btn:disabled,
-.back-btn:disabled,
-.subtle-action:disabled,
-.remove-answer-btn:disabled,
-.moderator-action:disabled,
-#show-create-btn:disabled,
-#show-join-btn:disabled,
-#vote-btn:disabled,
-#start-btn:disabled,
-#join-online-btn:disabled,
+button.primary-action:disabled,
+button.secondary-choice-btn:disabled,
+button.secondary-btn:disabled,
+button.back-btn:disabled,
+button.subtle-action:disabled,
+button.remove-answer-btn:disabled,
+button.moderator-action:disabled,
 #spin-btn:disabled,
-#stop-btn:disabled,
-#next-person-btn:disabled,
-#end-voting-btn:disabled {
-  color: rgba(47, 79, 75, 0.78) !important;
-  background: linear-gradient(180deg, #eaf2f4 0%, #d7e6eb 100%) !important;
-  opacity: 0.78;
+#stop-btn:disabled {
+  color: var(--button-ink-v16) !important;
+  background: linear-gradient(180deg, #e8f1f3 0%, #d7e5e8 100%) !important;
+  border-color: rgba(123, 151, 158, 0.34) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.78) !important;
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+button:disabled *,
+button:disabled strong,
+button:disabled small,
+button:disabled span {
+  color: var(--button-ink-v16) !important;
+  opacity: 0.82;
+}
+
+/* Der runde Soundknopf behaelt seine Form, nutzt aber dieselbe Farbpalette. */
+.sound-toggle {
+  background: linear-gradient(180deg, var(--button-bg-top-v16) 0%, var(--button-bg-bottom-v16) 100%) !important;
+  border-color: var(--button-border-v16) !important;
 }
