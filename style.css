@@ -4159,3 +4159,14 @@ h1 {
     margin-top: 0;
   }
 }
+
+/* --- v13: Glücksrad + Slogan auf der Startseite leicht nach unten versetzt --- */
+.welcome-display {
+  margin-top: 88px;
+}
+
+@media (max-width: 900px) {
+  .welcome-display {
+    margin-top: 22px;
+  }
+}
