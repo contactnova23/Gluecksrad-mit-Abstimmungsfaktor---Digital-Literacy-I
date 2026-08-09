@@ -6096,3 +6096,25 @@ button:disabled {
     white-space: normal !important;
   }
 }
+
+
+/* =========================================================
+   v27 · Wahlausruf: Einleitung als ruhige Einzelzeile
+   Nur Fenster 3. Gluecksrad unberuehrt.
+   ========================================================= */
+#create-panel .panel-header > div {
+  max-width: 880px !important;
+}
+
+@media (min-width: 1050px) {
+  #create-panel .panel-header .info {
+    max-width: none !important;
+    white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 1049px) {
+  #create-panel .panel-header .info {
+    white-space: normal !important;
+  }
+}
