@@ -7,7 +7,7 @@ https://contactnova23.github.io/Gluecksrad-mit-Abstimmungsfaktor---Digital-Liter
 
 ## Idee
 
-Die App verbindet eine Abstimmung mit einem Glücksrad.
+Die App verbindet eine Abstimmung mit einem Glücksrad in der Atmosphäre eines hellen, märchenhaften europäischen Glückshafens.
 
 Die abgegebenen Stimmen beeinflussen die Wahrscheinlichkeit auf dem Glücksrad:
 Eine Antwort mit mehr Stimmen erhält einen größeren Anteil am Rad und damit eine höhere Gewinnchance.
@@ -17,6 +17,8 @@ Die meistgewählte Antwort gewinnt jedoch nicht automatisch – das Ergebnis ble
 ## Funktionen
 
 - Klarer 6-Fenster-Ablauf: Start → Auswahl → Frage & Antworten → Abstimmungsort → Stimmen → Glücksrad
+- Historisch inspirierte Glückshafen-Atmosphäre mit Marktständen, Bannern und Festplatz-Kulisse
+- Realitätsnäheres hölzernes Glücksrad als Teil der 3D-Szene
 - Eigene Abstimmungsfrage erstellen
 - Beliebig viele Antwortmöglichkeiten hinzufügen
 - Doppelte Antwortmöglichkeiten werden verhindert
@@ -47,15 +49,7 @@ Die Oberfläche ist bewusst in einzelne, klar abgegrenzte Fenster aufgeteilt:
 5. Abgabe der Stimmen
 6. Glücksrad mit gewichteten Segmenten und anschließender Gewinnerverkündung
 
-Die 3D-Fairytale-Stadt bewegt sich passend zum Fortschritt der Nutzerinnen und Nutzer weiter.
-
-## Historisch inspirierte Atmosphäre
-
-Die visuelle Welt ist als helle, märchenhafte Interpretation einer spätmittelalterlichen Messe bzw. eines Schützenfestes gestaltet. Der Begriff **Glückshafen** bezeichnete historische Lotterie- bzw. Losveranstaltungen, die im Umfeld von Messen und Schützenfesten auftreten konnten.
-
-Für die App wird diese historische Idee bewusst modernisiert: Der Glückshafen bildet die erzählerische Rahmung, während das gewichtete Glücksrad die digitale Entscheidungsmechanik sichtbar macht. Die Sprache ist mittelalterlich angehaucht, bleibt aber absichtlich verständlich und benutzerfreundlich.
-
-Die 3D-Welt greift dazu Marktbuden, Banner, Schießscheiben, einen Glückshafen-Lostopf, ausgestellte Gaben und eine helle europäische Altstadt auf.
+Die 3D-Szene bewegt sich passend zum Fortschritt der Nutzerinnen und Nutzer weiter – vom Eintritt in den Glückshafen bis zum Losentscheid auf dem Markt.
 
 ## Abstimmungsarten
 
@@ -118,3 +112,9 @@ Die Web-App wurde umgesetzt mit:
 Die Anwendung ist über GitHub Pages erreichbar:
 
 https://contactnova23.github.io/Gluecksrad-mit-Abstimmungsfaktor---Digital-Literacy-I/
+
+## Hinweis zu config.js
+
+Die Datei `config.js` ist **nicht** in diesem Paket enthalten, damit deine bestehenden Supabase-Zugangsdaten unverändert bleiben können.
+
+Lege deshalb im Projektverzeichnis wieder deine bisherige `config.js` ab.

@@ -83,13 +83,13 @@ function validateSetupDetails(errorElement) {
   errorElement.textContent = '';
 
   if (!question) {
-    errorElement.textContent = 'Bitte verkündet zuerst eine Frage.';
+    errorElement.textContent = 'Bitte gib eine Abstimmungsfrage ein.';
     questionInput.focus();
     return null;
   }
 
   if (answers.length < 2) {
-    errorElement.textContent = 'Bitte stellt mindestens zwei Antworten zur Wahl.';
+    errorElement.textContent = 'Bitte gib mindestens zwei Antwortmöglichkeiten ein.';
     const firstEmptyAnswer = Array.from(answersContainer.querySelectorAll('.answer-input'))
       .find((input) => !input.value.trim());
     firstEmptyAnswer?.focus();
@@ -98,7 +98,7 @@ function validateSetupDetails(errorElement) {
 
   const normalizedAnswers = answers.map((answer) => answer.toLowerCase());
   if (new Set(normalizedAnswers).size !== normalizedAnswers.length) {
-    errorElement.textContent = 'Bitte führt jede Antwort nur einmal auf.';
+    errorElement.textContent = 'Bitte verwende jede Antwortmöglichkeit nur einmal.';
     return null;
   }
 
@@ -178,12 +178,12 @@ function celebrateWinner() {
 
   const message = document.createElement('p');
   message.className = 'winner-ceremony-message';
-  message.textContent = 'Die gewichtete Ziehung ist vollendet.';
+  message.textContent = 'Die gewichtete Ziehung ist abgeschlossen.';
 
   const closeButton = document.createElement('button');
   closeButton.type = 'button';
   closeButton.className = 'winner-ceremony-close';
-  closeButton.textContent = 'Zur Tafel zurück';
+  closeButton.textContent = 'Ergebnis ansehen';
 
   const ornamentBottom = document.createElement('div');
   ornamentBottom.className = 'winner-ornament winner-ornament-bottom';
@@ -348,7 +348,7 @@ function createAnswerRow(value = '') {
   const removeButton = document.createElement('button');
   removeButton.type = 'button';
   removeButton.className = 'remove-answer-btn';
-  removeButton.textContent = 'Streichen';
+  removeButton.textContent = 'Entfernen';
 
   removeButton.addEventListener('click', () => {
     const rows = answersContainer.querySelectorAll('.answer-row');
@@ -356,7 +356,7 @@ function createAnswerRow(value = '') {
       row.remove();
       updateRemoveButtons();
     } else {
-      setupError.textContent = 'Mindestens zwei Antworten müssen zur Wahl stehen.';
+      setupError.textContent = 'Mindestens zwei Antwortmöglichkeiten sind nötig.';
     }
   });
 
@@ -391,7 +391,7 @@ function showVoteScreen(question) {
   resultsSection.hidden = true;
   questionDisplay.textContent = question;
   voteConfirmation.textContent = '';
-  voteInfo.textContent = 'Die Stimmen bleiben bis zum Ende verborgen.';
+  voteInfo.textContent = 'Die Ergebnisse bleiben bis zum Ende verborgen.';
   roomStatus.hidden = true;
   roomStatus.textContent = '';
   onlineStatus.hidden = true;
@@ -402,14 +402,14 @@ function showVoteScreen(question) {
   if (roomMode) {
   roomStatus.hidden = true;
   roomStatus.textContent = '';
-  voteInfo.textContent = 'Die nächste Person darf vortreten. Ihre Stimme bleibt geheim.';
+  voteInfo.textContent = 'Die abstimmende Person kann jetzt ihre Auswahl treffen. Die Stimme bleibt geheim.';
 
-  endVotingBtn.textContent = 'Ausrufende Person: Abstimmung schließen';
+  endVotingBtn.textContent = 'Moderator: Wahl schließen';
   endVotingBtn.classList.add('moderator-action');
 
   newVotingBtnVote.hidden = true;
 } else {
-  endVotingBtn.textContent = 'Abstimmung schließen';
+  endVotingBtn.textContent = 'Wahl schließen';
   endVotingBtn.classList.remove('moderator-action');
 
   newVotingBtnVote.hidden = false;
@@ -420,14 +420,14 @@ function showVoteScreen(question) {
   onlineStatus.textContent = isOnlineModerator
     ? (currentRoomCode
       ? `Online-Raum: ${currentRoomCode} • ${currentVoteCount} ${currentVoteCount === 1 ? 'Stimme' : 'Stimmen'} bisher abgegeben`
-      : 'Die Abstimmung über die Ferne ist eröffnet.')
+      : 'Online-Abstimmung ist aktiv.')
     : (currentRoomCode
       ? `Online-Raum: ${currentRoomCode} • Deine Stimme bleibt bis zum Ende geheim.`
-      : 'Die Abstimmung über die Ferne ist eröffnet.');
+      : 'Online-Abstimmung ist aktiv.');
 
   if (isOnlineModerator) {
     endVotingBtn.hidden = false;
-    endVotingBtn.textContent = 'Ausrufende Person: Abstimmung schließen';
+    endVotingBtn.textContent = 'Moderator: Wahl schließen';
     endVotingBtn.classList.add('moderator-action');
   } else {
     endVotingBtn.hidden = true;
@@ -601,12 +601,12 @@ function resetApp() {
   roomStatus.textContent = '';
   onlineStatus.hidden = true;
   onlineStatus.textContent = '';
-  voteInfo.textContent = 'Die Stimmen bleiben bis zum Ende verborgen.';
+  voteInfo.textContent = 'Die Ergebnisse bleiben bis zum Ende verborgen.';
   voterNameInput.closest('.field').hidden = false;
 voteSelect.closest('.field').hidden = false;
 
 endVotingBtn.hidden = false;
-endVotingBtn.textContent = 'Abstimmung schließen';
+endVotingBtn.textContent = 'Wahl schließen';
 endVotingBtn.classList.remove('moderator-action');
 
 newVotingBtnVote.hidden = false;
@@ -681,10 +681,10 @@ async function refreshOnlineState() {
       onlineStatus.textContent = isOnlineModerator
         ? (currentRoomCode
           ? `Online-Raum: ${currentRoomCode} • ${currentVoteCount} ${currentVoteCount === 1 ? 'Stimme' : 'Stimmen'} bisher abgegeben`
-          : 'Die Abstimmung über die Ferne ist eröffnet.')
+          : 'Online-Abstimmung ist aktiv.')
         : (currentRoomCode
           ? `Online-Raum: ${currentRoomCode} • Deine Stimme bleibt bis zum Ende geheim.`
-          : 'Die Abstimmung über die Ferne ist eröffnet.');
+          : 'Online-Abstimmung ist aktiv.');
     }
   } catch (error) {
     console.error('Fehler beim Laden der Online-Stimmen:', error);
@@ -738,7 +738,7 @@ function restoreSavedState() {
       buildResultsList(summary);
       buildWheel(summary);
       showResultsScreen();
-      winnerDisplay.textContent = 'Der Glückshafen ist bereit. Das Rad kann in Gang gesetzt werden.';
+      winnerDisplay.textContent = 'Glücksrad kann jetzt gedreht werden.';
     }
   } catch (error) {
     console.error('Fehler beim Laden des gespeicherten Zustands:', error);
@@ -781,7 +781,7 @@ startBtn.addEventListener('click', async () => {
   }
 
   if (!roomModeToggle.checked && !onlineModeToggle.checked) {
-    setupError.textContent = 'Bitte wählt den Saal oder die Teilnahme über die Ferne.';
+    setupError.textContent = 'Bitte wähle Raum-Modus oder Online-Modus aus.';
     return;
   }
 
@@ -827,14 +827,14 @@ startBtn.addEventListener('click', async () => {
       currentVoteCount = 0;
       isVotingClosed = false;
       currentBrowserVoteKey = `${currentPollId}-${Math.random().toString(36).slice(2, 10)}`;
-      voteConfirmation.textContent = `Der Glückshafen ist eröffnet. Raumcode: ${currentRoomCode}`;
+      voteConfirmation.textContent = `Die Online-Runde ist eröffnet. Raumcode: ${currentRoomCode}`;
       saveState();
       await refreshOnlineState();
       startOnlineRefreshLoop();
       showVoteScreen(question);
       return;
     } catch (error) {
-      setupError.textContent = 'Der Glückshafen über die Ferne konnte nicht eröffnet werden.';
+      setupError.textContent = 'Fehler beim Eröffnen der Online-Runde.';
       console.error(error);
       return;
     }
@@ -851,18 +851,18 @@ voteBtn.addEventListener('click', async () => {
   const selectedOption = voteSelect.value;
 
   if (!selectedOption) {
-    voteConfirmation.textContent = 'Bitte wählt eine Antwort aus.';
+    voteConfirmation.textContent = 'Bitte wähle eine Antwort aus.';
     return;
   }
 
   if (onlineMode) {
     if (!currentPollId || isVotingClosed) {
-      voteConfirmation.textContent = 'Diese Runde ist bereits geschlossen.';
+      voteConfirmation.textContent = 'Diese Online-Runde ist bereits geschlossen.';
       return;
     }
 
     if (localStorage.getItem(`gluecksrad-vote-${currentPollId}`)) {
-      voteConfirmation.textContent = 'Für diesen Raum wurde auf diesem Gerät bereits eine Stimme abgegeben.';
+      voteConfirmation.textContent = 'Du hast schon einmal für diesen Raum abgestimmt.';
       return;
     }
 
@@ -878,7 +878,7 @@ voteBtn.addEventListener('click', async () => {
 
       if (error) {
         if (error.code === '23505') {
-          voteConfirmation.textContent = 'Für diesen Raum wurde bereits eine Stimme abgegeben.';
+          voteConfirmation.textContent = 'Du hast bereits für diesen Raum abgestimmt.';
           return;
         }
         throw error;
@@ -888,14 +888,14 @@ voteBtn.addEventListener('click', async () => {
 
 await refreshOnlineState();
 
-voteConfirmation.textContent = `✓ Eure Stimme ist vermerkt: „${selectedOption}“.`;
+voteConfirmation.textContent = `✓ Stimme gespeichert! Deine Auswahl „${selectedOption}“ wurde gezählt.`;
 animateFeedback(voteConfirmation);
 
 saveState();
 return;
 
     } catch (error) {
-      voteConfirmation.textContent = 'Die Stimme konnte nicht vermerkt werden.';
+      voteConfirmation.textContent = 'Die Stimme konnte nicht gespeichert werden.';
       console.error(error);
       return;
     }
@@ -904,12 +904,12 @@ return;
   votes.push({ name: name || 'Anonym', option: selectedOption });
 
   if (roomMode) {
-    voteConfirmation.textContent = '✓ Die Stimme ist vermerkt. Die nächste Person darf vortreten.';
+    voteConfirmation.textContent = '✓ Stimme gespeichert! Die nächste Person kann jetzt abstimmen.';
 
     roomStatus.hidden = true;
     roomStatus.textContent = '';
 
-    voteInfo.textContent = 'Die nächste Person darf vortreten. Die Stimme bleibt geheim.';
+    voteInfo.textContent = 'Die nächste Person kann jetzt abstimmen. Die Stimme bleibt geheim.';
 
     voterNameInput.closest('.field').hidden = false;
     voteSelect.closest('.field').hidden = false;
@@ -920,8 +920,8 @@ return;
     nextPersonBtn.hidden = true;
   } else {
     voteConfirmation.textContent = name
-      ? `✓ Eure Stimme ist vermerkt. Habt Dank, ${name}.`
-      : '✓ Eure Stimme ist vermerkt. Habt Dank.';
+      ? `✓ Stimme gespeichert! Vielen Dank, ${name}.`
+      : '✓ Stimme gespeichert! Vielen Dank.';
   }
 
   animateFeedback(voteConfirmation);
@@ -945,7 +945,7 @@ nextPersonBtn.addEventListener('click', () => {
 
   nextPersonBtn.hidden = true;
 
-  voteInfo.textContent = 'Die nächste Person darf vortreten. Die Stimme bleibt geheim.';
+  voteInfo.textContent = 'Die nächste Person kann jetzt abstimmen. Die Stimme bleibt geheim.';
   roomStatus.hidden = true;
   roomStatus.textContent = '';
 
@@ -954,12 +954,12 @@ nextPersonBtn.addEventListener('click', () => {
 
 endVotingBtn.addEventListener('click', async () => {
 if (onlineMode && !isOnlineModerator) {
-  voteConfirmation.textContent = 'Nur die ausrufende Person kann diese Runde schließen.';
+  voteConfirmation.textContent = 'Nur die leitende Person kann die Online-Runde schließen.';
   return;
 }
   
   if (roomMode || onlineMode) {
-    const shouldEnd = window.confirm('Soll die Abstimmung wirklich geschlossen werden?');
+    const shouldEnd = window.confirm('Möchtest du die Wahl wirklich schließen?');
     if (!shouldEnd) {
       return;
     }
@@ -975,7 +975,7 @@ if (onlineMode && !isOnlineModerator) {
       await refreshOnlineState();
     } catch (error) {
       console.error(error);
-      voteConfirmation.textContent = 'Die Abstimmung konnte nicht geschlossen werden.';
+      voteConfirmation.textContent = 'Die Wahl konnte nicht geschlossen werden.';
       return;
     }
   }
@@ -987,7 +987,7 @@ if (onlineMode && !isOnlineModerator) {
   currentWinnerOption = '';
   saveState();
   showResultsScreen();
-  winnerDisplay.textContent = 'Der Glückshafen ist bereit. Das Rad kann in Gang gesetzt werden.';
+  winnerDisplay.textContent = 'Glücksrad kann jetzt gedreht werden.';
 });
 
 function getCurrentWheelAngle() {
@@ -1013,7 +1013,7 @@ spinBtn.addEventListener('click', () => {
   }
 
   winnerDisplay.classList.remove('winner-announced');
-  winnerDisplay.textContent = '🎡 Das Rad läuft. Haltet es an, wenn das Los fallen soll.';
+  winnerDisplay.textContent = '🎡 Das Rad dreht sich. Klicke auf „Glücksrad stoppen“.';
 
   wheelSpinAnimation = wheel.animate(
     [
@@ -1057,7 +1057,7 @@ stopBtn.addEventListener('click', () => {
     wheelIsSpinning = false;
     spinBtn.disabled = false;
     stopBtn.disabled = true;
-    winnerDisplay.textContent = 'Das Los konnte nicht ermittelt werden.';
+    winnerDisplay.textContent = 'Es konnte kein Losgewinner ermittelt werden.';
     return;
   }
 
@@ -1065,7 +1065,7 @@ stopBtn.addEventListener('click', () => {
   const delta = (desiredAngle - visibleAngle + 360) % 360;
   targetRotation = visibleAngle + 360 * 3 + delta;
 
-  winnerDisplay.textContent = '✨ Der Glückshafen entscheidet …';
+  winnerDisplay.textContent = '✨ Das Glücksrad entscheidet …';
 
   wheel.style.transition = 'transform 2.5s ease-out';
   wheel.style.transform = `rotate(${targetRotation}deg)`;
@@ -1100,7 +1100,7 @@ joinOnlineBtn.addEventListener('click', async () => {
   const roomCode = joinRoomCodeInput.value.trim().toUpperCase();
 
   if (!roomCode) {
-    joinError.textContent = 'Bitte gebt einen Raumcode ein.';
+    joinError.textContent = 'Bitte gib einen Raumcode ein.';
     return;
   }
 
@@ -1147,9 +1147,9 @@ joinOnlineBtn.addEventListener('click', async () => {
     await refreshOnlineState();
     startOnlineRefreshLoop();
     showVoteScreen(currentQuestion);
-    voteConfirmation.textContent = 'Ihr seid der Runde beigetreten und könnt nun Eure Stimme abgeben.';
+    voteConfirmation.textContent = 'Du bist dem Online-Raum beigetreten. Du kannst jetzt abstimmen.';
   } catch (error) {
-    joinError.textContent = 'Der Beitritt gelang nicht. Bitte prüft den Raumcode und versucht es erneut.';
+    joinError.textContent = 'Beitritt nicht möglich. Bitte prüfe den Raumcode und versuche es erneut.';
     console.error('Fehler beim Beitritt zur Online-Abstimmung:', error);
   }
 });
