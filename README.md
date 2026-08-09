@@ -61,7 +61,7 @@ Für den Online-Modus benötigt die App die Tabellen `polls` und `votes`. Die mi
 - `polls`: `id`, `question`, `options`, `room_code`, `is_closed`, `created_by`, `created_at`
 - `votes`: `id`, `poll_id`, `option`, `voter_name`, `browser_key`, `voter_id`, `created_at`
 
-Die SQL-Datei wird **nicht automatisch** ausgeführt. Sie muss einmal manuell im Supabase SQL Editor gestartet werden. Die enthaltenen Unique-Constraints begrenzen Mehrfachstimmen pro anonymer Sitzung beziehungsweise Browser-Schlüssel; die Row-Level-Security-Policies erlauben das Schließen einer Runde nur der Sitzung, die sie erstellt hat.
+Die SQL-Datei wird **nicht automatisch** ausgeführt. Sie muss einmal manuell im Supabase SQL Editor gestartet werden. Die enthaltenen Unique-Constraints begrenzen Mehrfachstimmen pro anonymer Sitzung beziehungsweise Browser-Schlüssel; die Row-Level-Security-Policies erlauben das Schließen einer Runde nur der Sitzung, die sie erstellt hat. Zusätzlich entfernt das Setup pauschale Tabellenrechte für `anon`/`authenticated` und vergibt anschließend nur die für die App benötigten Data-API-Rechte neu.
 
 
 ### Datenschutz und Stimmengeheimnis
@@ -72,8 +72,8 @@ Für die Online-Stimmen gilt:
 
 - Teilnehmende besitzen **kein Leserecht auf die Tabelle `votes`**.
 - Auch die moderierende Sitzung kann die gewählten Optionen erst lesen, nachdem sie ihre eigene Runde geschlossen hat.
-- Im Browser der Moderation wird während der offenen Runde deshalb kein Zwischenstand einzelner Antworten geladen.
-- Online werden keine Klarnamen in `votes` gespeichert. Die optionale Namenseingabe bleibt nur für den lokalen Raum-Modus relevant.
+- Im Browser der Moderation wird während der offenen Runde deshalb weder die Stimmenverteilung noch ein aus `votes` abgeleiteter Zwischenstand geladen; der Status bleibt bewusst bei „versiegelt“.
+- Online werden keine Klarnamen in `votes` gespeichert. Die optionale Namenseingabe bleibt nur für den lokalen Raum-Modus relevant. Die Spalte `voter_name` bleibt aus Kompatibilitätsgründen im Schema, wird serverseitig aber immer auf `Anonym` gesetzt.
 - Nach dem Schließen werden nur die Antwortoptionen geladen und für Ergebnisliste und Glücksrad aggregiert.
 
 Für ein bereits bestehendes Supabase-Projekt kann `SUPABASE-PRIVACY-HARDENING.sql` einmal im SQL Editor ausgeführt werden. Das Skript setzt die hierfür nötigen RLS-Regeln erneut, anonymisiert eventuell bereits gespeicherte Namen und verhindert zukünftige Klarnamen in der Online-Stimm-Tabelle.
@@ -216,6 +216,7 @@ Details stehen in `ASSET-NACHWEISE.md` und `THIRD-PARTY-NOTICES.md`.
 | `config.js` | Supabase-Konfiguration der veröffentlichten Online-Fassung (Project URL + öffentlicher Publishable Key) |
 | `config.example.js` | Vorlage für die Supabase-Konfiguration |
 | `SUPABASE-SETUP.sql` | optionale Tabellen-, Constraint- und RLS-Einrichtung für einen neuen Supabase-Online-Modus |
+| `SUPABASE-PRIVACY-HARDENING.sql` | idempotente Nachhärtung eines bereits bestehenden Supabase-Projekts: RLS, anonyme Online-Stimmen und explizite Least-Privilege-Rechte |
 | `HISTORISCHE-GRUNDLAGE.md` | historische Einordnung und Quellen |
 | `ASSET-NACHWEISE.md` | Übersicht über eigene/prozedurale Inhalte und externe Medienressourcen |
 | `THIRD-PARTY-NOTICES.md` | Bibliotheken, Fonts und Lizenzhinweise |
@@ -249,6 +250,6 @@ http://localhost:8000
 - JavaScript ohne Build-Schritt
 - Three.js 0.160.0
 - Web Audio API
-- Supabase JavaScript Client 2.x (optional für den Online-Modus)
+- Supabase JavaScript Client 2.111.0 (im HTML fest gepinnt; optional für den Online-Modus)
 - Google Fonts
 - GitHub Pages

@@ -1,4 +1,4 @@
--- Glueckshafen Basel - Privacy Hardening v33
+-- Glueckshafen Basel - Privacy Hardening v34
 -- Dieses Skript EINMAL im SQL Editor des bereits funktionierenden Supabase-Projekts ausfuehren.
 -- Es veraendert nicht die Tabellenstruktur des Gluecksrads und loescht keine Abstimmungen.
 
@@ -66,10 +66,10 @@ before insert or update of voter_name on public.votes
 for each row execute function public.force_anonymous_vote_name();
 
 -- Least-privilege-Grants fuer die ueber Anonymous Sign-In angemeldeten Nutzer.
-revoke all on table public.votes from anon;
+-- Auch eventuell vorhandene Standardrechte des authenticated-Rollenkontos werden
+-- entfernt und danach nur die fuer diese App benoetigten Rechte neu vergeben.
+revoke all on table public.votes from anon, authenticated;
 grant select, insert on table public.votes to authenticated;
-revoke delete on table public.votes from authenticated;
 
-revoke all on table public.polls from anon;
+revoke all on table public.polls from anon, authenticated;
 grant select, insert, update on table public.polls to authenticated;
-revoke delete on table public.polls from authenticated;

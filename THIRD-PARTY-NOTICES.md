@@ -13,7 +13,7 @@ Dieses Projekt bündelt keine Bibliotheks- oder Fontdateien im Repository. Die f
 ## Supabase JavaScript Client
 
 - Projekt: https://github.com/supabase/supabase-js
-- verwendete Hauptversion: `2`
+- verwendete, im HTML fest gepinnte Version: `2.111.0`
 - Auslieferung: jsDelivr
 - Lizenz: MIT
 - Lizenztext: https://github.com/supabase/supabase-js/blob/master/LICENSE

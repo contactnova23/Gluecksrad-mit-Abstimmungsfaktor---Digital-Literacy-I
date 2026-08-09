@@ -26,7 +26,7 @@ Alle drei Familien werden im offiziellen Google-Fonts-Repository im Verzeichnis 
 
 ## Nutzereingaben
 
-Fragen, Antwortmöglichkeiten und optionale Namen werden von den Nutzenden eingegeben. Bei einer öffentlichen Nutzung dürfen dort keine rechtswidrigen oder unberechtigt übernommenen Inhalte eingetragen werden.
+Fragen und Antwortmöglichkeiten werden von den Nutzenden eingegeben. Optionale Namen gibt es nur im lokalen Raum-Modus; im Online-Modus werden keine Klarnamen an Supabase übertragen. Bei einer öffentlichen Nutzung dürfen in Freitextfeldern keine rechtswidrigen oder unberechtigt übernommenen Inhalte eingetragen werden.
 
 ## Bibliotheken und externe Dienste
 

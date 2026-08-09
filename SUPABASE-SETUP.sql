@@ -96,6 +96,10 @@ before insert or update of voter_name on public.votes
 for each row execute function public.force_anonymous_vote_name();
 
 -- Explizite Data-API-Rechte fuer anonym angemeldete Nutzer.
+-- Vorhandene Standardrechte werden zuerst entfernt, damit nur die fuer die App
+-- benoetigten Operationen erreichbar bleiben. RLS prueft zusaetzlich jede Zeile.
 grant usage on schema public to authenticated;
+revoke all on table public.polls from anon, authenticated;
+revoke all on table public.votes from anon, authenticated;
 grant select, insert, update on table public.polls to authenticated;
 grant select, insert on table public.votes to authenticated;

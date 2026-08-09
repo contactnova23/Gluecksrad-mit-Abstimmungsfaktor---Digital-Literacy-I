@@ -919,8 +919,10 @@ async function refreshOnlineState() {
       onlineStatus.hidden = false;
       onlineStatus.textContent = isOnlineModerator
         ? (currentRoomCode
-          ? `Online-Raum: ${currentRoomCode} • ${currentVoteCount} ${currentVoteCount === 1 ? 'Stimme' : 'Stimmen'} bisher abgegeben`
-          : 'Die Abstimmung über die Ferne ist eröffnet.')
+          ? (isVotingClosed
+            ? `Online-Raum: ${currentRoomCode} • ${currentVoteCount} ${currentVoteCount === 1 ? 'Stimme' : 'Stimmen'} ausgewertet`
+            : `Online-Raum: ${currentRoomCode} • Die Stimmen bleiben bis zum Schließen versiegelt.`)
+          : 'Die Abstimmung über die Ferne ist eröffnet. Die Stimmen bleiben bis zum Schließen versiegelt.')
         : (currentRoomCode
           ? `Online-Raum: ${currentRoomCode} • Deine Stimme bleibt bis zum Ende geheim.`
           : 'Die Abstimmung über die Ferne ist eröffnet.');
