@@ -451,7 +451,41 @@ function generateRoomCode() {
   return Math.random().toString(36).slice(2, 8).toUpperCase();
 }
 
+function getOnlineErrorMessage(error, context = 'general') {
+  const code = String(error?.code || '').toLowerCase();
+  const message = String(error?.message || '').toLowerCase();
+
+  if (code === 'anonymous_provider_disabled' || message.includes('anonymous sign-ins are disabled') || message.includes('anonymous provider')) {
+    return 'Die Verbindung zu Supabase steht, aber anonyme Anmeldungen sind dort noch ausgeschaltet. Aktiviert in Supabase unter Authentication die Anonymous Sign-Ins.';
+  }
+
+  if (code === '42501' || message.includes('row-level security') || message.includes('permission denied')) {
+    return 'Die Verbindung zu Supabase steht, aber die Datenbankrechte fehlen. Führt im Supabase SQL Editor die aktuelle Datei SUPABASE-SETUP.sql einmal vollständig aus.';
+  }
+
+  if (code === '42p01' || message.includes('could not find the table') || (message.includes('relation') && message.includes('does not exist'))) {
+    return 'Die Verbindung zu Supabase steht, aber die Tabellen polls und votes fehlen. Führt im Supabase SQL Editor die aktuelle Datei SUPABASE-SETUP.sql aus.';
+  }
+
+  if (message.includes('invalid api key') || message.includes('no api key') || code === 'bad_jwt') {
+    return 'Die Supabase-Zugangsdaten passen nicht zum Projekt. Prüft Project URL und Publishable Key in config.js.';
+  }
+
+  if (message.includes('failed to fetch') || message.includes('network') || error?.name === 'TypeError') {
+    return 'Supabase konnte über das Netzwerk nicht erreicht werden. Prüft die Internetverbindung und ob das Supabase-Projekt aktiv ist.';
+  }
+
+  const detail = error?.message ? ` (${error.message})` : '';
+  return context === 'join'
+    ? `Der Beitritt über Supabase ist fehlgeschlagen${detail}.`
+    : `Die Online-Abstimmung konnte in Supabase nicht eröffnet werden${detail}.`;
+}
+
 async function ensureAnonymousUser() {
+  if (!hasOnlineBackend()) {
+    throw new Error('Supabase-Client ist nicht initialisiert.');
+  }
+
   const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
 
   if (sessionError) {
@@ -466,6 +500,10 @@ async function ensureAnonymousUser() {
 
   if (error) {
     throw error;
+  }
+
+  if (!data?.user) {
+    throw new Error('Supabase hat keine anonyme Sitzung zurückgegeben.');
   }
 
   return data.user;
@@ -1073,8 +1111,9 @@ startBtn.addEventListener('click', async () => {
       showVoteScreen(question);
       return;
     } catch (error) {
-      setupError.textContent = 'Der Online-Dienst konnte nicht erreicht werden. Bitte nutzt vorerst den Raum-Modus oder prüft das Supabase-Projekt.';
-      console.error(error);
+      isOnlineModerator = false;
+      setupError.textContent = getOnlineErrorMessage(error, 'moderator');
+      console.error('Fehler beim Eröffnen der Online-Abstimmung:', error);
       return;
     }
   }
@@ -1337,11 +1376,7 @@ joinOnlineBtn.addEventListener('click', async () => {
   }
 
   try {
-    try {
-      await ensureAnonymousUser();
-    } catch (authError) {
-      console.warn('Anonyme Anmeldung beim Beitritt war nicht möglich. Es wird trotzdem versucht, den Raum zu laden.', authError);
-    }
+    await ensureAnonymousUser();
 
     const { data, error } = await supabaseClient
       .from('polls')
@@ -1377,7 +1412,7 @@ joinOnlineBtn.addEventListener('click', async () => {
     showVoteScreen(currentQuestion);
     voteConfirmation.textContent = 'Ihr seid der Runde beigetreten und könnt nun Eure Stimme abgeben.';
   } catch (error) {
-    joinError.textContent = 'Der Beitritt gelang nicht. Bitte prüft den Raumcode und versucht es erneut.';
+    joinError.textContent = getOnlineErrorMessage(error, 'join');
     console.error('Fehler beim Beitritt zur Online-Abstimmung:', error);
   }
 });

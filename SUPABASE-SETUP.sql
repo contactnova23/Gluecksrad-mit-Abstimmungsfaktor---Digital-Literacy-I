@@ -75,3 +75,8 @@ using (
       and p.created_by = auth.uid()
   )
 );
+
+-- Explizite Data-API-Rechte fuer anonym angemeldete Nutzer.
+grant usage on schema public to authenticated;
+grant select, insert, update on table public.polls to authenticated;
+grant select, insert on table public.votes to authenticated;

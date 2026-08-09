@@ -63,7 +63,7 @@ Die SQL-Datei wird **nicht automatisch** ausgeführt. Sie muss einmal manuell im
 
 ### Supabase-Konfiguration
 
-`config.js` enthält im gelieferten Repository bewusst Platzhalter. Für einen funktionierenden Online-Modus müssen dort die Project URL und ein öffentlicher Publishable-/Anon-Key des eigenen Supabase-Projekts eingetragen werden.
+`config.example.js` enthält Platzhalter. Die veröffentlichte `config.js` verbindet diese Fassung mit dem dafür eingerichteten Supabase-Projekt über dessen Project URL und öffentlichen Publishable Key.
 
 Ein `service_role`- oder anderer Secret-Key darf nicht in einer öffentlich ausgelieferten GitHub-Pages-Datei stehen.
 
@@ -194,7 +194,7 @@ Details stehen in `ASSET-NACHWEISE.md` und `THIRD-PARTY-NOTICES.md`.
 | `effects.js` | dezente, auf 30 FPS begrenzte Mausneigung/Schwebe-Bewegung der Oberfläche auf Geräten mit feinem Zeiger |
 | `vr-scene.js` | Three.js-Marktszene, Szenenwechsel, adaptive Qualität und atmosphärisches 3D-Glücksrad |
 | `medieval-atmosphere.js` | prozedurale Instrumentalmusik, Glücksrad-Klicks und Web-Audio-Feedback |
-| `config.js` | lokale Supabase-Konfiguration; im Repository mit Platzhaltern |
+| `config.js` | Supabase-Konfiguration der veröffentlichten Online-Fassung (Project URL + öffentlicher Publishable Key) |
 | `config.example.js` | Vorlage für die Supabase-Konfiguration |
 | `SUPABASE-SETUP.sql` | optionale Tabellen-, Constraint- und RLS-Einrichtung für einen neuen Supabase-Online-Modus |
 | `HISTORISCHE-GRUNDLAGE.md` | historische Einordnung und Quellen |

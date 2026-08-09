@@ -3,7 +3,7 @@
   Publishable Key fuer die oeffentliche GitHub-Pages-App.
   Niemals einen service_role- oder Secret-Key hier eintragen.
 */
-const SUPABASE_URL = 'https://tfoqdoyqlsgmvrrsmwqs.supabase.co';
+const SUPABASE_URL = 'https://ftdxqlcnyaarwszpflla.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_WUPutvjUKKMWaV8sWu70Xg_bfeuP3Sp';
 
 const hasSupabaseConfiguration = (
