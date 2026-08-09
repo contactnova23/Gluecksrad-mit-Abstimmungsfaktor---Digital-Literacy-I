@@ -18,7 +18,7 @@
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0xf0ead7, mobile ? 0.016 : 0.0135);
+    scene.fog = new THREE.FogExp2(0xe8f0e8, mobile ? 0.0155 : 0.0128);
 
     const renderer = new THREE.WebGLRenderer({
       canvas,
@@ -36,7 +36,7 @@
     );
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.12;
+    renderer.toneMappingExposure = 1.16;
 
     const shadowsEnabled = !mobile && !lowPower;
     renderer.shadowMap.enabled = shadowsEnabled;
@@ -53,39 +53,39 @@
 
     // ---------- Shared materials ----------
     const plasterMaterials = [
-      new THREE.MeshStandardMaterial({ color: 0xeee2ca, roughness: 0.88 }),
-      new THREE.MeshStandardMaterial({ color: 0xf4ead6, roughness: 0.88 }),
-      new THREE.MeshStandardMaterial({ color: 0xe8dcc5, roughness: 0.90 }),
+      new THREE.MeshStandardMaterial({ color: 0xf3e9d3, roughness: 0.88 }),
+      new THREE.MeshStandardMaterial({ color: 0xfff4df, roughness: 0.88 }),
+      new THREE.MeshStandardMaterial({ color: 0xeadbc0, roughness: 0.90 }),
     ];
 
     const roofMaterials = [
-      new THREE.MeshStandardMaterial({ color: 0xa96d49, roughness: 0.90 }),
-      new THREE.MeshStandardMaterial({ color: 0xb77d54, roughness: 0.90 }),
-      new THREE.MeshStandardMaterial({ color: 0x9d6747, roughness: 0.90 }),
+      new THREE.MeshStandardMaterial({ color: 0xb8774d, roughness: 0.90 }),
+      new THREE.MeshStandardMaterial({ color: 0x627b99, roughness: 0.88 }),
+      new THREE.MeshStandardMaterial({ color: 0xa86642, roughness: 0.90 }),
     ];
 
     const stoneMaterial = new THREE.MeshStandardMaterial({
-      color: 0xd3c19d,
+      color: 0xe2d3b4,
       roughness: 0.88,
     });
 
     const greenMaterial = new THREE.MeshStandardMaterial({
-      color: 0x78996d,
+      color: 0x83a66f,
       roughness: 0.96,
     });
 
     const darkGreenMaterial = new THREE.MeshStandardMaterial({
-      color: 0x5f815e,
+      color: 0x5f8758,
       roughness: 0.92,
     });
 
     const woodMaterial = new THREE.MeshStandardMaterial({
-      color: 0x8d6847,
+      color: 0x9a6d45,
       roughness: 0.90,
     });
 
     const timberMaterial = new THREE.MeshStandardMaterial({
-      color: 0x6e4628,
+      color: 0x80502e,
       roughness: 0.94,
     });
 
@@ -95,9 +95,9 @@
       new THREE.ShaderMaterial({
         side: THREE.BackSide,
         uniforms: {
-          topColor: { value: new THREE.Color(0xcfe3ff) },
-          midColor: { value: new THREE.Color(0xf4f8ff) },
-          bottomColor: { value: new THREE.Color(0xfff0d1) },
+          topColor: { value: new THREE.Color(0x83c5ff) },
+          midColor: { value: new THREE.Color(0xeaf6ff) },
+          bottomColor: { value: new THREE.Color(0xffefd0) },
         },
         vertexShader: `
           varying vec3 vPos;
@@ -123,9 +123,9 @@
     scene.add(sky);
 
     // ---------- Lighting ----------
-    scene.add(new THREE.HemisphereLight(0xeaf4ff, 0x728968, 1.95));
+    scene.add(new THREE.HemisphereLight(0xf1f8ff, 0x79936a, 2.05));
 
-    const sun = new THREE.DirectionalLight(0xffdda7, 3.5);
+    const sun = new THREE.DirectionalLight(0xffdfa9, 3.65);
     sun.position.set(13, 22, 10);
     sun.castShadow = shadowsEnabled;
 
@@ -142,7 +142,7 @@
 
     scene.add(sun);
 
-    const fill = new THREE.DirectionalLight(0xd9ebff, 0.85);
+    const fill = new THREE.DirectionalLight(0xd8eeff, 0.92);
     fill.position.set(-14, 10, 6);
     scene.add(fill);
 
@@ -153,8 +153,8 @@
       const ctx = c.getContext('2d');
 
       const grad = ctx.createLinearGradient(0, 0, 0, 256);
-      grad.addColorStop(0, '#d8c7a8');
-      grad.addColorStop(1, '#baa88b');
+      grad.addColorStop(0, '#e3d0ad');
+      grad.addColorStop(1, '#c2ad8c');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 256, 256);
 
@@ -171,9 +171,9 @@
           ctx.beginPath();
           ctx.roundRect(x + 2, y + 2, w - 4, h - 4, 6);
           ctx.fillStyle =
-            row % 3 === 0 ? '#ccb99a' :
-            row % 3 === 1 ? '#d6c4a5' :
-            '#c3b092';
+            row % 3 === 0 ? '#d8c4a2' :
+            row % 3 === 1 ? '#e3cfad' :
+            '#ccb793';
           ctx.fill();
 
           ctx.strokeStyle = 'rgba(94,76,53,0.18)';
@@ -193,7 +193,7 @@
     // ---------- Ground ----------
     const lawn = new THREE.Mesh(
       new THREE.PlaneGeometry(72, 88),
-      new THREE.MeshStandardMaterial({ color: 0x8da77d, roughness: 0.98 })
+      new THREE.MeshStandardMaterial({ color: 0x93b57b, roughness: 0.98 })
     );
     lawn.rotation.x = -Math.PI / 2;
     lawn.position.set(0, -0.04, -13);
@@ -269,10 +269,10 @@
           materialIndex: (index + (side > 0 ? 1 : 0)) % plasterMaterials.length,
           roofIndex: (index + (side > 0 ? 2 : 0)) % roofMaterials.length,
           awningColor: [
-            0x8f668f,
-            0x607f73,
-            0xb77c5c,
-            0x727d99,
+            0x5278a3,
+            0xc7855d,
+            0x739060,
+            0x6e82a9,
           ][(index + (side > 0 ? 1 : 0)) % 4],
         });
       }
@@ -386,11 +386,11 @@
     // ---------- Castle ----------
     const castle = new THREE.Group();
     const ivory = new THREE.MeshStandardMaterial({
-      color: 0xeee4cf,
+      color: 0xf4ead5,
       roughness: 0.84,
     });
     const castleRoof = new THREE.MeshStandardMaterial({
-      color: 0xc9875e,
+      color: 0x607a9a,
       roughness: 0.86,
     });
 
@@ -494,8 +494,8 @@
     // ---------- Mountains ----------
     const mountainGeometry = new THREE.IcosahedronGeometry(1, 1);
     const mountainMaterials = [
-      new THREE.MeshStandardMaterial({ color: 0x91aa87, roughness: 1 }),
-      new THREE.MeshStandardMaterial({ color: 0xa4b89a, roughness: 1 }),
+      new THREE.MeshStandardMaterial({ color: 0x8aa681, roughness: 1 }),
+      new THREE.MeshStandardMaterial({ color: 0xa1b99a, roughness: 1 }),
     ];
 
     for (let i = 0; i < 8; i += 1) {
@@ -750,7 +750,7 @@
 
       const shutterMesh = new THREE.InstancedMesh(
         new THREE.BoxGeometry(0.045, 0.48, 0.12),
-        new THREE.MeshStandardMaterial({ color: 0x596b3b, roughness: 0.92 }),
+        new THREE.MeshStandardMaterial({ color: 0x557044, roughness: 0.92 }),
         shutterInstances.length
       );
 
@@ -806,7 +806,7 @@
         windows.setColorAt(
           index,
           new THREE.Color(
-            item.warm ? 0xf2c982 : 0x84aebc
+            item.warm ? 0xf6cf82 : 0x9bc3d8
           )
         );
       });
@@ -842,8 +842,8 @@
       const lanternMesh = new THREE.InstancedMesh(
         new THREE.BoxGeometry(0.24, 0.32, 0.24),
         new THREE.MeshStandardMaterial({
-          color: 0xffdfa8,
-          emissive: 0xffc76a,
+          color: 0xffe7b5,
+          emissive: 0xffcf72,
           emissiveIntensity: 0.72,
           roughness: 0.36,
         }),
@@ -1022,10 +1022,10 @@
       }
 
       [
-        { x: -6.1, y: 3.8, z: -17.0, side: 1, colors: [0x7e4e32, 0xe6c27c] },
-        { x:  6.1, y: 3.8, z: -13.0, side: -1, colors: [0x5f7b4d, 0xf3dfab] },
-        { x: -6.1, y: 3.8, z:  -6.3, side: 1, colors: [0x6d4256, 0xf3d29d] },
-        { x:  6.1, y: 3.8, z:  -1.2, side: -1, colors: [0x7d5b33, 0xf6ead0] },
+        { x: -6.1, y: 3.8, z: -17.0, side: 1, colors: [0x315f93, 0xe3bd68] },
+        { x:  6.1, y: 3.8, z: -13.0, side: -1, colors: [0x315f93, 0xf0d78e] },
+        { x: -6.1, y: 3.8, z:  -6.3, side: 1, colors: [0x5d7599, 0xe3bd68] },
+        { x:  6.1, y: 3.8, z:  -1.2, side: -1, colors: [0x315f93, 0xf4dc9e] },
       ].forEach((item, index) => {
         const pole = new THREE.Mesh(
           new THREE.CylinderGeometry(0.05, 0.065, 4.2, 10),
@@ -1042,7 +1042,7 @@
         animatedDecorations.push({
           mesh: banner.group,
           baseRotationZ: 0,
-          amplitude: 0.05 + index * 0.01,
+          amplitude: 0.035 + index * 0.006,
           speed: 0.8 + index * 0.18,
           axis: 'z',
         });
@@ -1090,32 +1090,8 @@
         scene.add(stall);
       }
 
-      createMarketStall(-6.6, -23.6, 0xa57a4b, 0x687f52);
-      createMarketStall(6.8, -22.8, 0x946540, 0x7f4e31);
-
-      const crateMaterial = new THREE.MeshStandardMaterial({ color: 0x93673c, roughness: 0.92 });
-      const crateGeometry = new THREE.BoxGeometry(0.55, 0.55, 0.55);
-      [
-        [-5.8, -22.9], [-6.35, -22.3], [6.1, -22.1], [6.75, -23.3],
-        [-5.6, -9.8], [5.9, -4.9]
-      ].forEach(([x, z], index) => {
-        const crate = new THREE.Mesh(crateGeometry, crateMaterial);
-        crate.position.set(x, 0.28, z);
-        crate.rotation.y = index * 0.35;
-        crate.castShadow = shadowsEnabled;
-        scene.add(crate);
-      });
-
-      const barrelGeometry = new THREE.CylinderGeometry(0.22, 0.24, 0.5, 10);
-      [
-        [-5.2, -10.2], [5.4, -5.3], [-6.1, -17.4], [6.0, 1.1]
-      ].forEach(([x, z], index) => {
-        const barrel = new THREE.Mesh(barrelGeometry, woodMaterial);
-        barrel.position.set(x, 0.25, z);
-        barrel.rotation.y = index * 0.25;
-        barrel.castShadow = shadowsEnabled;
-        scene.add(barrel);
-      });
+      createMarketStall(-6.6, -23.6, 0xb78656, 0x5f7ea4);
+      createMarketStall(6.8, -22.8, 0xb07b50, 0x6f8a5e);
 
       // ----- Wooden fortune wheel at the town square -----
       const squareWheel = new THREE.Group();
@@ -1170,7 +1146,7 @@
         squareWheel.add(spoke);
       }
 
-      const wedgeColors = [0x7d4334, 0x637644, 0x8c6738, 0x586e79, 0x7a586b, 0x9b5a37];
+      const wedgeColors = [0x7f4d43, 0x708557, 0xa07a43, 0x5e7e9c, 0x806280, 0xae704b];
       wedgeColors.forEach((color, index) => {
         const wedge = new THREE.Mesh(
           new THREE.CylinderGeometry(1.10, 1.10, 0.08, 24, 1, false, index * (Math.PI * 2 / wedgeColors.length), (Math.PI * 2 / wedgeColors.length) - 0.035),
@@ -1183,7 +1159,7 @@
 
       const pointer = new THREE.Mesh(
         new THREE.ConeGeometry(0.12, 0.35, 5),
-        new THREE.MeshStandardMaterial({ color: 0xe2bf7d, roughness: 0.56, metalness: 0.08 })
+        new THREE.MeshStandardMaterial({ color: 0xf0d291, roughness: 0.56, metalness: 0.08 })
       );
       pointer.position.set(0, 3.65, 0.08);
       pointer.rotation.z = Math.PI;
@@ -1257,7 +1233,7 @@
       }
 
       // ----- Tiny light particles -----
-      particleCount = mobile ? 44 : 72;
+      particleCount = mobile ? 38 : 64;
       const positions = new Float32Array(particleCount * 3);
       particlePhases = new Float32Array(particleCount);
 
@@ -1277,7 +1253,7 @@
       const points = new THREE.Points(
         particleGeometry,
         new THREE.PointsMaterial({
-          color: 0xffd68a,
+          color: 0xffd98f,
           size: mobile ? 0.055 : 0.065,
           transparent: true,
           opacity: 0.62,

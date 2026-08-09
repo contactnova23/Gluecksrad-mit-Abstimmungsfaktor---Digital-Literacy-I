@@ -3,22 +3,35 @@
   --ui-tilt-y: 0deg;
   --ui-float-y: 0px;
 
-  --ink: #271b12;
-  --ink-soft: #594735;
-  --ink-muted: #75624f;
-  --parchment: #f5ead1;
-  --parchment-light: #fff9e9;
-  --parchment-deep: #e5d0a6;
-  --wood: #6b3e20;
-  --wood-dark: #3f2413;
-  --wood-light: #9b6a37;
-  --brass: #c59a52;
-  --brass-light: #ead198;
-  --forest: #47613b;
-  --forest-dark: #304329;
-  --wine: #773b3e;
-  --danger: #8f312d;
-  --success: #315a36;
+  --ink: #392b1f;
+  --ink-soft: #6a5a49;
+  --ink-muted: #85745f;
+
+  --paper: #fbf1d8;
+  --paper-light: #fffaf0;
+  --paper-deep: #ead6aa;
+
+  --wood: #8a5b31;
+  --wood-dark: #5e381d;
+  --wood-light: #b57b42;
+
+  --blue: #315f93;
+  --blue-dark: #22476f;
+  --blue-light: #dbe9f5;
+
+  --gold: #d2a752;
+  --gold-light: #f3dda4;
+
+  --green: #668653;
+  --green-dark: #49653e;
+
+  --wine: #8a4d51;
+  --danger: #9e403b;
+  --success: #3e6c47;
+
+  --frame-shadow:
+    0 32px 78px rgba(70, 46, 22, 0.23),
+    0 7px 22px rgba(66, 44, 22, 0.10);
 }
 
 * {
@@ -27,7 +40,7 @@
 
 html {
   min-height: 100%;
-  background: #d7e5d5;
+  background: #d8eaff;
 }
 
 body {
@@ -37,8 +50,8 @@ body {
   color: var(--ink);
   font-family: "Segoe UI", Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   background:
-    radial-gradient(circle at 50% 10%, rgba(255, 241, 205, 0.22), transparent 28%),
-    linear-gradient(180deg, #d9eaff 0%, #e7eee4 52%, #c7ceb6 100%);
+    radial-gradient(circle at 50% 4%, rgba(255, 246, 211, 0.28), transparent 28%),
+    linear-gradient(180deg, #d8eaff 0%, #eef6ef 52%, #d8dcc4 100%);
 }
 
 [hidden] {
@@ -64,28 +77,32 @@ body {
   padding: 34px 18px 48px;
 }
 
-/* One clear medieval window instead of nested modern cards. */
+/*
+  A single elegant fairytale-medieval notice board.
+  The inner UI is intentionally simple so the 3D town remains the visual star.
+*/
 .card {
   position: relative;
-  width: min(920px, 100%);
-  padding: 42px 44px 40px;
-  border: 11px solid transparent;
-  border-radius: 10px;
+  width: min(900px, 100%);
+  padding: 48px 46px 42px;
+  border: 10px solid transparent;
+  border-radius: 20px;
   color: var(--ink);
   background:
-    linear-gradient(180deg, rgba(255, 249, 232, 0.985), rgba(241, 226, 194, 0.97)) padding-box,
-    repeating-linear-gradient(
-      90deg,
-      #452715 0 8px,
-      #69401f 8px 16px,
-      #87592d 16px 22px,
-      #553019 22px 31px
+    linear-gradient(180deg, rgba(255, 250, 238, 0.985), rgba(247, 235, 207, 0.975)) padding-box,
+    linear-gradient(
+      100deg,
+      #6a4022 0%,
+      #98643a 23%,
+      #bd8750 50%,
+      #8c5930 76%,
+      #5d371d 100%
     ) border-box;
   box-shadow:
-    0 34px 78px rgba(42, 24, 12, 0.32),
-    0 0 0 2px rgba(210, 173, 103, 0.68),
-    inset 0 0 0 1px rgba(116, 78, 36, 0.30),
-    inset 0 16px 48px rgba(255,255,255,0.28);
+    var(--frame-shadow),
+    0 0 0 2px rgba(230, 194, 123, 0.82),
+    inset 0 0 0 1px rgba(123, 84, 42, 0.22),
+    inset 0 14px 42px rgba(255,255,255,0.28);
   transform:
     perspective(1600px)
     rotateX(var(--ui-tilt-x))
@@ -97,21 +114,35 @@ body {
 .card::before {
   content: "";
   position: absolute;
-  inset: 10px;
+  inset: 12px;
+  border-radius: 13px;
+  border: 1px solid rgba(191, 148, 74, 0.46);
   pointer-events: none;
-  border: 1px solid rgba(161, 119, 61, 0.42);
-  box-shadow: inset 0 0 26px rgba(105, 65, 28, 0.07);
+  box-shadow:
+    inset 0 0 28px rgba(112, 74, 35, 0.05),
+    0 0 0 1px rgba(255,255,255,0.28);
 }
 
+/* Small crest, intentionally understated. */
 .card::after {
-  content: "";
+  content: "✦";
   position: absolute;
-  left: 44px;
-  right: 44px;
-  top: 118px;
-  height: 1px;
-  pointer-events: none;
-  background: linear-gradient(90deg, transparent, rgba(146, 103, 49, 0.42), transparent);
+  left: 50%;
+  top: -31px;
+  width: 62px;
+  height: 62px;
+  transform: translateX(-50%);
+  display: grid;
+  place-items: center;
+  border-radius: 18px 18px 24px 24px;
+  color: var(--gold-light);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.6rem;
+  background: linear-gradient(180deg, #3c6c9d, #244e78);
+  border: 4px solid #8b5a31;
+  box-shadow:
+    0 0 0 2px rgba(229, 191, 110, 0.92),
+    0 9px 20px rgba(74, 45, 21, 0.20);
 }
 
 h1,
@@ -121,16 +152,16 @@ h3,
 #question-display,
 .winner {
   font-family: Georgia, "Times New Roman", serif;
-  color: #2d1c10;
+  color: #342317;
 }
 
 h1 {
-  margin: 0 0 13px;
-  max-width: 800px;
+  margin: 5px 0 14px;
+  max-width: 790px;
   font-size: clamp(2.15rem, 5vw, 3.35rem);
-  line-height: 1.02;
+  line-height: 1.03;
   font-weight: 700;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.022em;
 }
 
 h2 {
@@ -142,7 +173,7 @@ h2 {
 h3,
 .mode-fieldset legend {
   margin: 0 0 12px;
-  font-size: 1.22rem;
+  font-size: 1.20rem;
   font-weight: 700;
 }
 
@@ -152,10 +183,11 @@ p {
 
 .intro {
   max-width: 760px;
-  margin: 0 0 34px;
+  margin: 0 0 32px;
   padding-bottom: 20px;
   color: var(--ink-soft);
   font-size: 1.02rem;
+  border-bottom: 1px solid rgba(173, 132, 65, 0.24);
 }
 
 .info {
@@ -164,7 +196,6 @@ p {
   font-size: 0.98rem;
 }
 
-/* Screens are simply content states inside the same parchment window. */
 .entry-choice,
 .setup-panel,
 #vote-section,
@@ -176,7 +207,7 @@ p {
 .wizard-screen:not([hidden]),
 #vote-section:not([hidden]),
 #results-section:not([hidden]) {
-  animation: screenIn 0.42s cubic-bezier(0.2, 0.75, 0.25, 1) both;
+  animation: screenIn 0.42s cubic-bezier(0.2, 0.76, 0.26, 1) both;
 }
 
 .panel-header {
@@ -215,7 +246,7 @@ p {
 
 .field > span,
 .step-label {
-  color: #3b291a;
+  color: #473320;
   font-weight: 760;
 }
 
@@ -228,208 +259,204 @@ button {
 input,
 select {
   width: 100%;
-  min-height: 49px;
+  min-height: 50px;
   padding: 11px 13px;
-  border: 1px solid rgba(105, 73, 39, 0.44);
-  border-radius: 5px;
+  border: 1px solid rgba(121, 90, 50, 0.34);
+  border-radius: 8px;
   outline: 0;
-  color: #24180f;
-  font-weight: 580;
+  color: #2b1d13;
+  font-weight: 570;
   background:
-    linear-gradient(180deg, rgba(255, 253, 245, 0.99), rgba(247, 238, 218, 0.99));
+    linear-gradient(180deg, rgba(255,255,255,0.92), rgba(250, 242, 222, 0.94));
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.82),
-    inset 0 0 9px rgba(117, 77, 34, 0.05);
-  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    inset 0 1px 0 rgba(255,255,255,0.72),
+    0 1px 0 rgba(126, 90, 48, 0.08);
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
 }
 
 input::placeholder {
-  color: #776451;
-  opacity: 1;
-  font-weight: 450;
+  color: #91816e;
 }
 
 input:focus,
 select:focus {
-  border-color: #6a814f;
+  transform: translateY(-1px);
+  border-color: rgba(49, 95, 147, 0.62);
   box-shadow:
-    0 0 0 3px rgba(93, 125, 71, 0.15),
-    inset 0 1px 0 rgba(255,255,255,0.86);
+    0 0 0 3px rgba(49, 95, 147, 0.12),
+    inset 0 1px 0 rgba(255,255,255,0.78);
 }
 
 button {
-  min-height: 45px;
-  padding: 10px 17px;
-  border: 1px solid #3b2414;
-  border-radius: 6px;
-  color: #fff8e8;
-  font-weight: 760;
+  min-height: 47px;
+  padding: 11px 18px;
+  border: 1px solid rgba(79, 49, 23, 0.18);
+  border-radius: 8px;
   cursor: pointer;
-  background: linear-gradient(180deg, #76502d 0%, #533117 100%);
+  color: #fffaf0;
+  font-weight: 760;
+  letter-spacing: 0.005em;
+  background: linear-gradient(180deg, #7d5230, #5f391f);
   box-shadow:
-    inset 0 0 0 1px rgba(222, 190, 130, 0.25),
-    0 7px 14px rgba(62, 34, 15, 0.16);
-  transition: transform 0.16s ease, filter 0.16s ease, box-shadow 0.16s ease;
+    inset 0 1px 0 rgba(255,255,255,0.20),
+    0 8px 18px rgba(69, 42, 19, 0.14);
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.18s ease,
+    filter 0.18s ease;
 }
 
 button:hover:not(:disabled) {
-  transform: translateY(-1px);
-  filter: brightness(1.05);
+  transform: translateY(-2px);
+  filter: brightness(1.035);
   box-shadow:
-    inset 0 0 0 1px rgba(235, 207, 153, 0.32),
-    0 9px 18px rgba(62, 34, 15, 0.21);
+    inset 0 1px 0 rgba(255,255,255,0.22),
+    0 12px 24px rgba(69, 42, 19, 0.18);
 }
 
 button:active:not(:disabled) {
-  transform: translateY(1px);
+  transform: translateY(0);
 }
 
 button:focus-visible {
-  outline: 3px solid rgba(197, 154, 82, 0.40);
+  outline: 3px solid rgba(49, 95, 147, 0.22);
   outline-offset: 3px;
 }
 
 button:disabled {
-  opacity: 0.48;
   cursor: not-allowed;
+  opacity: 0.52;
   box-shadow: none;
 }
 
 .primary-action,
 #show-create-btn,
 #vote-btn,
-#spin-btn,
 #start-btn,
-#join-online-btn {
-  color: #fff8e7;
-  background: linear-gradient(180deg, #6e4b2a, #4a2c17);
+#join-online-btn,
+#spin-btn {
+  color: #fff9e8;
+  border-color: rgba(230, 195, 119, 0.64);
+  background: linear-gradient(180deg, #3c6f9f, #28547f);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.22),
+    0 0 0 1px rgba(142, 99, 48, 0.46),
+    0 9px 20px rgba(44, 79, 116, 0.18);
 }
 
 .secondary-choice-btn,
 .secondary-btn,
+.back-btn,
 #show-join-btn,
-#next-person-btn,
-#stop-btn {
-  color: #fbf8eb;
-  border-color: #283a24;
-  background: linear-gradient(180deg, #58734b, #394e32);
+#next-person-btn {
+  color: #49331e;
+  border-color: rgba(141, 102, 54, 0.31);
+  background: linear-gradient(180deg, #fff7e6, #edd8ae);
   box-shadow:
-    inset 0 0 0 1px rgba(236, 239, 212, 0.15),
-    0 7px 14px rgba(43, 57, 35, 0.15);
+    inset 0 1px 0 rgba(255,255,255,0.65),
+    0 7px 15px rgba(90, 61, 29, 0.10);
 }
 
-.back-btn {
-  min-height: 38px;
-  padding: 6px 4px;
-  border: 0;
-  border-bottom: 1px solid rgba(82, 53, 28, 0.45);
-  border-radius: 0;
-  color: #5a3a20;
-  background: transparent;
-  box-shadow: none;
-}
-
-.back-btn:hover:not(:disabled) {
-  transform: none;
-  color: #2e1c10;
-  box-shadow: none;
+#stop-btn {
+  color: #fff9ed;
+  background: linear-gradient(180deg, #6d8a5b, #4c6c3f);
 }
 
 #end-voting-btn,
 .remove-answer-btn,
 .moderator-action {
-  color: #fff5ee;
-  border-color: #512527;
-  background: linear-gradient(180deg, #884547, #632d30);
+  color: #fff7f2;
+  background: linear-gradient(180deg, #9a5b5e, #784044);
+}
+
+.back-btn {
+  min-height: 40px;
+  padding: 8px 12px;
+}
+
+.answers-box,
+.mode-fieldset {
+  margin: 8px 0 0;
+  padding: 18px;
+  border: 1px solid rgba(154, 117, 68, 0.20);
+  border-radius: 10px;
+  background: rgba(255, 250, 237, 0.52);
 }
 
 .answer-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 9px;
-  margin-bottom: 10px;
-}
-
-.answers-box,
-.setup-block {
-  margin: 24px 0 0;
-  padding: 22px 0 0;
-  border-top: 1px solid rgba(119, 81, 39, 0.25);
-  background: transparent;
+  gap: 10px;
+  margin-bottom: 11px;
 }
 
 .mode-fieldset {
-  margin: 4px 0 0;
-  padding: 0;
   border: 0;
-}
-
-.mode-fieldset legend {
-  padding: 0;
-  margin-bottom: 14px;
 }
 
 .mode-choice-grid {
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 
 .mode-option {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 13px;
-  align-items: start;
+  align-items: flex-start;
   padding: 15px 16px;
-  border: 1px solid rgba(106, 75, 40, 0.30);
-  border-radius: 5px;
+  border: 1px solid rgba(144, 107, 60, 0.20);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.68), rgba(244, 233, 209, 0.76));
   cursor: pointer;
-  background: rgba(255, 250, 236, 0.72);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.52);
-  transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
 }
 
 .mode-option:hover {
-  transform: translateX(2px);
-  border-color: rgba(93, 116, 70, 0.52);
+  transform: translateY(-1px);
+  border-color: rgba(49, 95, 147, 0.30);
 }
 
 .mode-option.is-selected {
-  border-color: #567046;
-  background: linear-gradient(90deg, rgba(223, 233, 204, 0.92), rgba(250, 241, 218, 0.92));
-  box-shadow:
-    inset 4px 0 0 #567046,
-    inset 0 1px 0 rgba(255,255,255,0.62);
+  border-color: rgba(49, 95, 147, 0.52);
+  background: linear-gradient(180deg, rgba(239, 247, 253, 0.93), rgba(225, 237, 244, 0.90));
+  box-shadow: 0 0 0 3px rgba(49, 95, 147, 0.10);
 }
 
-.mode-option input[type="radio"] {
-  width: 19px;
-  height: 19px;
-  min-height: auto;
-  margin: 3px 0 0;
-  accent-color: #567046;
+.mode-option input {
+  width: 20px;
+  height: 20px;
+  min-height: 20px;
+  margin-top: 3px;
+  accent-color: var(--blue);
 }
 
 .mode-copy strong {
   display: block;
-  margin-bottom: 4px;
-  color: #342317;
+  margin-bottom: 5px;
+  color: #3f2c1d;
 }
 
-.mode-copy small,
-.online-help {
+.mode-copy small {
   display: block;
-  color: #655342;
-  line-height: 1.48;
-  font-size: 0.91rem;
+  color: #6f5d49;
+  line-height: 1.5;
 }
 
 .error,
 .confirm,
 .room-status {
-  margin: 14px 0 0;
-  padding: 10px 12px;
-  border-left: 4px solid currentColor;
-  border-radius: 3px;
+  margin-top: 13px;
+  padding: 11px 13px;
+  border-radius: 8px;
+  font-weight: 630;
 }
 
 .error:empty,
@@ -438,85 +465,86 @@ button:disabled {
 }
 
 .error {
-  color: #7d2925;
-  background: rgba(250, 229, 218, 0.88);
+  color: #7c2f2b;
+  background: rgba(164, 61, 54, 0.08);
+  border: 1px solid rgba(164, 61, 54, 0.14);
 }
 
 .confirm,
 .room-status {
-  color: #315638;
-  background: rgba(224, 237, 213, 0.90);
+  color: #345a39;
+  background: rgba(78, 119, 67, 0.09);
+  border: 1px solid rgba(78, 119, 67, 0.15);
 }
 
 .results-list {
   display: grid;
-  gap: 7px;
+  gap: 8px;
   margin: 20px 0 0;
   padding: 0;
   list-style: none;
 }
 
 .results-list li {
-  padding: 10px 12px;
-  border-bottom: 1px solid rgba(114, 79, 41, 0.24);
-  color: #332318;
-  font-weight: 620;
-  background: transparent;
+  padding: 11px 13px;
+  border: 1px solid rgba(148, 110, 61, 0.18);
+  border-radius: 8px;
+  color: #4f3b28;
+  background: rgba(255, 249, 235, 0.72);
 }
 
-/* Wooden wheel presented like a real object on the town square. */
+/* Wooden wheel: simple, warm and readable. */
 .wheel-area {
   position: relative;
   display: grid;
   place-items: center;
-  min-height: 465px;
-  margin: 22px 0 4px;
-  padding: 28px 0 72px;
+  min-height: 450px;
+  margin: 24px auto 4px;
+  padding-bottom: 42px;
   overflow: visible;
 }
 
 .wheel-area::before {
   content: "";
   position: absolute;
-  left: 50%;
-  bottom: 50px;
   z-index: 0;
-  width: 205px;
-  height: 245px;
+  left: 50%;
+  bottom: 72px;
+  width: 165px;
+  height: 210px;
   transform: translateX(-50%);
-  background:
-    linear-gradient(105deg, transparent 0 30%, rgba(255,255,255,0.10) 30% 32%, transparent 32%),
-    linear-gradient(180deg, #80512b, #513016);
-  clip-path: polygon(43% 0, 57% 0, 57% 28%, 78% 100%, 63% 100%, 50% 54%, 37% 100%, 22% 100%, 43% 28%);
-  filter: drop-shadow(0 20px 13px rgba(57, 32, 14, 0.20));
+  clip-path: polygon(43% 0, 57% 0, 57% 29%, 77% 100%, 61% 100%, 50% 53%, 39% 100%, 23% 100%, 43% 29%);
+  border-radius: 10px;
+  background: linear-gradient(180deg, #9c683b, #68401f);
+  box-shadow: 0 16px 26px rgba(62, 38, 18, 0.18);
 }
 
 .wheel-area::after {
   content: "";
   position: absolute;
-  left: 50%;
-  bottom: 23px;
   z-index: 0;
-  width: 300px;
-  height: 38px;
+  left: 50%;
+  bottom: 28px;
+  width: 265px;
+  height: 28px;
   transform: translateX(-50%);
   border-radius: 50%;
-  background: radial-gradient(ellipse, rgba(47, 27, 12, 0.32), transparent 70%);
+  background: radial-gradient(circle, rgba(65, 43, 22, 0.25), transparent 70%);
 }
 
 .wheel {
   position: relative;
   z-index: 2;
-  width: min(76vw, 360px);
+  width: min(78vw, 350px);
   aspect-ratio: 1;
   overflow: hidden;
-  border: 16px solid #5b3419;
+  border: 17px solid #704721;
   border-radius: 50%;
-  background: conic-gradient(#804337 0 120deg, #6f7d3d 120deg 240deg, #8d6a37 240deg 360deg);
+  background: conic-gradient(#834c43 0deg 120deg, #6d8050 120deg 240deg, #9b773e 240deg 360deg);
   box-shadow:
-    inset 0 0 0 6px #b88545,
-    inset 0 0 0 12px #3d2412,
-    0 24px 42px rgba(52, 29, 12, 0.26);
+    inset 0 0 0 6px #c89a56,
+    inset 0 0 0 12px #54331b,
+    0 22px 36px rgba(57, 35, 17, 0.23);
 }
 
 .wheel::before {
@@ -525,11 +553,11 @@ button:disabled {
   inset: 10px;
   border-radius: 50%;
   pointer-events: none;
-  opacity: 0.55;
+  opacity: 0.60;
   background:
-    repeating-conic-gradient(from 0deg, rgba(56, 32, 15, 0.42) 0 1.4deg, transparent 1.4deg 44deg),
-    repeating-radial-gradient(circle, rgba(255,255,255,0.08) 0 9px, rgba(66,38,17,0.06) 9px 17px);
-  mix-blend-mode: multiply;
+    repeating-radial-gradient(circle, rgba(255,255,255,0.08) 0 12px, rgba(58, 35, 18, 0.06) 12px 20px),
+    linear-gradient(135deg, rgba(255,255,255,0.14), rgba(60, 35, 18, 0.08));
+  mix-blend-mode: soft-light;
 }
 
 .wheel::after {
@@ -537,65 +565,51 @@ button:disabled {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 66px;
-  height: 66px;
+  width: 62px;
+  height: 62px;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  background: radial-gradient(circle at 34% 28%, #f0d49a, #ae7b3d 54%, #5d3518 100%);
+  background: radial-gradient(circle at 35% 30%, #f8e1ad, #c79b51 56%, #70441f 100%);
   box-shadow:
-    0 0 0 13px rgba(92, 53, 24, 0.98),
-    0 0 0 20px rgba(193, 143, 69, 0.95),
-    inset 0 0 10px rgba(52, 28, 11, 0.28);
+    0 0 0 13px rgba(112, 69, 31, 0.97),
+    0 0 0 20px rgba(211, 169, 91, 0.96);
 }
 
 .wheel-pointer {
   position: absolute;
-  left: 50%;
-  top: 24px;
   z-index: 4;
-  width: 44px;
-  height: 78px;
+  left: 50%;
+  top: 20px;
+  width: 42px;
+  height: 77px;
   transform: translateX(-50%);
-  background: linear-gradient(180deg, #edd397, #c0924c 52%, #6a3d1c);
-  clip-path: polygon(50% 100%, 8% 43%, 29% 43%, 29% 0, 71% 0, 71% 43%, 92% 43%);
-  filter: drop-shadow(0 10px 8px rgba(53, 29, 12, 0.19));
+  clip-path: polygon(50% 100%, 8% 42%, 29% 42%, 29% 0, 71% 0, 71% 42%, 92% 42%);
+  border-radius: 8px;
+  background: linear-gradient(180deg, #f3dfa5, #d0a259 48%, #7a4d28 100%);
+  box-shadow: 0 10px 18px rgba(60, 37, 18, 0.16);
 }
 
 .wheel-controls {
   justify-content: center;
-  margin-bottom: 10px;
 }
 
 .winner {
-  margin: 12px 0 0;
-  color: #4a2e18;
+  margin: 10px 0;
+  min-height: 30px;
+  color: #4a3420;
   text-align: center;
-  font-size: 1.05rem;
-}
-
-.winner.winner-announced {
-  position: absolute !important;
-  width: 1px !important;
-  height: 1px !important;
-  padding: 0 !important;
-  margin: -1px !important;
-  overflow: hidden !important;
-  clip: rect(0 0 0 0) !important;
-  white-space: nowrap !important;
-  border: 0 !important;
+  font-weight: 700;
 }
 
 .feedback-pop {
-  animation: feedbackPop 0.48s ease;
+  animation: feedbackPop 0.5s ease;
 }
 
-body.vr-walking .card {
-  box-shadow:
-    0 38px 86px rgba(42, 24, 12, 0.36),
-    0 0 0 2px rgba(210, 173, 103, 0.68);
+.winner-pop {
+  animation: winnerPulse 0.72s ease;
 }
 
-/* Winner ceremony stays intentionally more theatrical than the normal UI. */
+/* Cinematic winner ceremony retained, but made brighter and cleaner. */
 .winner-ceremony-layer {
   position: fixed;
   inset: 0;
@@ -604,200 +618,190 @@ body.vr-walking .card {
   place-items: center;
   padding: 24px;
   overflow: hidden;
-  background:
-    radial-gradient(circle at 50% 44%, rgba(255, 231, 164, 0.15), transparent 31%),
-    rgba(29, 18, 10, 0.62);
-  backdrop-filter: blur(7px) saturate(0.88);
-  animation: ceremonyBackdropIn 0.45s ease both;
+  background: rgba(45, 52, 45, 0.33);
+  backdrop-filter: blur(6px) saturate(0.94);
+  -webkit-backdrop-filter: blur(6px) saturate(0.94);
+  animation: ceremonyBackdropIn 0.42s ease both;
 }
 
 .winner-ceremony-layer.is-leaving {
-  animation: ceremonyBackdropOut 0.38s ease both;
+  animation: ceremonyBackdropOut 0.34s ease forwards;
 }
 
 .winner-ceremony-layer.is-leaving .winner-ceremony {
-  animation: ceremonyExit 0.38s ease both;
+  animation: ceremonyOut 0.34s ease forwards;
 }
 
 .winner-ceremony-glow {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: min(78vw, 760px);
-  aspect-ratio: 1;
+  width: min(720px, 92vw);
+  height: min(720px, 92vw);
   transform: translate(-50%, -50%);
   border-radius: 50%;
   pointer-events: none;
-  background: radial-gradient(circle, rgba(255, 226, 151, 0.35), rgba(207, 157, 69, 0.09) 40%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 232, 168, 0.54), rgba(255, 224, 143, 0.16) 36%, transparent 68%);
   filter: blur(12px);
-  animation: ceremonyGlow 2.6s ease-in-out infinite alternate;
+  animation: ceremonyGlow 2.7s ease-in-out infinite alternate;
 }
 
 .winner-ceremony-rays {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: min(86vw, 860px);
+  width: min(900px, 115vw);
   aspect-ratio: 1;
   transform: translate(-50%, -50%);
   border-radius: 50%;
   opacity: 0.22;
   pointer-events: none;
-  background: repeating-conic-gradient(from 0deg, transparent 0 10deg, rgba(255, 226, 157, 0.25) 10deg 12deg, transparent 12deg 25deg);
-  mask-image: radial-gradient(circle, transparent 0 23%, #000 46%, transparent 72%);
+  background: repeating-conic-gradient(from 0deg, rgba(255,232,166,0.72) 0deg 3deg, transparent 3deg 19deg);
   animation: ceremonyRays 30s linear infinite;
 }
 
 .winner-ceremony {
   position: relative;
-  width: min(92vw, 630px);
-  padding: 48px 42px 34px;
+  width: min(610px, 92vw);
+  padding: 52px 44px 38px;
+  border: 8px solid transparent;
+  border-radius: 18px;
+  color: #352316;
   text-align: center;
-  color: #2b1b10;
-  border: 9px solid #583218;
-  border-radius: 8px;
   background:
-    linear-gradient(180deg, rgba(255, 250, 234, 0.995), rgba(239, 218, 177, 0.99));
+    linear-gradient(180deg, #fff9e9, #f2dfb9) padding-box,
+    linear-gradient(100deg, #714524, #b17a42, #714524) border-box;
   box-shadow:
-    0 42px 90px rgba(25, 13, 5, 0.48),
-    0 0 0 2px #d1aa63,
-    inset 0 0 0 1px rgba(124, 80, 33, 0.28),
-    inset 0 15px 36px rgba(255,255,255,0.26);
-  animation: royalDescent 1.04s cubic-bezier(0.18, 0.88, 0.24, 1.08) both;
+    0 30px 80px rgba(54, 34, 16, 0.34),
+    0 0 0 2px rgba(229, 193, 110, 0.92),
+    inset 0 0 0 1px rgba(118, 82, 40, 0.22);
+  animation: ceremonyDrop 0.88s cubic-bezier(0.16, 0.86, 0.26, 1.06) both;
 }
 
-.winner-ceremony::before,
+.winner-ceremony::before {
+  content: "✦";
+  position: absolute;
+  left: 50%;
+  top: -29px;
+  width: 58px;
+  height: 58px;
+  transform: translateX(-50%);
+  display: grid;
+  place-items: center;
+  border-radius: 18px 18px 23px 23px;
+  color: #f5dfa5;
+  font-size: 1.45rem;
+  background: linear-gradient(180deg, #3c6d9e, #244d77);
+  border: 4px solid #78502c;
+  box-shadow: 0 0 0 2px #d5ae5d;
+}
+
 .winner-ceremony::after {
   content: "";
   position: absolute;
-  left: 24px;
-  right: 24px;
+  left: 36px;
+  right: 36px;
+  bottom: 23px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, #b9883f, transparent);
-}
-
-.winner-ceremony::before { top: 22px; }
-.winner-ceremony::after { bottom: 22px; }
-
-.winner-crest {
-  display: grid;
-  place-items: center;
-  width: 86px;
-  height: 86px;
-  margin: -88px auto 18px;
-  border-radius: 50%;
-  color: #fff0c3;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 2.35rem;
-  background: radial-gradient(circle at 34% 28%, #d9ba72, #916127 58%, #4d2a13 100%);
-  border: 5px solid #e7c984;
-  box-shadow:
-    0 0 0 4px #5b3317,
-    0 14px 24px rgba(50, 26, 10, 0.30);
-  animation: crestArrival 1.25s 0.12s cubic-bezier(0.17, 0.89, 0.32, 1.2) both;
-}
-
-.winner-ornament {
-  color: #8a622c;
-  font-family: Georgia, "Times New Roman", serif;
-  letter-spacing: 0.18em;
-}
-
-.winner-ornament-top {
-  margin-bottom: 12px;
-}
-
-.winner-ornament-bottom {
-  margin-top: 18px;
-  font-size: 1.3rem;
+  background: linear-gradient(90deg, transparent, rgba(171,126,57,0.38), transparent);
 }
 
 .winner-ceremony-kicker {
-  margin: 0 0 7px;
-  color: #644522;
+  margin: 0 0 10px;
+  color: #745833;
   font-size: 0.76rem;
-  font-weight: 820;
-  letter-spacing: 0.15em;
+  font-weight: 800;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
 .winner-ceremony-title {
   margin: 0;
-  color: #3b2414;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.5rem, 4vw, 2.05rem);
+  font-size: clamp(1.25rem, 3vw, 1.65rem);
+  color: #4b3421;
 }
 
 .winner-ceremony-name {
-  margin: 9px auto 14px;
-  color: #5f3021;
+  margin: 14px 0 10px;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(2.2rem, 7vw, 4rem);
-  font-weight: 800;
-  line-height: 1.02;
-  overflow-wrap: anywhere;
-  text-shadow: 0 1px 0 #fff5dc, 0 3px 10px rgba(117, 70, 25, 0.12);
-  animation: winnerNameReveal 0.68s 0.66s cubic-bezier(0.18, 0.86, 0.24, 1.08) both;
+  font-size: clamp(2.3rem, 7vw, 4.2rem);
+  line-height: 1;
+  color: #2f5d8d;
+  text-shadow: 0 3px 0 rgba(255,255,255,0.42);
+  animation: ceremonyName 0.68s 0.48s cubic-bezier(0.18, 0.84, 0.25, 1.08) both;
 }
 
 .winner-ceremony-divider {
-  position: relative;
-  width: min(300px, 72%);
+  display: block;
+  width: 180px;
   height: 1px;
-  margin: 0 auto 15px;
-  background: linear-gradient(90deg, transparent, #af7c38 18%, #d6b571 50%, #af7c38 82%, transparent);
+  margin: 20px auto;
+  background: linear-gradient(90deg, transparent, #b48a43, transparent);
 }
 
 .winner-ceremony-divider::after {
-  content: "◆";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  padding: 0 7px;
-  color: #906126;
-  background: #f0dcae;
-  font-size: 0.58rem;
+  content: "✦";
+  display: block;
+  width: 30px;
+  margin: -13px auto 0;
+  color: #b28a47;
+  background: #f8ebcf;
 }
 
 .winner-ceremony-message {
-  margin: 0 auto 20px;
-  color: #4f3b29;
-  font-size: 0.96rem;
-  font-weight: 600;
+  margin: 0 auto 22px;
+  max-width: 430px;
+  color: #6a5743;
 }
 
 .winner-ceremony-close {
-  min-width: 178px;
+  min-width: 185px;
+  color: #fff8e8;
+  border-color: rgba(231,194,113,0.55);
+  background: linear-gradient(180deg, #3c6e9f, #28537e);
 }
 
 .winner-ceremony-particles {
   position: absolute;
   inset: 0;
-  overflow: hidden;
   pointer-events: none;
 }
 
 .winner-ceremony-particle {
   position: absolute;
-  top: -5vh;
-  width: var(--particle-size);
-  height: var(--particle-size);
-  border-radius: 50%;
+  top: -12vh;
+  width: var(--size, 8px);
+  height: calc(var(--size, 8px) * 1.6);
+  border-radius: 2px;
   opacity: 0;
-  box-shadow: 0 0 12px currentColor;
-  animation: ceremonyParticleFall var(--particle-duration) var(--particle-delay) ease-in infinite;
+  animation: ceremonyParticle var(--duration, 3.6s) linear var(--delay, 0s) forwards;
+}
+
+body.winner-ceremony-open {
+  overflow: hidden;
+}
+
+body.vr-walking .card {
+  box-shadow:
+    0 38px 86px rgba(71,46,23,0.26),
+    0 8px 24px rgba(66,44,22,0.10),
+    0 0 0 2px rgba(230,194,123,0.84);
 }
 
 @keyframes screenIn {
-  from { opacity: 0; transform: translateY(7px); }
+  from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes feedbackPop {
-  0% { transform: scale(0.985); }
-  50% { transform: scale(1.014); }
+  0% { transform: scale(0.98); }
+  50% { transform: scale(1.018); }
   100% { transform: scale(1); }
+}
+
+@keyframes winnerPulse {
+  50% { transform: scale(1.03); }
 }
 
 @keyframes ceremonyBackdropIn {
@@ -806,84 +810,53 @@ body.vr-walking .card {
 }
 
 @keyframes ceremonyBackdropOut {
-  from { opacity: 1; }
   to { opacity: 0; }
 }
 
-@keyframes royalDescent {
-  0% {
-    opacity: 0;
-    transform: translateY(-115vh) scale(0.90) rotateX(16deg);
-    filter: blur(5px);
-  }
-  64% {
-    opacity: 1;
-    transform: translateY(16px) scale(1.015) rotateX(-1deg);
-    filter: blur(0);
-  }
-  82% {
-    transform: translateY(-6px) scale(0.997);
-  }
-  100% {
-    transform: translateY(0) scale(1);
-  }
+@keyframes ceremonyDrop {
+  0% { opacity: 0; transform: translateY(-110vh) scale(0.93); }
+  72% { opacity: 1; transform: translateY(14px) scale(1.01); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-@keyframes ceremonyExit {
-  to { opacity: 0; transform: translateY(30px) scale(0.97); filter: blur(2px); }
-}
-
-@keyframes crestArrival {
-  from { opacity: 0; transform: translateY(-28px) rotate(-20deg) scale(0.62); }
-  to { opacity: 1; transform: translateY(0) rotate(0) scale(1); }
-}
-
-@keyframes winnerNameReveal {
-  from { opacity: 0; transform: translateY(-12px) scale(0.92); letter-spacing: 0.06em; }
-  to { opacity: 1; transform: translateY(0) scale(1); letter-spacing: 0.01em; }
+@keyframes ceremonyOut {
+  to { opacity: 0; transform: translateY(28px) scale(0.98); }
 }
 
 @keyframes ceremonyGlow {
-  from { transform: translate(-50%, -50%) scale(0.94); opacity: 0.68; }
-  to { transform: translate(-50%, -50%) scale(1.07); opacity: 1; }
+  to { transform: translate(-50%, -50%) scale(1.08); opacity: 0.82; }
 }
 
 @keyframes ceremonyRays {
   to { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
-@keyframes ceremonyParticleFall {
-  0% { opacity: 0; transform: translate3d(0, -2vh, 0) scale(0.6); }
-  14% { opacity: 0.95; }
-  100% { opacity: 0; transform: translate3d(var(--particle-drift), 110vh, 0) scale(1.04); }
+@keyframes ceremonyName {
+  from { opacity: 0; transform: scale(0.76) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-body.winner-ceremony-open {
-  overflow: hidden;
+@keyframes ceremonyParticle {
+  0% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.92; }
+  100% { transform: translate3d(var(--drift, 0px), 122vh, 0) rotate(var(--turn, 480deg)); opacity: 0; }
 }
 
 @media (max-width: 720px) {
   .app {
-    padding: 16px 10px 28px;
+    padding: 24px 12px 38px;
   }
 
   .card {
-    padding: 32px 22px 28px;
+    padding: 38px 20px 28px;
     border-width: 8px;
+    border-radius: 16px;
   }
 
   .card::after {
-    left: 22px;
-    right: 22px;
-    top: 110px;
-  }
-
-  h1 {
-    font-size: clamp(2rem, 10vw, 2.8rem);
-  }
-
-  .intro {
-    margin-bottom: 26px;
+    top: -25px;
+    width: 52px;
+    height: 52px;
   }
 
   .panel-header {
@@ -895,58 +868,39 @@ body.winner-ceremony-open {
     align-self: flex-start;
   }
 
-  .entry-actions,
-  .action-row,
-  .wizard-nav {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .entry-actions button,
-  .action-row button,
-  .wizard-nav button,
-  .primary-action {
-    width: 100%;
-  }
-
   .answer-row {
     grid-template-columns: 1fr;
   }
 
+  .entry-actions,
+  .action-row,
+  .wizard-nav {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .entry-actions button,
+  .action-row button,
+  .wizard-nav button {
+    width: 100%;
+  }
+
   .wheel-area {
     min-height: 390px;
-    padding-bottom: 60px;
   }
 
   .wheel-area::before {
-    width: 155px;
-    height: 190px;
+    width: 130px;
+    height: 170px;
+    bottom: 70px;
   }
 
   .wheel {
     width: min(82vw, 305px);
-    border-width: 13px;
-  }
-
-  .winner-ceremony-layer {
-    padding: 15px;
   }
 
   .winner-ceremony {
-    width: min(94vw, 560px);
-    padding: 44px 24px 29px;
-    border-width: 7px;
-  }
-
-  .winner-crest {
-    width: 76px;
-    height: 76px;
-    margin-top: -80px;
-    font-size: 2rem;
-  }
-
-  .winner-ceremony-name {
-    font-size: clamp(2rem, 12vw, 3.3rem);
+    padding: 46px 22px 32px;
   }
 }
 
