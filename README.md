@@ -71,16 +71,24 @@ Ohne gültige Supabase-Konfiguration bleibt der Raum-Modus nutzbar; beim Versuch
 
 ## Gestaltung und Typografie
 
-Die Oberfläche folgt einem einheitlichen Designsystem:
+Die Oberfläche folgt einem einheitlichen, leichten Basel-Designsystem. Die Farbwelt orientiert sich an Rhein, Himmel, hellem Stein, begrünten Ufern und dem warmen Sandstein des Basler Münsters, ohne die Oberfläche schwer oder historisierend dunkel wirken zu lassen. Mittelalterliche Atmosphäre entsteht vor allem durch Proportion, Pergamentanmutung, feine Linien und die typografische Hierarchie.
 
-- helle, pergamentartige Briefflächen,
-- zurückhaltende Palette aus Himmelblau, Salbei, warmem Beige und gedämpften Akzentfarben,
-- `Cormorant Garamond` für Überschriften und zeremonielle Titel,
+- helle, warme Pergament-/Briefflächen mit sehr zurückhaltender Papierstruktur,
+- Rheinblau bzw. gedämpftes Blaugrün als primärer UI-Akzent,
+- kühles Schiefergrün für Text und Orientierung,
+- gedämpftes Sandsteinrot und Messinggold nur als sparsame Akzente,
+- `Cormorant Garamond` ausschließlich für Überschriften, Auswahlkartentitel und zeremonielle Titel,
 - `Alegreya` für Fließtext, Formulare, Statusmeldungen und sämtliche UI-Buttons,
 - `Parisienne` ausschließlich für die persönliche Unterschrift „Olga Nova“,
-- einheitliche helle Buttons mit dunkler blaugrüner Schrift.
+- eine durchgehende Button-Komponente mit heller Rhein-Färbung und dunkler Schrift; Hierarchie entsteht über Größe und Position statt über wechselnde Farben oder Schriftarten,
+- konsistente Abstände, Feldhöhen, Radien und Textgrößen über alle sechs Etappen hinweg,
+- eine reduzierte Fortschrittsanzeige und eine Gewinnerproklamation im selben visuellen System wie die Hauptfenster.
 
-Die Fonts werden zur Laufzeit über Google Fonts geladen. Es werden keine Fontdateien im Repository mitgeliefert.
+Die Fonts werden zur Laufzeit über Google Fonts geladen. Für Alegreya werden reguläre und kursive Schnitte sowie die im UI verwendeten Gewichte geladen; es werden keine Fontdateien im Repository mitgeliefert.
+
+### Schutz der Glücksrad-Konstruktion
+
+Die visuelle Überarbeitung verändert nicht die Architektur des Glücksrads. DOM-Aufbau, Radgestell, Radgeometrie, Segmentberechnung, Rotationslogik, Stop-Berechnung und das 3D-Glücksrad bleiben funktional unverändert. Das Designsystem formatiert lediglich die umgebenden Oberflächen wie Überschriften, Ergebnislegende und Bedienknöpfe.
 
 ## Glücksrad und Gewinnerverkündung
 

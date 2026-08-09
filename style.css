@@ -4663,3 +4663,1040 @@ button span,
     font-size: 1rem;
   }
 }
+
+/* =========================================================
+   v22 BASEL LIGHT EDITORIAL DESIGN SYSTEM
+   Visuelle Neufassung der gesamten UI. Die Konstruktion des
+   funktionalen und dekorativen Gluecksrads bleibt unangetastet:
+   keine Geometrie-, Gestell- oder Rotationsregeln in diesem Block.
+   ========================================================= */
+:root {
+  --basel-rhine: #5e8886;
+  --basel-rhine-deep: #466e6d;
+  --basel-rhine-soft: #dce9e7;
+  --basel-sky: #ced9da;
+  --basel-sky-soft: #edf3f2;
+  --basel-stone: #cbbeb2;
+  --basel-sandstone: #a77b69;
+  --basel-sandstone-soft: #eadbd3;
+  --basel-moss: #526a59;
+  --basel-slate: #344845;
+  --basel-ink: #344845;
+  --basel-ink-soft: #65736f;
+  --basel-muted: #82908c;
+  --basel-gold: #b49058;
+  --basel-paper: #f7f2e7;
+  --basel-paper-warm: #efe4cf;
+  --basel-paper-light: #fffdf7;
+  --basel-line: rgba(106, 122, 115, 0.22);
+  --basel-line-warm: rgba(169, 127, 99, 0.24);
+  --basel-shadow: 0 26px 74px rgba(45, 62, 58, 0.14), 0 5px 18px rgba(45, 62, 58, 0.06);
+  --basel-shadow-soft: 0 12px 30px rgba(54, 72, 68, 0.08);
+  --basel-radius-panel: 28px;
+  --basel-radius-control: 13px;
+  --basel-content: 760px;
+
+  --font-display-v17: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-text-v17: "Alegreya", Georgia, "Times New Roman", serif;
+  --font-ui-v17: "Alegreya", Georgia, "Times New Roman", serif;
+  --font-signature-v17: "Parisienne", "Brush Script MT", cursive;
+
+  --button-ink-v16: #345654;
+  --button-bg-top-v16: #f0f7f7;
+  --button-bg-bottom-v16: #dbe9e8;
+  --button-border-v16: rgba(78, 120, 119, 0.30);
+  --button-shadow-v16: 0 8px 18px rgba(70, 105, 103, 0.10), inset 0 1px 0 rgba(255,255,255,0.88);
+}
+
+html {
+  background: var(--basel-sky-soft) !important;
+}
+
+body {
+  color: var(--basel-ink) !important;
+  font-family: var(--font-text-v17) !important;
+  font-size: 17px;
+  line-height: 1.58;
+  background:
+    radial-gradient(circle at 50% -5%, rgba(255,255,255,0.74), transparent 32%),
+    linear-gradient(180deg, #dbe8e8 0%, #edf2ed 52%, #eee8dc 100%) !important;
+}
+
+body::before {
+  background:
+    linear-gradient(180deg, rgba(220, 235, 233, 0.10), rgba(247, 242, 229, 0.08) 55%, rgba(207, 191, 174, 0.07)),
+    radial-gradient(circle at 50% 12%, rgba(255,255,255,0.20), transparent 38%) !important;
+}
+
+.scene-vignette {
+  background:
+    linear-gradient(90deg, rgba(207, 222, 220, 0.14), transparent 18%, transparent 82%, rgba(207, 222, 220, 0.14)),
+    linear-gradient(180deg, rgba(236, 244, 243, 0.06), transparent 58%, rgba(77, 100, 91, 0.07)) !important;
+}
+
+.app {
+  padding: 98px 24px 66px !important;
+}
+
+/* Ein einziges ruhiges Brieffenster statt mehrerer uebereinanderliegender Rahmen. */
+.card {
+  width: min(920px, calc(100% - 64px)) !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: var(--basel-radius-panel) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.card::before,
+.card::after {
+  display: none !important;
+}
+
+.wizard-screen,
+#vote-section,
+#results-section {
+  min-height: 620px !important;
+  padding: 62px 66px 68px !important;
+  overflow: hidden;
+  border: 1px solid rgba(164, 138, 103, 0.30) !important;
+  border-radius: var(--basel-radius-panel) !important;
+  color: var(--basel-ink) !important;
+  background:
+    linear-gradient(180deg, rgba(255,253,247,0.97) 0%, rgba(248,241,226,0.97) 100%) !important;
+  box-shadow: var(--basel-shadow) !important;
+}
+
+.wizard-screen::before,
+#vote-section::before,
+#results-section::before {
+  display: block !important;
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+  border-radius: inherit !important;
+  background:
+    radial-gradient(circle at 14% 8%, rgba(255,255,255,0.60), transparent 25%),
+    radial-gradient(circle at 88% 90%, rgba(196, 160, 116, 0.08), transparent 28%),
+    repeating-linear-gradient(0deg, rgba(89,78,62,0.018) 0 1px, transparent 1px 4px) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.58) !important;
+  opacity: 1 !important;
+}
+
+.wizard-screen::after,
+#vote-section::after,
+#results-section::after {
+  display: block !important;
+  content: "" !important;
+  position: absolute !important;
+  left: 50% !important;
+  top: 24px !important;
+  width: 74px !important;
+  height: 1px !important;
+  transform: translateX(-50%) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: linear-gradient(90deg, transparent, rgba(180,144,88,0.64), transparent) !important;
+  box-shadow: none !important;
+  opacity: 0.76 !important;
+  pointer-events: none !important;
+}
+
+.wizard-screen > *,
+#vote-section > *,
+#results-section > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Typografische Hierarchie: drei Rollen, keine zufaelligen Wechsel. */
+h1,
+h2,
+h3,
+#question-display,
+.mode-fieldset legend,
+.choice-card-button strong,
+.mode-copy strong,
+.winner-ceremony-title,
+.winner-ceremony-name {
+  color: var(--basel-slate) !important;
+  font-family: var(--font-display-v17) !important;
+  font-style: normal !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.018em !important;
+}
+
+h1 {
+  margin: 0 0 30px !important;
+  font-size: clamp(3rem, 5vw, 4.15rem) !important;
+  line-height: 0.98 !important;
+  text-wrap: balance;
+}
+
+h2,
+#question-display {
+  margin: 0 0 10px !important;
+  font-size: clamp(2.25rem, 4vw, 3.05rem) !important;
+  line-height: 1.02 !important;
+  text-wrap: balance;
+}
+
+h3,
+.mode-fieldset legend {
+  margin: 0 0 16px !important;
+  font-size: 1.42rem !important;
+  line-height: 1.15 !important;
+}
+
+p,
+.info,
+.field,
+.field > span,
+.step-label,
+.mode-copy,
+.mode-copy small,
+.choice-card-button small,
+.results-list,
+.confirm,
+.error,
+.room-status,
+.winner,
+.wheel-note,
+.welcome-proclamation,
+.welcome-proclamation-sequence,
+.welcome-proclamation-sequence .welcome-line {
+  font-family: var(--font-text-v17) !important;
+}
+
+.info,
+.wheel-note {
+  max-width: 58ch;
+  margin: 0 !important;
+  color: var(--basel-ink-soft) !important;
+  font-size: 1.04rem !important;
+  line-height: 1.55 !important;
+}
+
+.screen-eyebrow,
+.market-welcome,
+.winner-ceremony-kicker {
+  margin: 0 0 11px !important;
+  color: var(--basel-rhine-deep) !important;
+  font-family: var(--font-ui-v17) !important;
+  font-size: 0.76rem !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.15em !important;
+  text-transform: uppercase !important;
+}
+
+.screen-eyebrow::before,
+.market-welcome::before,
+.market-welcome::after {
+  color: var(--basel-sandstone) !important;
+}
+
+.panel-header {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: start !important;
+  gap: 28px !important;
+  margin: 0 0 38px !important;
+}
+
+.panel-header > div {
+  max-width: 650px !important;
+}
+
+/* Willkommen: gleiche Grundsprache, aber weiterhin Briefcharakter. */
+.welcome-copy h1 {
+  color: var(--basel-slate) !important;
+  margin-bottom: 30px !important;
+  font-size: clamp(2.75rem, 4.4vw, 3.9rem) !important;
+  line-height: 1 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.welcome-proclamation-sequence {
+  gap: 9px !important;
+  max-width: 21ch !important;
+  margin-top: 0 !important;
+  color: #445955 !important;
+  font-size: 1.08rem !important;
+  line-height: 1.44 !important;
+}
+
+.welcome-proclamation-sequence .welcome-line {
+  line-height: 1.44 !important;
+}
+
+.welcome-signature-block {
+  width: 21ch !important;
+  max-width: 21ch !important;
+  margin-top: 30px !important;
+}
+
+.welcome-signoff {
+  margin: 0 0 7px !important;
+  color: var(--basel-ink-soft) !important;
+  font-size: 0.98rem !important;
+  font-style: italic !important;
+  font-weight: 500 !important;
+}
+
+.welcome-signature {
+  margin: 0 !important;
+  color: var(--basel-sandstone) !important;
+  font-family: var(--font-signature-v17) !important;
+  font-size: 2.2rem !important;
+  line-height: 1 !important;
+}
+
+/* Das Schild bleibt geometrisch unveraendert, wird nur farblich veredelt. */
+.welcome-wheel-sign {
+  color: #3d5350 !important;
+  font-family: var(--font-display-v17) !important;
+  font-size: 1.08rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+  border-color: rgba(157, 118, 91, 0.38) !important;
+  background: linear-gradient(180deg, rgba(249,241,226,0.96), rgba(232,216,190,0.96)) !important;
+  box-shadow: 0 8px 18px rgba(82,69,54,0.10) !important;
+}
+
+/* Formulare: ruhige, klare Eingabeflaechen. */
+.field {
+  gap: 9px !important;
+  margin: 0 0 24px !important;
+}
+
+.field > span,
+.step-label {
+  color: #415652 !important;
+  font-family: var(--font-ui-v17) !important;
+  font-size: 0.98rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.015em !important;
+}
+
+.field small {
+  color: var(--basel-muted) !important;
+  font-size: 0.88em !important;
+  font-weight: 500 !important;
+}
+
+input,
+select,
+textarea {
+  min-height: 56px !important;
+  padding: 13px 15px !important;
+  border: 1px solid rgba(83, 118, 112, 0.27) !important;
+  border-radius: var(--basel-radius-control) !important;
+  color: var(--basel-ink) !important;
+  font-family: var(--font-ui-v17) !important;
+  font-size: 1.03rem !important;
+  font-weight: 500 !important;
+  background: rgba(255,254,250,0.84) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.86), 0 5px 14px rgba(56,75,70,0.035) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #929c98 !important;
+  font-style: italic !important;
+  font-weight: 400 !important;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+  background: rgba(255,255,252,0.96) !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  transform: none !important;
+  border-color: rgba(70,110,109,0.60) !important;
+  box-shadow: 0 0 0 4px rgba(94,136,134,0.12), inset 0 1px 0 rgba(255,255,255,0.90) !important;
+}
+
+/* Buttons: eine einzige Komponentenfamilie, Hierarchie ueber Groesse und Platzierung. */
+button,
+button.primary-action,
+button.secondary-choice-btn,
+button.secondary-btn,
+button.back-btn,
+button.subtle-action,
+button.remove-answer-btn,
+button.moderator-action,
+button.winner-ceremony-close,
+#experience-start-btn,
+#show-create-btn,
+#show-join-btn,
+#back-to-welcome-btn,
+#back-from-create-btn,
+#add-answer-btn,
+#continue-to-mode-btn,
+#back-to-create-btn,
+#start-btn,
+#back-from-join-btn,
+#join-online-btn,
+#vote-btn,
+#end-voting-btn,
+#new-voting-btn-vote,
+#spin-btn,
+#stop-btn,
+#new-voting-btn-results {
+  min-height: 52px !important;
+  padding: 11px 22px !important;
+  color: var(--button-ink-v16) !important;
+  border: 1px solid var(--button-border-v16) !important;
+  border-radius: var(--basel-radius-control) !important;
+  font-family: var(--font-ui-v17) !important;
+  font-size: 1.02rem !important;
+  font-style: normal !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.006em !important;
+  text-shadow: none !important;
+  background: linear-gradient(180deg, var(--button-bg-top-v16), var(--button-bg-bottom-v16)) !important;
+  box-shadow: var(--button-shadow-v16) !important;
+  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease, background .16s ease !important;
+}
+
+button *,
+button strong,
+button small,
+button span {
+  color: inherit !important;
+  font-family: inherit !important;
+}
+
+button::after {
+  display: none !important;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-1px) !important;
+  color: #2f4e4c !important;
+  border-color: rgba(70, 110, 109, 0.44) !important;
+  background: linear-gradient(180deg, #f6fbfa, #e1efee) !important;
+  box-shadow: 0 10px 22px rgba(62,96,93,0.13), inset 0 1px 0 rgba(255,255,255,0.92) !important;
+  filter: none !important;
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0) !important;
+  box-shadow: 0 4px 10px rgba(62,96,93,0.09), inset 0 1px 0 rgba(255,255,255,0.90) !important;
+}
+
+button:focus-visible {
+  outline: 3px solid rgba(94,136,134,0.20) !important;
+  outline-offset: 3px !important;
+}
+
+button:disabled {
+  color: rgba(52,72,69,0.66) !important;
+  border-color: rgba(102,125,121,0.18) !important;
+  background: linear-gradient(180deg, #edf2f1, #e0e8e6) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.72) !important;
+  opacity: 0.78 !important;
+}
+
+.back-btn {
+  min-height: 42px !important;
+  padding: 8px 14px !important;
+  font-size: 0.94rem !important;
+  box-shadow: none !important;
+}
+
+.welcome-start-btn {
+  min-height: 56px !important;
+  padding-inline: 28px !important;
+}
+
+/* Auswahlkarten */
+.choice-actions {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+  margin-top: 30px !important;
+}
+
+.choice-card-button {
+  min-height: 138px !important;
+  padding: 22px !important;
+  display: grid !important;
+  grid-template-columns: 44px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 16px !important;
+  text-align: left !important;
+  border-color: rgba(79,116,111,0.22) !important;
+  background: linear-gradient(180deg, rgba(249,253,252,0.94), rgba(228,239,237,0.90)) !important;
+}
+
+.choice-card-button .choice-icon {
+  width: 42px !important;
+  height: 42px !important;
+  display: grid !important;
+  place-items: center !important;
+  border: 1px solid rgba(94,136,134,0.34) !important;
+  border-radius: 50% !important;
+  color: var(--basel-rhine-deep) !important;
+  font-size: 1.05rem !important;
+  background: rgba(255,255,255,0.46) !important;
+  box-shadow: none !important;
+}
+
+.choice-card-button strong {
+  display: block !important;
+  margin: 0 0 5px !important;
+  color: var(--basel-slate) !important;
+  font-family: var(--font-display-v17) !important;
+  font-size: 1.34rem !important;
+  font-weight: 600 !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.choice-card-button small {
+  display: block !important;
+  color: var(--basel-ink-soft) !important;
+  font-size: 0.96rem !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+}
+
+.choice-card-button:hover .choice-icon {
+  transform: none !important;
+  border-color: rgba(94,136,134,0.52) !important;
+}
+
+/* Antwort- und Modusflaechen */
+.answers-box,
+.mode-fieldset {
+  margin: 8px 0 0 !important;
+  padding: 22px !important;
+  border: 1px solid rgba(164,138,103,0.20) !important;
+  border-radius: 18px !important;
+  background: rgba(255,253,247,0.48) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.54) !important;
+}
+
+.answer-row {
+  gap: 10px !important;
+  margin-bottom: 11px !important;
+}
+
+.remove-answer-btn {
+  min-width: 52px !important;
+  padding-inline: 14px !important;
+}
+
+.mode-choice-grid {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 13px !important;
+}
+
+.mode-option {
+  min-height: 88px !important;
+  padding: 18px 20px !important;
+  display: grid !important;
+  grid-template-columns: 22px minmax(0, 1fr) !important;
+  gap: 15px !important;
+  align-items: start !important;
+  border: 1px solid rgba(84,114,108,0.20) !important;
+  border-radius: 15px !important;
+  background: rgba(255,254,249,0.70) !important;
+  box-shadow: none !important;
+}
+
+.mode-option:hover {
+  transform: translateY(-1px) !important;
+  border-color: rgba(70,110,109,0.38) !important;
+  background: rgba(247,252,251,0.90) !important;
+  box-shadow: var(--basel-shadow-soft) !important;
+}
+
+.mode-option.is-selected {
+  transform: none !important;
+  border-color: rgba(70,110,109,0.52) !important;
+  background: linear-gradient(90deg, rgba(220,233,231,0.78), rgba(255,253,247,0.82)) !important;
+  box-shadow: inset 4px 0 0 rgba(94,136,134,0.66) !important;
+}
+
+.mode-option::after {
+  display: none !important;
+}
+
+.mode-option input {
+  width: 18px !important;
+  min-width: 18px !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  margin: 4px 0 0 !important;
+  padding: 0 !important;
+  accent-color: var(--basel-rhine-deep) !important;
+  box-shadow: none !important;
+}
+
+.mode-copy strong {
+  display: block !important;
+  margin: 0 0 4px !important;
+  color: var(--basel-slate) !important;
+  font-size: 1.24rem !important;
+  line-height: 1.15 !important;
+}
+
+.mode-copy small {
+  display: block !important;
+  color: var(--basel-ink-soft) !important;
+  font-size: 0.96rem !important;
+  line-height: 1.42 !important;
+}
+
+/* Aktionsbereiche */
+.entry-actions,
+.action-row,
+.wizard-nav,
+.wheel-controls {
+  gap: 12px !important;
+}
+
+.wizard-nav {
+  margin-top: 30px !important;
+  justify-content: flex-end !important;
+}
+
+.action-row {
+  margin-top: 8px !important;
+  align-items: center !important;
+}
+
+#new-voting-btn-vote,
+#new-voting-btn-results {
+  margin-top: 22px !important;
+}
+
+/* Statusmeldungen: weniger Boxen, mehr redaktionelle Ruhe. */
+.error,
+.confirm,
+.room-status {
+  margin: 16px 0 0 !important;
+  padding: 11px 14px !important;
+  border-radius: 11px !important;
+  font-size: 0.98rem !important;
+  font-weight: 500 !important;
+  line-height: 1.42 !important;
+  box-shadow: none !important;
+}
+
+.error {
+  color: #7b5149 !important;
+  border: 1px solid rgba(167,123,105,0.25) !important;
+  background: rgba(234,219,211,0.52) !important;
+}
+
+.confirm,
+.room-status {
+  color: #405f56 !important;
+  border: 1px solid rgba(82,106,89,0.20) !important;
+  background: rgba(220,233,231,0.52) !important;
+}
+
+/* Ergebnisbereich: klare Legende oberhalb des unveraenderten Rads. */
+.wheel-heading {
+  max-width: 650px !important;
+  margin: 0 auto 26px !important;
+  text-align: center !important;
+}
+
+.wheel-heading .info,
+.wheel-note {
+  margin-inline: auto !important;
+}
+
+.results-data {
+  width: min(100%, 720px) !important;
+  margin: 0 auto 10px !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  text-align: left !important;
+}
+
+.results-list .result-option-key {
+  min-height: 54px !important;
+  padding: 11px 14px !important;
+  grid-template-columns: 14px minmax(0, 1fr) !important;
+  gap: 10px !important;
+  border-width: 1px !important;
+  border-left-width: 4px !important;
+  border-radius: 12px !important;
+  color: var(--basel-ink) !important;
+  background: linear-gradient(90deg, var(--option-tint), rgba(255,253,247,0.80) 52%) !important;
+  box-shadow: 0 5px 14px rgba(55,72,67,0.04) !important;
+}
+
+.results-list .result-option-marker {
+  width: 11px !important;
+  height: 11px !important;
+  border-width: 1px !important;
+  box-shadow: 0 0 0 1px rgba(66,74,69,0.16) !important;
+}
+
+.results-list .result-option-label {
+  color: var(--basel-ink) !important;
+  font-family: var(--font-ui-v17) !important;
+  font-size: 0.99rem !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+}
+
+.wheel-controls {
+  justify-content: center !important;
+  margin-top: 16px !important;
+}
+
+.wheel-controls button {
+  min-width: 210px !important;
+}
+
+.winner {
+  min-height: 28px !important;
+  margin: 18px auto 0 !important;
+  color: var(--basel-ink-soft) !important;
+  font-size: 1.03rem !important;
+  line-height: 1.45 !important;
+  text-align: center !important;
+}
+
+#new-voting-btn-results {
+  display: block !important;
+  width: fit-content !important;
+  margin-inline: auto !important;
+}
+
+/* Fortschritt: fein, ruhig und sichtbar, ohne Spielzeug-Optik. */
+.journey-hud {
+  top: 22px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  padding: 8px 13px !important;
+  border: 1px solid rgba(91,117,111,0.18) !important;
+  border-radius: 999px !important;
+  background: rgba(248,249,244,0.74) !important;
+  box-shadow: 0 8px 22px rgba(51,70,65,0.08) !important;
+  backdrop-filter: blur(10px) saturate(.9) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(.9) !important;
+}
+
+.journey-track {
+  gap: 7px !important;
+}
+
+.journey-track::before {
+  background: rgba(88,112,106,0.16) !important;
+}
+
+.journey-track::after {
+  background: linear-gradient(90deg, var(--basel-rhine), #789487) !important;
+}
+
+.journey-sigil {
+  width: 27px !important;
+  height: 27px !important;
+  border: 1px solid rgba(87,113,107,0.24) !important;
+  color: #6d7b77 !important;
+  font-size: 0.74rem !important;
+  background: rgba(255,254,249,0.94) !important;
+  box-shadow: none !important;
+}
+
+.journey-step.is-active .journey-sigil {
+  color: #fff !important;
+  border-color: var(--basel-rhine-deep) !important;
+  background: var(--basel-rhine-deep) !important;
+  box-shadow: 0 0 0 4px rgba(94,136,134,0.12) !important;
+}
+
+.journey-step.is-complete .journey-sigil {
+  color: #fff !important;
+  border-color: #71897b !important;
+  background: #71897b !important;
+}
+
+.sound-toggle {
+  top: 20px !important;
+  right: 22px !important;
+  width: 46px !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  background: rgba(244,249,248,0.86) !important;
+  box-shadow: 0 8px 22px rgba(51,70,65,0.09) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+/* Gewinnerproklamation: dieselbe Editorial-/Pergamentsprache wie die Hauptfenster. */
+.winner-ceremony-layer {
+  background: rgba(211,225,222,0.32) !important;
+  backdrop-filter: blur(9px) saturate(.88) !important;
+  -webkit-backdrop-filter: blur(9px) saturate(.88) !important;
+}
+
+.winner-ceremony,
+.winner-proclamation {
+  width: min(650px, 92vw) !important;
+  min-height: 0 !important;
+  padding: 70px 72px 60px !important;
+  border: 1px solid rgba(164,138,103,0.30) !important;
+  border-radius: var(--basel-radius-panel) !important;
+  color: var(--basel-ink) !important;
+  background: linear-gradient(180deg, rgba(255,253,247,0.99), rgba(248,241,226,0.99)) !important;
+  box-shadow: var(--basel-shadow) !important;
+}
+
+.winner-ceremony::before {
+  border-radius: inherit !important;
+  background:
+    radial-gradient(circle at 14% 8%, rgba(255,255,255,0.55), transparent 25%),
+    repeating-linear-gradient(0deg, rgba(89,78,62,0.016) 0 1px, transparent 1px 4px) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.54) !important;
+}
+
+.winner-proclamation-seal {
+  width: 46px !important;
+  height: 46px !important;
+  margin: 0 auto 22px !important;
+  color: var(--basel-sandstone) !important;
+  border: 1px solid rgba(167,123,105,0.34) !important;
+  background: rgba(234,219,211,0.50) !important;
+  box-shadow: none !important;
+}
+
+.winner-ceremony-title {
+  font-size: clamp(2.35rem, 5vw, 3.35rem) !important;
+  line-height: 1 !important;
+}
+
+.winner-ceremony-name {
+  margin: 20px auto 16px !important;
+  color: var(--basel-rhine-deep) !important;
+  font-size: clamp(3.2rem, 8vw, 5rem) !important;
+  line-height: .95 !important;
+}
+
+.winner-ceremony-divider {
+  width: min(220px, 52%) !important;
+  margin: 24px auto 22px !important;
+  background: linear-gradient(90deg, transparent, rgba(167,123,105,0.46), transparent) !important;
+}
+
+.winner-ceremony-divider::after {
+  background: var(--basel-sandstone) !important;
+}
+
+.winner-ceremony-message {
+  max-width: 470px !important;
+  margin: 0 auto 28px !important;
+  color: var(--basel-ink-soft) !important;
+  font-size: 1.05rem !important;
+  line-height: 1.55 !important;
+}
+
+.winner-proclamation-flourish {
+  margin-top: 20px !important;
+  color: var(--basel-gold) !important;
+  opacity: .72 !important;
+}
+
+.winner-ceremony-particles {
+  display: none !important;
+}
+
+/* Responsive Ordnung */
+@media (max-width: 900px) {
+  .app {
+    padding: 88px 14px 40px !important;
+  }
+
+  .card {
+    width: min(100%, calc(100% - 16px)) !important;
+  }
+
+  .wizard-screen,
+  #vote-section,
+  #results-section {
+    min-height: 600px !important;
+    padding: 52px 40px 58px !important;
+  }
+
+  .panel-header {
+    gap: 18px !important;
+  }
+
+  .choice-actions,
+  .results-data {
+    grid-template-columns: 1fr !important;
+  }
+
+  .welcome-copy h1 {
+    font-size: clamp(2.6rem, 8vw, 3.55rem) !important;
+  }
+
+  .welcome-proclamation-sequence,
+  .welcome-signature-block {
+    max-width: 24ch !important;
+    width: 24ch !important;
+  }
+
+  .welcome-actions {
+    justify-content: center !important;
+  }
+
+  .winner-ceremony,
+  .winner-proclamation {
+    padding: 58px 42px 50px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    font-size: 16px;
+  }
+
+  .app {
+    padding-inline: 8px !important;
+  }
+
+  .card {
+    width: calc(100% - 8px) !important;
+  }
+
+  .wizard-screen,
+  #vote-section,
+  #results-section {
+    min-height: 0 !important;
+    padding: 46px 24px 50px !important;
+    border-radius: 22px !important;
+  }
+
+  .wizard-screen::after,
+  #vote-section::after,
+  #results-section::after {
+    top: 20px !important;
+  }
+
+  .panel-header {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    margin-bottom: 30px !important;
+  }
+
+  .back-btn {
+    justify-self: start !important;
+    order: -1;
+  }
+
+  h1 {
+    font-size: clamp(2.55rem, 12vw, 3.25rem) !important;
+  }
+
+  h2,
+  #question-display {
+    font-size: clamp(2.05rem, 10vw, 2.65rem) !important;
+  }
+
+  .choice-card-button {
+    min-height: 118px !important;
+    padding: 18px !important;
+  }
+
+  .action-row,
+  .wizard-nav,
+  .wheel-controls {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+  }
+
+  .action-row button,
+  .wizard-nav button,
+  .wheel-controls button,
+  #new-voting-btn-vote,
+  #new-voting-btn-results {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .welcome-start-btn {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .winner-ceremony,
+  .winner-proclamation {
+    width: min(100%, 590px) !important;
+    padding: 52px 26px 44px !important;
+    border-radius: 22px !important;
+  }
+
+  .journey-hud {
+    top: 14px !important;
+    padding: 7px 10px !important;
+  }
+
+  .journey-track {
+    gap: 4px !important;
+  }
+
+  .journey-sigil {
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 0.68rem !important;
+  }
+
+  .sound-toggle {
+    top: 12px !important;
+    right: 10px !important;
+    width: 42px !important;
+    height: 42px !important;
+    min-height: 42px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button,
+  input,
+  select,
+  textarea,
+  .choice-card-button,
+  .mode-option {
+    transition: none !important;
+  }
+}
+
+/* Kleine Displays: Radblock proportional skalieren, Konstruktion selbst bleibt identisch. */
+@media (max-width: 420px) {
+  .welcome-display {
+    transform: scale(0.90) !important;
+    transform-origin: top center !important;
+    margin-bottom: -38px !important;
+  }
+}
+
+@media (max-width: 350px) {
+  .welcome-display {
+    transform: scale(0.80) !important;
+    margin-bottom: -76px !important;
+  }
+}
