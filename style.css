@@ -3712,3 +3712,20 @@ h1 {
     height: 198px;
   }
 }
+
+/* --- v7 Endrad-Fix: Positionierung ohne translate, damit Rotation das Gestell nicht zerreisst --- */
+.wheel {
+  left: calc(50% - (var(--wheel-size) / 2)) !important;
+  top: var(--wheel-top) !important;
+  transform: rotate(0deg);
+  transform-origin: 50% 50%;
+}
+
+.wheel::before,
+.wheel::after {
+  pointer-events: none;
+}
+
+.wheel-area {
+  overflow: visible;
+}
