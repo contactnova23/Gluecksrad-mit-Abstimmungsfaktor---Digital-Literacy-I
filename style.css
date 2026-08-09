@@ -6074,3 +6074,25 @@ button:disabled {
     font-size: 0.96rem !important;
   }
 }
+
+
+/* =========================================================
+   v26 · Auswahlseite: klare Textfuehrung und Benutzerlogik
+   Nur Fenster 2. Gluecksrad unberuehrt.
+   ========================================================= */
+#entry-choice .panel-header > div {
+  max-width: 860px !important;
+}
+
+@media (min-width: 1050px) {
+  #entry-choice .panel-header .info {
+    max-width: none !important;
+    white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 1049px) {
+  #entry-choice .panel-header .info {
+    white-space: normal !important;
+  }
+}
