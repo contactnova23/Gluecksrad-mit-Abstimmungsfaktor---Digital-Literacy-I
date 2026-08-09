@@ -5859,3 +5859,97 @@ button:disabled {
     font-size: 1.30rem !important;
   }
 }
+
+
+/* =========================================================
+   v24 · Startseite: klare Hierarchie Markt -> Stand -> Spiel
+   Nur semantische/typografische Kennzeichnung. Die komplette
+   Radkonstruktion, ihre Geometrie und Positionierungslogik bleiben
+   unangetastet.
+   ========================================================= */
+.welcome-copy {
+  position: relative !important;
+}
+
+.welcome-market-label {
+  position: absolute;
+  top: -30px;
+  left: 0;
+  margin: 0 !important;
+  color: var(--basel-rhine-deep) !important;
+  font-family: var(--font-ui-v17) !important;
+  font-size: 0.72rem !important;
+  font-style: normal !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  letter-spacing: 0.17em !important;
+  text-transform: uppercase !important;
+  white-space: nowrap;
+}
+
+.welcome-market-label::before {
+  content: "✦";
+  display: inline-block;
+  margin-right: 8px;
+  color: var(--basel-sandstone) !important;
+  font-size: 0.70em;
+  vertical-align: 0.12em;
+}
+
+/* Die bestehende Tafel bekommt eine klare Spielbezeichnung,
+   ohne Breite oder Anschluss an das Rad zu veraendern. */
+.welcome-wheel-sign {
+  min-height: 66px;
+  box-sizing: border-box;
+  padding: 9px 18px 10px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 3px !important;
+}
+
+.welcome-wheel-sign__title {
+  display: block;
+  color: var(--basel-slate) !important;
+  font-family: var(--font-display-v17) !important;
+  font-size: 1.20rem !important;
+  font-style: normal !important;
+  font-weight: 700 !important;
+  line-height: 1.02 !important;
+  letter-spacing: 0.012em !important;
+}
+
+.welcome-wheel-sign__tagline {
+  display: block;
+  color: var(--basel-ink-soft) !important;
+  font-family: var(--font-text-v17) !important;
+  font-size: 0.76rem !important;
+  font-style: italic !important;
+  font-weight: 500 !important;
+  line-height: 1.18 !important;
+  letter-spacing: 0.005em !important;
+}
+
+@media (max-width: 900px) {
+  .welcome-market-label {
+    top: -27px;
+    font-size: 0.70rem !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .welcome-market-label {
+    top: -25px;
+    font-size: 0.66rem !important;
+    letter-spacing: 0.14em !important;
+  }
+
+  .welcome-wheel-sign__title {
+    font-size: 1.14rem !important;
+  }
+
+  .welcome-wheel-sign__tagline {
+    font-size: 0.73rem !important;
+  }
+}
