@@ -1,35 +1,32 @@
 # Asset- und Urheberrechtsnachweise
 
-## Keine fremden Medienassets
+## Lokale Medienassets
 
-Dieses Paket enthält keine übernommenen:
+Der aktuelle Projektstand enthält keine extern übernommenen Foto-, Illustrations-, Textur-, 3D-Modell-, Musik-, Sprach- oder Geräuschdateien.
 
-- Fotos
-- Illustrationen
-- Wappenbilder
-- Texturen
-- 3D-Modelle
-- Musikstücke
-- Sprachaufnahmen
-- Geräuschdateien
-- Webfonts
+Die pergamentartige Oberfläche wird im aktuellen Stand mit CSS-Flächen und Verläufen erzeugt. Frühere lokale Pergament-Bilddateien werden nicht mehr verwendet und gehören nicht zum bereinigten Repository.
 
-## Prozedurale Inhalte
+## Prozedural beziehungsweise im Code erzeugte Inhalte
 
-Folgende Inhalte entstehen durch den im Projekt enthaltenen Code:
+Folgende Inhalte werden durch den Projektcode erzeugt:
 
-- Pflastertextur auf einem Canvas
-- Himmelverlauf
-- Gebäude, Marktbuden, Brunnen, Stadtmauer, Stadtmobiliar und Glücksrad aus geometrischen Grundformen
-- Windrauschen und Marktgemurmel aus gefiltertem Rauschen
-- Holzklappern und Glocken aus Oszillatoren der Web Audio API
+- Pflastertextur auf einem Canvas,
+- Himmel- und Atmosphärenverläufe,
+- Gebäude, Marktstände, Brunnen, Stadtmauer, Tor, Stadtmobiliar, Publikum und Glücksräder aus Three.js-Grundgeometrien,
+- UI-Farbflächen und Antwort-/Rad-Zuordnung aus CSS und JavaScript,
+- Wind-, Markt- und Stoffrauschen aus der Web Audio API,
+- Holzklappern, Glocken, kurze Rufe, Vogelklänge und UI-Signale aus Oszillatoren und synthetischem Rauschen.
 
-Dadurch muss für diese visuellen und akustischen Inhalte keine externe Asset-Lizenz eingeholt oder angegeben werden.
+## Webfonts
 
-## Eigene Inhalte
+Die App lädt die Schriftfamilien **Alegreya**, **Cormorant Garamond** und **Parisienne** zur Laufzeit über Google Fonts. Die Fontdateien werden nicht in diesem Repository gebündelt.
 
-Die in der App eingegebenen Fragen, Antwortmöglichkeiten und Namen stammen von den Nutzenden. Bei einer öffentlichen Nutzung sollten dort keine rechtswidrigen oder unberechtigt übernommenen Inhalte eingetragen werden.
+Alle drei Familien werden im offiziellen Google-Fonts-Repository im Verzeichnis `ofl` mit einer `OFL.txt` geführt und stehen unter der SIL Open Font License 1.1. Maßgeblich bleiben die jeweiligen Lizenz- und Urheberrechtshinweise der Fontprojekte.
 
-## Bibliotheken
+## Nutzereingaben
 
-Die App lädt Three.js und Supabase JS über jsDelivr. Hinweise zu diesen Bibliotheken stehen in `THIRD-PARTY-NOTICES.md`.
+Fragen, Antwortmöglichkeiten und optionale Namen werden von den Nutzenden eingegeben. Bei einer öffentlichen Nutzung dürfen dort keine rechtswidrigen oder unberechtigt übernommenen Inhalte eingetragen werden.
+
+## Bibliotheken und externe Dienste
+
+Die App lädt Three.js, Supabase JS und Google Fonts zur Laufzeit von externen Diensten. Details und Lizenzhinweise stehen in `THIRD-PARTY-NOTICES.md`.

@@ -36,7 +36,6 @@ const onlineStatus = document.getElementById('online-status');
 const voterNameInput = document.getElementById('voter-name');
 const voteSelect = document.getElementById('vote-select');
 const voteBtn = document.getElementById('vote-btn');
-const nextPersonBtn = document.getElementById('next-person-btn');
 const voteConfirmation = document.getElementById('vote-confirmation');
 const endVotingBtn = document.getElementById('end-voting-btn');
 
@@ -248,9 +247,6 @@ function celebrateWinner() {
   const existingCeremony = document.querySelector('.winner-ceremony-layer');
   if (existingCeremony) existingCeremony.remove();
 
-  const oldConfetti = document.querySelector('.confetti-layer');
-  if (oldConfetti) oldConfetti.remove();
-
   const layer = document.createElement('div');
   layer.className = 'winner-ceremony-layer';
   layer.setAttribute('role', 'dialog');
@@ -268,12 +264,12 @@ function celebrateWinner() {
 
   const kicker = document.createElement('p');
   kicker.className = 'winner-ceremony-kicker';
-  kicker.textContent = 'Der Glückshafen hat entschieden';
+  kicker.textContent = 'Das Rad des Glücks hat entschieden';
 
   const title = document.createElement('h2');
   title.id = 'winner-proclamation-title';
   title.className = 'winner-ceremony-title';
-  title.textContent = 'Das Los fällt auf';
+  title.textContent = 'Bestimmt wurde';
 
   const name = document.createElement('p');
   name.className = 'winner-ceremony-name';
@@ -497,46 +493,41 @@ function showVoteScreen(question) {
   onlineStatus.hidden = true;
   onlineStatus.textContent = '';
   voteBtn.hidden = false;
-  nextPersonBtn.hidden = true;
   setQuestStep(4);
   emitAtmosphere('voting');
 
   if (roomMode) {
-  roomStatus.hidden = true;
-  roomStatus.textContent = '';
-  voteInfo.textContent = 'Die nächste Person darf vortreten. Ihre Stimme bleibt geheim.';
-
-  endVotingBtn.textContent = 'Ausrufende Person: Abstimmung schließen';
-  endVotingBtn.classList.add('moderator-action');
-
-  newVotingBtnVote.hidden = true;
-} else {
-  endVotingBtn.textContent = 'Abstimmung schließen';
-  endVotingBtn.classList.remove('moderator-action');
-
-  newVotingBtnVote.hidden = false;
+    roomStatus.hidden = true;
+    roomStatus.textContent = '';
+    voteInfo.textContent = 'Die nächste Person darf vortreten. Ihre Stimme bleibt geheim.';
+    endVotingBtn.textContent = 'Ausrufende Person: Abstimmung schließen';
+    endVotingBtn.classList.add('moderator-action');
+    newVotingBtnVote.hidden = true;
+  } else {
+    endVotingBtn.textContent = 'Abstimmung schließen';
+    endVotingBtn.classList.remove('moderator-action');
+    newVotingBtnVote.hidden = false;
   }
 
   if (onlineMode) {
-  onlineStatus.hidden = false;
-  onlineStatus.textContent = isOnlineModerator
-    ? (currentRoomCode
-      ? `Online-Raum: ${currentRoomCode} • ${currentVoteCount} ${currentVoteCount === 1 ? 'Stimme' : 'Stimmen'} bisher abgegeben`
-      : 'Die Abstimmung über die Ferne ist eröffnet.')
-    : (currentRoomCode
-      ? `Online-Raum: ${currentRoomCode} • Deine Stimme bleibt bis zum Ende geheim.`
-      : 'Die Abstimmung über die Ferne ist eröffnet.');
+    onlineStatus.hidden = false;
+    onlineStatus.textContent = isOnlineModerator
+      ? (currentRoomCode
+        ? `Online-Raum: ${currentRoomCode} • ${currentVoteCount} ${currentVoteCount === 1 ? 'Stimme' : 'Stimmen'} bisher abgegeben`
+        : 'Die Abstimmung über die Ferne ist eröffnet.')
+      : (currentRoomCode
+        ? `Online-Raum: ${currentRoomCode} • Deine Stimme bleibt bis zum Ende geheim.`
+        : 'Die Abstimmung über die Ferne ist eröffnet.');
 
-  if (isOnlineModerator) {
-    endVotingBtn.hidden = false;
-    endVotingBtn.textContent = 'Ausrufende Person: Abstimmung schließen';
-    endVotingBtn.classList.add('moderator-action');
-  } else {
-    endVotingBtn.hidden = true;
+    if (isOnlineModerator) {
+      endVotingBtn.hidden = false;
+      endVotingBtn.textContent = 'Ausrufende Person: Abstimmung schließen';
+      endVotingBtn.classList.add('moderator-action');
+    } else {
+      endVotingBtn.hidden = true;
+    }
   }
 }
-
-}  
 function startOnlineRefreshLoop() {
   if (onlineRefreshTimer) {
     window.clearInterval(onlineRefreshTimer);
@@ -575,6 +566,35 @@ const WHEEL_PALETTE = [
   '#d892a4',
 ];
 
+function hslToHex(hue, saturation, lightness) {
+  const s = saturation / 100;
+  const l = lightness / 100;
+  const chroma = (1 - Math.abs(2 * l - 1)) * s;
+  const segment = ((hue % 360) + 360) % 360 / 60;
+  const x = chroma * (1 - Math.abs((segment % 2) - 1));
+  const m = l - chroma / 2;
+  let red = 0;
+  let green = 0;
+  let blue = 0;
+
+  if (segment < 1) [red, green, blue] = [chroma, x, 0];
+  else if (segment < 2) [red, green, blue] = [x, chroma, 0];
+  else if (segment < 3) [red, green, blue] = [0, chroma, x];
+  else if (segment < 4) [red, green, blue] = [0, x, chroma];
+  else if (segment < 5) [red, green, blue] = [x, 0, chroma];
+  else [red, green, blue] = [chroma, 0, x];
+
+  return `#${[red, green, blue]
+    .map((channel) => Math.round((channel + m) * 255).toString(16).padStart(2, '0'))
+    .join('')}`;
+}
+
+function getWheelColor(index) {
+  if (index < WHEEL_PALETTE.length) return WHEEL_PALETTE[index];
+  const hue = (index * 137.508 + 18) % 360;
+  return hslToHex(hue, 38, 68);
+}
+
 function hexToRgba(hex, alpha) {
   const value = hex.replace('#', '');
   const red = parseInt(value.slice(0, 2), 16);
@@ -586,7 +606,7 @@ function hexToRgba(hex, alpha) {
 function buildResultsList(summary) {
   resultsList.innerHTML = '';
   summary.forEach((item, index) => {
-    const color = WHEEL_PALETTE[index % WHEEL_PALETTE.length];
+    const color = getWheelColor(index);
     const listItem = document.createElement('li');
     listItem.classList.add('result-option-key');
     listItem.style.setProperty('--option-color', color);
@@ -613,17 +633,12 @@ function buildWheel(summary) {
   summary.forEach((item, index) => {
     const size = totalVotes > 0 ? (item.votes / totalVotes) * 360 : 360 / summary.length;
     const endAngle = startAngle + size;
-    const color = WHEEL_PALETTE[index % WHEEL_PALETTE.length];
+    const color = getWheelColor(index);
     gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
     startAngle = endAngle;
   });
 
   wheel.style.background = `conic-gradient(${gradientParts.join(', ')})`;
-}
-
-function getWinner(summary) {
-  const highestVotes = Math.max(...summary.map((item) => item.votes));
-  return summary.find((item) => item.votes === highestVotes);
 }
 
 function getWeightedWinner(summary) {
@@ -838,7 +853,7 @@ function restoreSavedState() {
     roomMode = Boolean(parsedState.roomMode);
     onlineMode = Boolean(parsedState.onlineMode);
 
-    // Alte gespeicherte Sitzungen aus dem entfernten Einfachen Modus nicht wiederherstellen.
+    // Ungültige gespeicherte Sitzungen ohne Abstimmungsmodus nicht wiederherstellen.
     if (currentPhase !== 'setup' && !roomMode && !onlineMode) {
       clearSavedState();
       return;
@@ -958,7 +973,8 @@ startBtn.addEventListener('click', async () => {
       setupError.textContent = 'Supabase ist nicht verfügbar. Bitte prüfe die Konfiguration.';
       return;
     }
-  isOnlineModerator = true;
+
+    isOnlineModerator = true;
     try {
       await ensureAnonymousUser();
       currentRoomCode = generateRoomCode();
@@ -1037,16 +1053,13 @@ voteBtn.addEventListener('click', async () => {
       }
 
       localStorage.setItem(`gluecksrad-vote-${currentPollId}`, currentBrowserVoteKey);
+      await refreshOnlineState();
 
-await refreshOnlineState();
-
-voteConfirmation.textContent = `✓ Eure Stimme ist vermerkt: „${selectedOption}“.`;
-animateFeedback(voteConfirmation);
-gameFeedback('vote', voteBtn, 'vote');
-
-saveState();
-return;
-
+      voteConfirmation.textContent = `✓ Eure Stimme ist vermerkt: „${selectedOption}“.`;
+      animateFeedback(voteConfirmation);
+      gameFeedback('vote', voteBtn, 'vote');
+      saveState();
+      return;
     } catch (error) {
       voteConfirmation.textContent = 'Die Stimme konnte nicht vermerkt werden.';
       console.error(error);
@@ -1069,8 +1082,6 @@ return;
 
     voteBtn.hidden = false;
     voteBtn.textContent = 'Stimme abgeben';
-
-    nextPersonBtn.hidden = true;
   } else {
     voteConfirmation.textContent = name
       ? `✓ Eure Stimme ist vermerkt. Habt Dank, ${name}.`
@@ -1085,33 +1096,12 @@ return;
   saveState();
 });
 
-nextPersonBtn.addEventListener('click', () => {
-  voteConfirmation.textContent = '';
-
-  voterNameInput.closest('.field').hidden = false;
-  voteSelect.closest('.field').hidden = false;
-
-  voterNameInput.value = '';
-  voteSelect.selectedIndex = 0;
-
-  voteBtn.hidden = false;
-  voteBtn.textContent = 'Stimme abgeben';
-
-  nextPersonBtn.hidden = true;
-
-  voteInfo.textContent = 'Die nächste Person darf vortreten. Die Stimme bleibt geheim.';
-  roomStatus.hidden = true;
-  roomStatus.textContent = '';
-
-  voterNameInput.focus();
-});
-
 endVotingBtn.addEventListener('click', async () => {
-if (onlineMode && !isOnlineModerator) {
-  voteConfirmation.textContent = 'Nur die ausrufende Person kann diese Runde schließen.';
-  return;
-}
-  
+  if (onlineMode && !isOnlineModerator) {
+    voteConfirmation.textContent = 'Nur die ausrufende Person kann diese Runde schließen.';
+    return;
+  }
+
   if (roomMode || onlineMode) {
     const shouldEnd = window.confirm('Soll die Abstimmung wirklich geschlossen werden?');
     if (!shouldEnd) {
@@ -1168,7 +1158,7 @@ spinBtn.addEventListener('click', () => {
   }
 
   winnerDisplay.classList.remove('winner-announced');
-  winnerDisplay.textContent = '🎡 Das Rad läuft. Haltet es an, wenn das Los fallen soll.';
+  winnerDisplay.textContent = '🎡 Das Rad läuft. Haltet es an, wenn entschieden werden soll.';
   setWheelGameState('is-wheel-spinning');
   gameFeedback('wheel-start', spinBtn, 'wheel-start');
   emitAtmosphere('wheel-spin');
@@ -1218,7 +1208,7 @@ stopBtn.addEventListener('click', () => {
     wheelIsSpinning = false;
     spinBtn.disabled = false;
     stopBtn.disabled = true;
-    winnerDisplay.textContent = 'Das Los konnte nicht ermittelt werden.';
+    winnerDisplay.textContent = 'Das Ergebnis konnte nicht ermittelt werden.';
     return;
   }
 
@@ -1242,7 +1232,7 @@ wheel.addEventListener('transitionend', () => {
   wheelIsSpinning = false;
   spinBtn.disabled = false;
   stopBtn.disabled = true;
-  winnerDisplay.textContent = `Das Los fällt auf: ${currentWinnerOption}`;
+  winnerDisplay.textContent = `Bestimmt wurde: ${currentWinnerOption}`;
   winnerDisplay.classList.add('winner-announced');
   setWheelGameState('is-winner');
   completeQuest();

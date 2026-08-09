@@ -429,7 +429,6 @@ button:disabled {
 .secondary-btn,
 .back-btn,
 #show-join-btn,
-#next-person-btn,
 .subtle-action {
   color: #466058;
   border-color: rgba(119, 151, 142, 0.28);
@@ -1125,34 +1124,6 @@ body.is-winner .card {
   animation: ceremonyOut 0.32s ease forwards;
 }
 
-.winner-ceremony-glow {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: min(760px, 96vw);
-  height: min(760px, 96vw);
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  pointer-events: none;
-  background: radial-gradient(circle, rgba(255, 244, 185, 0.72), rgba(214, 237, 228, 0.30) 42%, transparent 70%);
-  filter: blur(9px);
-  animation: ceremonyGlow 2.5s ease-in-out infinite alternate;
-}
-
-.winner-ceremony-rays {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: min(900px, 115vw);
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  opacity: 0.20;
-  pointer-events: none;
-  background: repeating-conic-gradient(from 0deg, rgba(255, 236, 164, 0.82) 0deg 2deg, transparent 2deg 18deg);
-  animation: ceremonyRays 36s linear infinite;
-}
-
 .winner-ceremony {
   position: relative;
   width: min(610px, 92vw);
@@ -1190,21 +1161,6 @@ body.is-winner .card {
   bottom: 23px;
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(190, 157, 90, 0.42), transparent);
-}
-
-.winner-ornament,
-.winner-crest {
-  color: var(--gold);
-}
-
-.winner-ornament {
-  font-family: Georgia, "Times New Roman", serif;
-  letter-spacing: 0.18em;
-}
-
-.winner-crest {
-  margin: 7px auto 5px;
-  font-size: 1.6rem;
 }
 
 .winner-ceremony-kicker {
@@ -1373,14 +1329,6 @@ body.vr-walking .card {
 
 @keyframes ceremonyOut {
   to { opacity: 0; transform: translateY(24px) scale(0.98); }
-}
-
-@keyframes ceremonyGlow {
-  to { transform: translate(-50%, -50%) scale(1.08); opacity: 0.84; }
-}
-
-@keyframes ceremonyRays {
-  to { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 @keyframes ceremonyName {
@@ -1837,8 +1785,7 @@ button:active:not(:disabled) {
 .back-btn,
 .subtle-action,
 #stop-btn,
-#end-voting-btn,
-#next-person-btn {
+#end-voting-btn {
   background: linear-gradient(180deg, rgba(255, 251, 242, 0.98), rgba(248, 242, 223, 0.95));
 }
 
@@ -2337,7 +2284,7 @@ body {
   padding: 84px 84px 92px;
   border: 0 !important;
   border-radius: 0 !important;
-  background: url('assets/parchment-window.png') center/100% 100% no-repeat !important;
+  background: linear-gradient(180deg, rgba(250, 241, 219, 0.24), rgba(236, 219, 180, 0.12)) !important;
   box-shadow: var(--paper-shadow-v4) !important;
   overflow: visible;
 }
@@ -2450,7 +2397,6 @@ button:hover:not(:disabled) {
 .back-btn,
 .subtle-action,
 #stop-btn,
-#next-person-btn,
 #end-voting-btn {
   background: linear-gradient(180deg, #fbf6ea 0%, #f1e6cf 100%) !important;
 }
@@ -3031,8 +2977,7 @@ body.is-wheel-spinning .wheel-pointer {
   border-radius: 0 !important;
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(250, 241, 219, 0.35), rgba(236, 219, 180, 0.18)),
-    url('assets/parchment-window.png') center/100% 100% no-repeat !important;
+    linear-gradient(180deg, rgba(250, 241, 219, 0.35), rgba(236, 219, 180, 0.18));
   box-shadow: 0 26px 46px rgba(72, 63, 42, 0.12);
 }
 
@@ -4220,7 +4165,6 @@ button.sound-toggle,
 #back-from-join-btn,
 #join-online-btn,
 #vote-btn,
-#next-person-btn,
 #end-voting-btn,
 #new-voting-btn-vote,
 #spin-btn,
@@ -4421,7 +4365,6 @@ button span,
 #back-from-join-btn,
 #join-online-btn,
 #vote-btn,
-#next-person-btn,
 #end-voting-btn,
 #new-voting-btn-vote,
 #spin-btn,
@@ -4473,11 +4416,6 @@ button span,
   animation: ceremonyBackdropIn 0.34s ease both;
 }
 
-.winner-ceremony-glow,
-.winner-ceremony-rays,
-.winner-ornament,
-.winner-crest { display: none !important; }
-
 .winner-ceremony,
 .winner-proclamation {
   position: relative;
@@ -4506,8 +4444,7 @@ button span,
   border: 0 !important;
   border-radius: 0 !important;
   background:
-    linear-gradient(180deg, rgba(250, 241, 219, 0.20), rgba(236, 219, 180, 0.12)),
-    url('assets/parchment-window.png') center/100% 100% no-repeat !important;
+    linear-gradient(180deg, rgba(250, 241, 219, 0.20), rgba(236, 219, 180, 0.12));
   box-shadow: none !important;
 }
 

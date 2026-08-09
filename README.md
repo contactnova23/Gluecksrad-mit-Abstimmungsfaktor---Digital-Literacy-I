@@ -1,129 +1,191 @@
-# Glücksrad mit Abstimmungsfaktor – Mittelalterlicher Glückshafen Basel
+# Glücksrad mit Abstimmungsfaktor – Glückshafen Basel
 
-Web-App-Prototyp für die Prüfungsleistung in Digital Literacy I.
+Web-App-Prototyp für die Prüfungsleistung in Digital Literacy I. Die Anwendung verbindet eine Abstimmung mit einem gewichteten Glücksrad und inszeniert den Ablauf als historisch inspirierten Glückshafen auf einem spätmittelalterlichen Basler Markt- und Festplatz.
 
-Live-Version des bisherigen Projekts:
+GitHub-Pages-Adresse des Projekts (entspricht diesem Repository-Stand erst nach dessen Veröffentlichung):
 https://contactnova23.github.io/Gluecksrad-mit-Abstimmungsfaktor---Digital-Literacy-I/
 
-## Wichtig vor dem Upload
+## Aktueller Funktionsstand
 
-Die Datei `config.js` enthält bewusst Platzhalter. Übertrage dort die **Project URL** und den **Publishable Key** aus deiner bisherigen funktionierenden `config.js`.
+Die App besteht aus sechs aufeinanderfolgenden Etappen:
 
-Verwende im Browser ausschließlich einen öffentlichen Publishable-/Anon-Key. Ein `service_role`- oder Secret-Key darf niemals in GitHub Pages veröffentlicht werden.
+1. **Willkommen** – höfischer Aufruf zum Glückshafen mit dekorativem Holzrad.
+2. **Auswahl** – neue Abstimmung eröffnen oder einem Online-Raum beitreten.
+3. **Frage und Antworten** – Frage formulieren und mindestens zwei unterschiedliche Antwortoptionen anlegen.
+4. **Abstimmungsort** – Raum-Modus oder Online-Modus wählen.
+5. **Stimmabgabe** – Stimmen werden bis zum Schließen der Runde verborgen gehalten.
+6. **Rad des Glücks** – Stimmenverteilung anzeigen, Rad starten, manuell anhalten und die Gewinnerproklamation anzeigen.
 
-Wenn du die bestehende `config.js` im Repository beibehältst, kannst du stattdessen alle übrigen Dateien aus diesem Paket hochladen und `config.js` beim Ersetzen auslassen.
+Eine Fortschrittsanzeige mit sechs Etappen begleitet diesen Ablauf. Kleine visuelle und akustische Rückmeldungen markieren unter anderem Etappenwechsel, hinzugefügte Antworten, Moduswahl, Stimmabgabe, Radstart und Gewinnerverkündung.
 
-## Unveränderte Texte
+## Entscheidungslogik des Glücksrads
 
-Die sichtbaren Texte der sechs App-Fenster wurden nicht umformuliert. Der Ablauf bleibt:
+Die abgegebenen Stimmen bestimmen die Größe der Felder auf dem Rad:
 
-1. Start
-2. Auswahl
-3. Frage und Antworten
-4. Abstimmungsort
-5. Stimmabgabe
-6. Glücksrad und Gewinnerverkündung
+- Eine Antwort mit mehr Stimmen erhält einen größeren Winkelanteil.
+- Ein größeres Feld besitzt entsprechend eine höhere Gewinnchance.
+- Die meistgewählte Antwort gewinnt **nicht automatisch**.
+- Beim Betätigen von **„Rad anhalten“** wird die Gewinneroption zufallsbasiert entsprechend der Stimmengewichtung gezogen. Das Timing des Klicks selbst bestimmt die Gewinneroption nicht.
+- Anschließend läuft die sichtbare Radanimation kontrolliert aus und landet auf dem Mittelpunkt des gezogenen Feldes.
+- Wenn noch keine Stimme abgegeben wurde, sind alle Felder gleich groß und alle Antworten haben dieselbe Chance.
 
-Geändert wurden ausschließlich Gestaltung, 3D-Szenerie, Inszenierung, Performance und Klangkulisse.
+Die Ergebnisliste und das Rad benutzen dieselbe Farbzuordnung. Jede Antwortzeile erhält den Farbton ihres Radsegments sowie einen Farbindikator. Die ersten acht Farben sind fest definiert; bei mehr Antwortoptionen werden zusätzliche Farben deterministisch erzeugt, damit die Zuordnung nicht einfach zyklisch wiederholt wird.
 
-## Inhalt dieser Version
+Die Gewinnerproklamation erklärt die Logik bewusst in verständlicher Sprache:
 
-### Heller, reduzierter Stil
+> Eure Stimmen bestimmten, wie viel Raum jede Antwort auf dem Rad erhielt. Welches Feld schließlich zum Stehen kam, entschied der Zufall.
 
-- luftige Leinen-/Pergamentflächen statt eines schweren Holzrahmens
-- helle Palette aus Himmelblau, Salbei, warmem Elfenbein und gedämpftem Terrakotta
-- feine mittelalterliche Formen, Serifenschrift und Siegelmotive ohne dunkle Casino-Optik
-- weiterhin eine helle spätmittelalterliche Markt- und Festplatzszene
+## Abstimmungsmodi
 
-### Stärkere, aber nicht-kompetitive Gamification
+### Raum-Modus
 
-- sechs sichtbare Etappen-Siegel für den unveränderten Ablauf
-- Partikel- und Impulsfeedback bei Etappenwechseln, neuen Antworten und Moduswahl
-- sichtbarer Siegelmoment nach einer abgegebenen Stimme
-- stärker inszenierte Radphase mit Zeigerbewegung, Halo und Holzklappern
-- klarere Gewinnerzeremonie ohne Punkte, Ranglisten oder Eingriff in die geheime Abstimmung
+Der Raum-Modus ist für eine Gruppe an einem gemeinsamen Gerät gedacht. Die Teilnehmenden geben nacheinander ihre Stimme ab. Die ausrufende Person schließt die Abstimmung und gelangt anschließend zum Rad des Glücks.
 
-### Hörbarere Klangkulisse
+### Online-Modus
 
-- deutlich angehobene Markt-, Wind- und Stoffgeräusche
-- eigene akustische Signale für Etappen, Stimmabgabe, Radlauf und Gewinnerverkündung
-- Dynamikkompressor gegen unangenehme Lautstärkespitzen
-- weiterhin vollständig prozedural und ohne fremde Audiodateien
+Der Online-Modus ist optional und benötigt ein vorhandenes Supabase-Projekt.
 
+Beim Eröffnen einer Online-Runde:
 
-- spätmittelalterlich inspirierter Basler Markt- und Festplatz
-- Marktbuden, Pflaster, Brunnen, Banner, Waren, Schießscheiben und Publikum
-- Glückshafen-Stand mit Lostopf und ausgestellten Gaben
-- großes hölzernes Glücksrad mit langem, sichtbar auf dem Boden stehendem A-Gestell
-- separates Podest für die Gewinnerverkündung
-- Basler Stadtmauer-/Torsilhouette statt eines märchenhaften Schlosses
-- szenenabhängige Kamera- und Kulissenabschnitte
-- prozedurale Marktklänge ohne fremde Audiodateien
-- Sound-Schalter oben rechts
-- adaptive Qualitätsstufen für Desktop, Mobilgeräte und schwächere Hardware
-- pausierte 3D- und Audioverarbeitung bei inaktivem Browser-Tab
-- statische Schatten und reduzierte Pixel-Dichte auf leistungsschwächeren Geräten
-- vollständig nutzbare App auch dann, wenn WebGL nicht geladen werden kann
+- erstellt die ausrufende Person einen sechsstelligen Raumcode,
+- wird die Abstimmung in der Tabelle `polls` gespeichert,
+- können Teilnehmende mit dem Raumcode über eigene Geräte beitreten,
+- wird pro Browser/Gerät eine bereits abgegebene Stimme zusätzlich über `localStorage` erkannt,
+- aktualisiert die Moderationsansicht den Stimmenstand während der Abstimmung ungefähr alle drei Sekunden,
+- kann nur die ausrufende Person die Online-Abstimmung schließen und das Rad bedienen.
 
-## Idee
+Die App erwartet im Supabase-Projekt mindestens folgende Datenstruktur:
 
-Die App verbindet eine Abstimmung mit einem Glücksrad.
+- `polls`: `id`, `question`, `options`, `room_code`, `is_closed`
+- `votes`: `poll_id`, `option`, `voter_name`, `browser_key`
 
-Die abgegebenen Stimmen beeinflussen die Wahrscheinlichkeit auf dem Glücksrad: Eine Antwort mit mehr Stimmen erhält einen größeren Anteil am Rad und damit eine höhere Gewinnchance.
+Die konkrete Datenbankdefinition, Constraints und Row-Level-Security-Regeln werden **nicht** von diesem Repository eingerichtet. Sie müssen im verwendeten Supabase-Projekt bereits passend konfiguriert sein.
 
-Die meistgewählte Antwort gewinnt jedoch nicht automatisch – das Ergebnis bleibt zufallsbasiert.
+### Supabase-Konfiguration
 
-## Funktionen
+`config.js` enthält im gelieferten Repository bewusst Platzhalter. Für einen funktionierenden Online-Modus müssen dort die Project URL und ein öffentlicher Publishable-/Anon-Key des eigenen Supabase-Projekts eingetragen werden.
 
-- Klarer 6-Fenster-Ablauf: Start → Auswahl → Frage & Antworten → Abstimmungsort → Stimmen → Glücksrad
-- Eigene Abstimmungsfrage erstellen
-- Beliebig viele Antwortmöglichkeiten hinzufügen
-- Doppelte Antwortmöglichkeiten werden verhindert
-- Stimmen abgeben
-- Gewichtetes Glücksrad
-- Glücksrad starten und manuell stoppen
-- Gewinner anzeigen
-- Raum-Modus auf einem gemeinsamen Gerät
-- Online-Modus über Supabase und Raumcode
+Ein `service_role`- oder anderer Secret-Key darf nicht in einer öffentlich ausgelieferten GitHub-Pages-Datei stehen.
 
-## Historisch inspirierte Atmosphäre
+Ohne gültige Supabase-Konfiguration bleibt der Raum-Modus nutzbar; beim Versuch, den Online-Modus zu verwenden, zeigt die App eine entsprechende Fehlermeldung.
 
-Der historische Glückshafen war vor allem ein Losgefäß beziehungsweise ein Stand, an dem Lose gezogen und Warenpreise vergeben wurden. Das digitale Glücksrad bleibt als verständliche Visualisierung der gewichteten Abstimmung erhalten, wird aber als vormodernes Marktgerät aus Holz inszeniert.
+## Gestaltung und Typografie
 
-Die historische Einordnung und Quellen sind in `HISTORISCHE-GRUNDLAGE.md` dokumentiert.
+Die Oberfläche folgt einem einheitlichen Designsystem:
 
-## Urheberrecht und Medien
+- helle, pergamentartige Briefflächen,
+- zurückhaltende Palette aus Himmelblau, Salbei, warmem Beige und gedämpften Akzentfarben,
+- `Cormorant Garamond` für Überschriften und zeremonielle Titel,
+- `Alegreya` für Fließtext, Formulare, Statusmeldungen und sämtliche UI-Buttons,
+- `Parisienne` ausschließlich für die persönliche Unterschrift „Olga Nova“,
+- einheitliche helle Buttons mit dunkler blaugrüner Schrift.
 
-Für diese Fassung wurden keine fremden Fotos, Illustrationen, 3D-Modelle, Musikstücke oder Geräuschdateien eingebunden.
+Die Fonts werden zur Laufzeit über Google Fonts geladen. Es werden keine Fontdateien im Repository mitgeliefert.
 
-- Pflaster und Oberflächen werden zur Laufzeit prozedural erzeugt.
-- Die komplette 3D-Welt besteht aus selbst erzeugten Three.js-Grundformen.
-- Wind, Marktgemurmel, Holzklappern und Glocken werden mit der Web Audio API synthetisiert.
-- Es werden keine Audiodateien heruntergeladen oder weiterverbreitet.
+## Glücksrad und Gewinnerverkündung
 
-Weitere Hinweise stehen in `ASSET-NACHWEISE.md` und `THIRD-PARTY-NOTICES.md`.
+Die App enthält drei klar getrennte Rad-Darstellungen:
+
+1. **Dekoratives Rad auf der Startseite** – rein visuell und ohne Einfluss auf die Auswahl.
+2. **Funktionales UI-Rad im Ergebnisfenster** – stellt die tatsächlichen Stimmenanteile dar und führt die gewichtete Auswahl aus.
+3. **3D-Holzrad in der Marktszene** – atmosphärische Begleitdarstellung; seine Bewegung wird an Radstart, Radstopp und Gewinnerereignis gekoppelt.
+
+Das funktionale UI-Rad steht sichtbar auf einem langen Holzgestell. Die Gewinnerverkündung erscheint anschließend als Pergament-Proklamation im selben Designsystem wie die übrige App. Sie ist bewusst keine Rekonstruktion eines dokumentierten historischen Einzelrituals.
+
+## Historisch inspirierte 3D-Szene
+
+Die Three.js-Szene zeigt eine bewusst stilisierte, spätmittelalterlich inspirierte Basler Markt- und Festumgebung, unter anderem mit:
+
+- Marktständen und Waren,
+- Pflaster und Marktfläche,
+- Brunnen,
+- Bannern und Wimpeln,
+- Schieß-/Geschicklichkeitsmotiven,
+- Publikum,
+- Glückshafen-Stand mit Gefäß und ausgestellten Gaben,
+- hölzernem Glücksrad mit langem Gestell,
+- kleinem Ausruf-/Gewinnerpodest,
+- Stadtmauer und Toranlage,
+- kirchlicher Stadtsilhouette.
+
+Das digitale Rad ist eine moderne Visualisierung der gewichteten Auswahl und kein Anspruch darauf, dass ein solches Rad 1471 beim Basler Glückshafen eingesetzt wurde. Die historische Einordnung ist in `HISTORISCHE-GRUNDLAGE.md` dokumentiert.
+
+## Klangkulisse
+
+Die Klangkulisse wird vollständig mit der Web Audio API erzeugt. Es werden keine Audioaufnahmen geladen.
+
+Enthalten sind unter anderem:
+
+- Wind- und Stoffrauschen,
+- abstrahiertes Marktgemurmel,
+- Holzklappern,
+- Glocken-/Klangsignale,
+- dezente Ruf- und Vogelklänge,
+- eigene Feedbacksignale für Stimmabgabe und Radphase.
+
+Browser erlauben Audio normalerweise erst nach einer Nutzerinteraktion; deshalb wird die Klangkulisse beim ersten geeigneten Klick oder Tastendruck freigeschaltet. Der Sound-Schalter oben rechts speichert die Auswahl lokal. Bei einem inaktiven Browser-Tab wird die Audioverarbeitung angehalten beziehungsweise abgesenkt.
+
+## Performance und Fallbacks
+
+Die 3D-Darstellung wählt abhängig von Gerät, Speicherausstattung, Prozessorkernen, Data-Saver und `prefers-reduced-motion` eine Qualitätsstufe.
+
+Dabei werden unter anderem angepasst:
+
+- Ziel-Bildrate,
+- maximale Pixel-Dichte,
+- Antialiasing,
+- Schatten,
+- zusätzliche Wolken-/Szenendetails.
+
+Die 3D-Szene verwendet getrennte Szenengruppen für Ankunft, Versammlung und Ergebnisbereich und blendet nur die jeweils relevanten Gruppen ein. Auf höherer Qualität verwendete Schatten werden nicht permanent neu berechnet. Wenn Three.js/WebGL nicht geladen werden kann, wird die 3D-Leinwand ausgeblendet; die eigentliche Abstimmungs-App bleibt bedienbar.
+
+3D-Animation und Audio reagieren außerdem auf `visibilitychange`, damit bei einem inaktiven Tab weniger Arbeit anfällt.
+
+## Lokale Speicherung
+
+Die App verwendet `localStorage` für:
+
+- den aktuellen lokalen App-/Abstimmungszustand,
+- den Ein/Aus-Zustand der Klangkulisse,
+- die Kennzeichnung einer bereits auf diesem Gerät abgegebenen Online-Stimme.
+
+Diese Speicherung ersetzt keine serverseitige Zugriffskontrolle im Online-Modus.
+
+## Urheberrecht und externe Abhängigkeiten
+
+Die Marktszene, das Pflaster, die UI-Oberflächen und die Klangkulisse werden durch HTML/CSS/JavaScript beziehungsweise prozedural zur Laufzeit erzeugt. Das aktuelle Repository benötigt keine externen Foto-, Musik-, Geräusch-, 3D-Modell- oder Texturdateien.
+
+Externe Laufzeitabhängigkeiten sind:
+
+- Three.js über jsDelivr,
+- Supabase JavaScript Client über jsDelivr,
+- Google Fonts für Alegreya, Cormorant Garamond und Parisienne.
+
+Details stehen in `ASSET-NACHWEISE.md` und `THIRD-PARTY-NOTICES.md`.
 
 ## Dateien
 
-| Datei | Aufgabe |
+| Datei | Aktuelle Aufgabe |
 |---|---|
-| `index.html` | Struktur der App; sichtbare Fenstertexte unverändert |
-| `style.css` | helle Leinen-/Pergamentoberfläche, Gamification und realistisches UI-Rad |
-| `script.js` | Abstimmungslogik, gewichtete Ziehung und Szenenereignisse |
-| `effects.js` | ressourcenschonende Mausneigung der Tafel |
-| `vr-scene.js` | prozedurale 3D-Welt, Szenenwechsel und 3D-Glücksrad |
-| `medieval-atmosphere.js` | prozedurale, urheberrechtsfreie Klangkulisse |
-| `config.js` | Supabase-Zugang mit einzutragender Project URL und Publishable Key |
-| `config.example.js` | Sicherheitskopie der Konfigurationsvorlage |
-| `.nojekyll` | sorgt für unveränderte Auslieferung über GitHub Pages |
+| `index.html` | HTML-Struktur der sechs Etappen, Startseite, Ergebnisrad und externe Laufzeitressourcen |
+| `style.css` | gesamtes UI-Design, Pergamentflächen, Radgestell, responsive Darstellung, Gamification und Gewinnerproklamation |
+| `script.js` | Abstimmungsablauf, Raum-/Online-Modus, Ergebnisliste, Farbzuordnung, gewichtete Zufallsauswahl und UI-Radanimation |
+| `effects.js` | dezente, auf 30 FPS begrenzte Mausneigung/Schwebe-Bewegung der Oberfläche auf Geräten mit feinem Zeiger |
+| `vr-scene.js` | Three.js-Marktszene, Szenenwechsel, adaptive Qualität und atmosphärisches 3D-Glücksrad |
+| `medieval-atmosphere.js` | prozedurale Web-Audio-Klangkulisse und Sound-Feedback |
+| `config.js` | lokale Supabase-Konfiguration; im Repository mit Platzhaltern |
+| `config.example.js` | Vorlage für die Supabase-Konfiguration |
+| `HISTORISCHE-GRUNDLAGE.md` | historische Einordnung und Quellen |
+| `ASSET-NACHWEISE.md` | Übersicht über eigene/prozedurale Inhalte und externe Medienressourcen |
+| `THIRD-PARTY-NOTICES.md` | Bibliotheken, Fonts und Lizenzhinweise |
 
 ## Veröffentlichung über GitHub Pages
 
-1. `config.js` prüfen beziehungsweise die bisher funktionierenden Supabase-Werte übertragen.
-2. Alle Dateien in das Stammverzeichnis des GitHub-Repositories hochladen.
-3. In GitHub unter **Settings → Pages** die Veröffentlichung aus dem Branch `main` und dem Ordner `/ (root)` aktivieren.
-4. Nach dem Deployment die Seite einmal mit geleertem Cache oder in einem privaten Browserfenster öffnen.
-5. Raum-Modus, Online-Modus, Radstart, Radstopp, Gewinnerdialog und Sound-Schalter testen.
+1. Falls der Online-Modus genutzt werden soll, `config.js` mit der gültigen Project URL und einem öffentlichen Supabase-Key konfigurieren.
+2. Die Projektdateien in das Stammverzeichnis des GitHub-Repositories hochladen.
+3. Unter **Settings → Pages** die Veröffentlichung aus dem Branch `main` und `/ (root)` aktivieren.
+4. Nach Änderungen an CSS oder JavaScript die Seite mit geleertem Cache oder in einem privaten Fenster prüfen.
+5. Den vollständigen Ablauf testen: Start → Erstellung/Beitritt → Modus → Stimme → Abstimmung schließen → Rad starten → Rad anhalten → Gewinnerproklamation.
 
 ## Lokaler Test
 
@@ -133,7 +195,7 @@ Im Projektordner:
 python3 -m http.server 8000
 ```
 
-Danach im Browser öffnen:
+Danach im Browser:
 
 ```text
 http://localhost:8000
@@ -141,10 +203,11 @@ http://localhost:8000
 
 ## Technik
 
-- HTML
+- HTML5
 - CSS
-- JavaScript
-- Three.js über jsDelivr
+- JavaScript ohne Build-Schritt
+- Three.js 0.160.0
 - Web Audio API
-- Supabase
+- Supabase JavaScript Client 2.x (optional für den Online-Modus)
+- Google Fonts
 - GitHub Pages

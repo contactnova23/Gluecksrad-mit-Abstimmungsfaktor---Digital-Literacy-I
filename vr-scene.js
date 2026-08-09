@@ -1116,7 +1116,7 @@
 
     function detectStep() {
       if (isVisible(resultsSection)) {
-        if ((winnerDisplay?.textContent || '').includes('Das Los fällt auf:')) return 6;
+        if ((winnerDisplay?.textContent || '').includes('Bestimmt wurde:')) return 6;
         return 5;
       }
       if (isVisible(voteSection)) return 4;
