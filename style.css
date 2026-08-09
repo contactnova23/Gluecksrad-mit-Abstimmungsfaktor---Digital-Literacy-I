@@ -4171,13 +4171,82 @@ h1 {
   }
 }
 
-/* --- v14: Slogan + Start-Glücksrad deutlich weiter nach unten --- */
+/* --- v14: Glücksrad + Slogan auf der Startseite stärker nach unten verschoben --- */
 .welcome-display {
-  margin-top: 122px;
+  margin-top: 118px;
 }
 
 @media (max-width: 900px) {
   .welcome-display {
-    margin-top: 42px;
+    margin-top: 36px;
   }
+}
+
+/* --- v15: einheitliche Buttonfarben mit dunkler Schrift --- */
+button,
+.primary-action,
+.secondary-choice-btn,
+.secondary-btn,
+.back-btn,
+.subtle-action,
+.remove-answer-btn,
+.moderator-action,
+#show-create-btn,
+#show-join-btn,
+#vote-btn,
+#start-btn,
+#join-online-btn,
+#spin-btn,
+#stop-btn,
+#next-person-btn,
+#end-voting-btn {
+  color: #2f4f4b !important;
+  border-color: rgba(132, 166, 176, 0.34) !important;
+  background: linear-gradient(180deg, #eef7f8 0%, #dcecf1 100%) !important;
+  box-shadow:
+    0 10px 22px rgba(96, 129, 138, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.86) !important;
+}
+
+button:hover:not(:disabled),
+.primary-action:hover:not(:disabled),
+.secondary-choice-btn:hover:not(:disabled),
+.secondary-btn:hover:not(:disabled),
+.back-btn:hover:not(:disabled),
+.subtle-action:hover:not(:disabled),
+.remove-answer-btn:hover:not(:disabled),
+.moderator-action:hover:not(:disabled),
+#show-create-btn:hover:not(:disabled),
+#show-join-btn:hover:not(:disabled),
+#vote-btn:hover:not(:disabled),
+#start-btn:hover:not(:disabled),
+#join-online-btn:hover:not(:disabled),
+#spin-btn:hover:not(:disabled),
+#stop-btn:hover:not(:disabled),
+#next-person-btn:hover:not(:disabled),
+#end-voting-btn:hover:not(:disabled) {
+  color: #294640 !important;
+  background: linear-gradient(180deg, #f2fafb 0%, #e3f1f5 100%) !important;
+}
+
+button:disabled,
+.primary-action:disabled,
+.secondary-choice-btn:disabled,
+.secondary-btn:disabled,
+.back-btn:disabled,
+.subtle-action:disabled,
+.remove-answer-btn:disabled,
+.moderator-action:disabled,
+#show-create-btn:disabled,
+#show-join-btn:disabled,
+#vote-btn:disabled,
+#start-btn:disabled,
+#join-online-btn:disabled,
+#spin-btn:disabled,
+#stop-btn:disabled,
+#next-person-btn:disabled,
+#end-voting-btn:disabled {
+  color: rgba(47, 79, 75, 0.78) !important;
+  background: linear-gradient(180deg, #eaf2f4 0%, #d7e6eb 100%) !important;
+  opacity: 0.78;
 }
