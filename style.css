@@ -3804,3 +3804,53 @@ h1 {
     font-size: clamp(2.35rem, 8vw, 3.8rem);
   }
 }
+
+/* --- v10: harmonischer Starttext und bereinigtes Start-Glücksrad --- */
+.welcome-copy h1 {
+  margin-bottom: 30px;
+}
+
+.welcome-proclamation-sequence {
+  margin-top: 8px;
+  gap: 18px;
+}
+
+.welcome-signature-block {
+  margin-top: 42px;
+  max-width: 20ch;
+  text-align: left;
+}
+
+.welcome-signoff {
+  display: block;
+  margin: 0 0 14px;
+}
+
+.welcome-signature {
+  display: block;
+}
+
+/* Die braunen Balken innerhalb der farbigen Felder auf der Startseite entfernen */
+.show-wheel__spoke {
+  display: none;
+}
+
+/* leichte, saubere Segmenttrennung ohne dunkle Balken */
+.show-wheel__sector {
+  opacity: 0.42;
+}
+
+@media (max-width: 900px) {
+  .welcome-copy h1 {
+    margin-bottom: 24px;
+  }
+
+  .welcome-proclamation-sequence {
+    margin-top: 4px;
+    gap: 16px;
+  }
+
+  .welcome-signature-block {
+    margin-top: 34px;
+  }
+}
