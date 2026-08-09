@@ -15,9 +15,9 @@
     />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Marck+Script&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;500;700&family=Cormorant+Garamond:wght@500;600;700&family=Parisienne&display=swap"
     />
-    <link rel="stylesheet" href="style.css?v=pergament-v3" />
+    <link rel="stylesheet" href="style.css?v=pergament-v4" />
   </head>
   <body>
     <canvas id="vr-world-canvas" aria-hidden="true"></canvas>
@@ -48,44 +48,57 @@
         <section id="setup-section">
           <!-- Fenster 1: Willkommen -->
           <section id="welcome-panel" class="wizard-screen welcome-screen">
-            <div class="welcome-letterhead">
-              <p class="market-welcome">Willkommen zum Glückshafen</p>
-              <h1>Glücksrad mit Abstimmungsfaktor</h1>
-            </div>
-
-            <div class="welcome-scroll">
-              <article class="welcome-letter">
-                <p class="welcome-letter-copy">
-                  Edle Reisende, tretet näher und versucht Eure Fortuna am „Rad des Glücks“.
-                  Ein beherzter Dreh, ein günstiges Los – und die Gunst der Stunde könnte die Eure sein.
+            <div class="welcome-hero">
+              <div class="welcome-copy">
+                <h1>Willkommen zum Glückshafen</h1>
+                <p class="welcome-proclamation">
+                  Edle Reisende, tretet näher: Hier prüft das Rad des Glücks, wem Fortuna heute hold ist.
                 </p>
-                <p class="welcome-letter-copy">
-                  So zögert nicht: Gebt Eure Stimme, wagt den Versuch und lasst das Rad über Euer Glück entscheiden.
+                <p class="welcome-proclamation">
+                  Gebt Eure Stimme ab, wagt den Dreh und lasst mit heiterem Herzen entscheiden, welches Los Euch beschieden sei.
                 </p>
-                <p class="welcome-signoff">Mit Federgruß</p>
-                <p class="welcome-signature">Olga Nova</p>
-              </article>
-
-              <div class="welcome-wheel-crest" aria-hidden="true">
-                <div class="welcome-wheel-sign">Wagt den Dreh – versucht Eure Fortuna!</div>
-                <div class="welcome-wheel" role="presentation">
-                  <span class="wheel-spoke" style="--spoke-rotation: 0deg"></span>
-                  <span class="wheel-spoke" style="--spoke-rotation: 45deg"></span>
-                  <span class="wheel-spoke" style="--spoke-rotation: 90deg"></span>
-                  <span class="wheel-spoke" style="--spoke-rotation: 135deg"></span>
-                  <span class="wheel-spoke" style="--spoke-rotation: 22.5deg"></span>
-                  <span class="wheel-spoke" style="--spoke-rotation: 67.5deg"></span>
-                  <span class="wheel-spoke" style="--spoke-rotation: 112.5deg"></span>
-                  <span class="wheel-spoke" style="--spoke-rotation: 157.5deg"></span>
-                  <span class="wheel-hub"></span>
+                <div class="welcome-signature-block">
+                  <p class="welcome-signoff">Mit Federgruß</p>
+                  <p class="welcome-signature">Olga Nova</p>
+                </div>
+                <div class="welcome-actions">
+                  <button id="experience-start-btn" type="button" class="primary-action welcome-start-btn">
+                    Den Glückshafen betreten
+                  </button>
                 </div>
               </div>
-            </div>
 
-            <div class="welcome-actions">
-              <button id="experience-start-btn" type="button" class="primary-action welcome-start-btn">
-                Den Glückshafen betreten
-              </button>
+              <aside class="welcome-display" aria-hidden="true">
+                <div class="welcome-wheel-sign">Wagt den Dreh – versucht Eure Fortuna!</div>
+                <div class="show-wheel show-wheel--welcome">
+                  <span class="show-wheel__base show-wheel__base--left"></span>
+                  <span class="show-wheel__base show-wheel__base--right"></span>
+                  <span class="show-wheel__leg show-wheel__leg--left"></span>
+                  <span class="show-wheel__leg show-wheel__leg--right"></span>
+                  <span class="show-wheel__post"></span>
+                  <span class="show-wheel__crossbar"></span>
+                  <div class="show-wheel__wheel">
+                    <span class="show-wheel__sector" style="--wheel-sector-start: 0deg"></span>
+                    <span class="show-wheel__sector" style="--wheel-sector-start: 45deg"></span>
+                    <span class="show-wheel__sector" style="--wheel-sector-start: 90deg"></span>
+                    <span class="show-wheel__sector" style="--wheel-sector-start: 135deg"></span>
+                    <span class="show-wheel__sector" style="--wheel-sector-start: 180deg"></span>
+                    <span class="show-wheel__sector" style="--wheel-sector-start: 225deg"></span>
+                    <span class="show-wheel__sector" style="--wheel-sector-start: 270deg"></span>
+                    <span class="show-wheel__sector" style="--wheel-sector-start: 315deg"></span>
+                    <span class="show-wheel__spoke" style="--wheel-spoke-rotation: 0deg"></span>
+                    <span class="show-wheel__spoke" style="--wheel-spoke-rotation: 22.5deg"></span>
+                    <span class="show-wheel__spoke" style="--wheel-spoke-rotation: 45deg"></span>
+                    <span class="show-wheel__spoke" style="--wheel-spoke-rotation: 67.5deg"></span>
+                    <span class="show-wheel__spoke" style="--wheel-spoke-rotation: 90deg"></span>
+                    <span class="show-wheel__spoke" style="--wheel-spoke-rotation: 112.5deg"></span>
+                    <span class="show-wheel__spoke" style="--wheel-spoke-rotation: 135deg"></span>
+                    <span class="show-wheel__spoke" style="--wheel-spoke-rotation: 157.5deg"></span>
+                    <span class="show-wheel__hub"></span>
+                  </div>
+                  <span class="show-wheel__pointer"></span>
+                </div>
+              </aside>
             </div>
           </section>
 
@@ -248,6 +261,15 @@
           <ul id="results-list" class="results-list results-data" aria-label="Stimmenverteilung"></ul>
 
           <div class="wheel-area">
+            <div class="wheel-floor" aria-hidden="true"></div>
+            <div class="wheel-stand" aria-hidden="true">
+              <span class="wheel-base wheel-base--left"></span>
+              <span class="wheel-base wheel-base--right"></span>
+              <span class="wheel-leg wheel-leg--left"></span>
+              <span class="wheel-leg wheel-leg--right"></span>
+              <span class="wheel-post"></span>
+              <span class="wheel-crossbar"></span>
+            </div>
             <div class="wheel-pointer"></div>
             <div id="wheel" class="wheel"></div>
           </div>
