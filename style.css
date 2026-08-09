@@ -3729,3 +3729,42 @@ h1 {
 .wheel-area {
   overflow: visible;
 }
+
+/* --- v8 Starttext-Folge exakt nach Vorgabe --- */
+.welcome-proclamation-sequence {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+  max-width: 20ch;
+  font-size: 1.22rem;
+  line-height: 1.38;
+}
+
+.welcome-proclamation-sequence .welcome-line {
+  display: block;
+}
+
+.welcome-signature-block {
+  margin-top: 34px;
+  text-align: left;
+}
+
+.welcome-signoff {
+  margin: 0 0 10px;
+}
+
+.welcome-signature {
+  margin: 0;
+}
+
+@media (max-width: 720px) {
+  .welcome-proclamation-sequence {
+    gap: 14px;
+    font-size: 1.12rem;
+  }
+
+  .welcome-signature-block {
+    margin-top: 28px;
+  }
+}
