@@ -73,8 +73,27 @@ using (
     from public.polls p
     where p.id = poll_id
       and p.created_by = auth.uid()
+      and p.is_closed = true
   )
 );
+
+
+-- Datenschutz: Online-Stimmen werden serverseitig ohne Namen gespeichert.
+-- So kann auch ein veraenderter/alter Client keinen Klarnamen in votes ablegen.
+create or replace function public.force_anonymous_vote_name()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.voter_name := 'Anonym';
+  return new;
+end;
+$$;
+
+drop trigger if exists votes_force_anonymous_name on public.votes;
+create trigger votes_force_anonymous_name
+before insert or update of voter_name on public.votes
+for each row execute function public.force_anonymous_vote_name();
 
 -- Explizite Data-API-Rechte fuer anonym angemeldete Nutzer.
 grant usage on schema public to authenticated;

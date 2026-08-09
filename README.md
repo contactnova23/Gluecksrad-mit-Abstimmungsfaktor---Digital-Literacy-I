@@ -51,8 +51,10 @@ Beim Eröffnen einer Online-Runde:
 - wird die Abstimmung in der Tabelle `polls` gespeichert,
 - können Teilnehmende mit dem Raumcode über eigene Geräte beitreten,
 - wird pro Browser/Gerät eine bereits abgegebene Stimme zusätzlich über `localStorage` erkannt,
-- aktualisiert die Moderationsansicht den Stimmenstand während der Abstimmung ungefähr alle drei Sekunden,
-- kann in der Oberfläche nur die ausrufende Person die Online-Abstimmung schließen und das Rad bedienen; mit den Policies aus `SUPABASE-SETUP.sql` wird das Schließen zusätzlich serverseitig auf die erstellende anonyme Sitzung begrenzt.
+- aktualisiert die App den Status der Online-Runde regelmäßig,
+- werden während einer offenen Online-Runde **keine gewählten Optionen in die Moderationsansicht geladen**,
+- werden Online-Stimmen **ohne Namen** gespeichert,
+- kann nur die ausrufende Person die Online-Abstimmung schließen und anschließend die Stimmen für die gewichtete Auswertung lesen; die Datenbank-Policies erzwingen diese Trennung serverseitig.
 
 Für den Online-Modus benötigt die App die Tabellen `polls` und `votes`. Die mitgelieferte Datei `SUPABASE-SETUP.sql` richtet für ein neues Projekt die zur aktuellen Implementierung passenden Felder und Sicherheitsregeln ein, unter anderem:
 
@@ -60,6 +62,23 @@ Für den Online-Modus benötigt die App die Tabellen `polls` und `votes`. Die mi
 - `votes`: `id`, `poll_id`, `option`, `voter_name`, `browser_key`, `voter_id`, `created_at`
 
 Die SQL-Datei wird **nicht automatisch** ausgeführt. Sie muss einmal manuell im Supabase SQL Editor gestartet werden. Die enthaltenen Unique-Constraints begrenzen Mehrfachstimmen pro anonymer Sitzung beziehungsweise Browser-Schlüssel; die Row-Level-Security-Policies erlauben das Schließen einer Runde nur der Sitzung, die sie erstellt hat.
+
+
+### Datenschutz und Stimmengeheimnis
+
+Der Online-Modus verwendet einen öffentlichen Supabase-Publishable-Key zusammen mit Anonymous Sign-In und Row Level Security. Der Publishable Key ist kein Administratorschlüssel; die eigentliche Zugriffskontrolle findet in der Datenbank statt.
+
+Für die Online-Stimmen gilt:
+
+- Teilnehmende besitzen **kein Leserecht auf die Tabelle `votes`**.
+- Auch die moderierende Sitzung kann die gewählten Optionen erst lesen, nachdem sie ihre eigene Runde geschlossen hat.
+- Im Browser der Moderation wird während der offenen Runde deshalb kein Zwischenstand einzelner Antworten geladen.
+- Online werden keine Klarnamen in `votes` gespeichert. Die optionale Namenseingabe bleibt nur für den lokalen Raum-Modus relevant.
+- Nach dem Schließen werden nur die Antwortoptionen geladen und für Ergebnisliste und Glücksrad aggregiert.
+
+Für ein bereits bestehendes Supabase-Projekt kann `SUPABASE-PRIVACY-HARDENING.sql` einmal im SQL Editor ausgeführt werden. Das Skript setzt die hierfür nötigen RLS-Regeln erneut, anonymisiert eventuell bereits gespeicherte Namen und verhindert zukünftige Klarnamen in der Online-Stimm-Tabelle.
+
+**Restliche technische Grenze der statischen GitHub-Pages-Architektur:** Die Metadaten einer Abstimmung (`question`, `options`, `room_code`, Status) sind für angemeldete anonyme Nutzer derzeit lesbar, damit der Beitritt per Raumcode ohne eigenen Server funktioniert. Die **Einzelstimmen** sind davon getrennt und durch RLS geschützt. Für eine produktive Anwendung mit höherem Schutzbedarf wäre ein serverseitiger Join-Endpunkt beziehungsweise eine Supabase Edge Function die nächste Härtungsstufe.
 
 ### Supabase-Konfiguration
 

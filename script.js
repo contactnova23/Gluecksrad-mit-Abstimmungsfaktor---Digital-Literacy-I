@@ -582,6 +582,12 @@ function showVoteScreen(question) {
   setQuestStep(4);
   emitAtmosphere('voting');
 
+  const voterNameField = voterNameInput.closest('.field');
+  if (voterNameField) {
+    // Im Online-Modus werden bewusst keine Namen an Supabase uebertragen.
+    voterNameField.hidden = onlineMode;
+  }
+
   if (roomMode) {
     roomStatus.hidden = true;
     roomStatus.textContent = '';
@@ -599,11 +605,11 @@ function showVoteScreen(question) {
     onlineStatus.hidden = false;
     onlineStatus.textContent = isOnlineModerator
       ? (currentRoomCode
-        ? `Online-Raum: ${currentRoomCode} • ${currentVoteCount} ${currentVoteCount === 1 ? 'Stimme' : 'Stimmen'} bisher abgegeben`
-        : 'Die Abstimmung über die Ferne ist eröffnet.')
+        ? `Online-Raum: ${currentRoomCode} • Die Stimmen bleiben bis zum Schließen versiegelt.`
+        : 'Die Abstimmung über die Ferne ist eröffnet. Die Stimmen bleiben bis zum Schließen versiegelt.')
       : (currentRoomCode
-        ? `Online-Raum: ${currentRoomCode} • Deine Stimme bleibt bis zum Ende geheim.`
-        : 'Die Abstimmung über die Ferne ist eröffnet.');
+        ? `Online-Raum: ${currentRoomCode} • Deine Stimme wird ohne Namen gespeichert und bleibt bis zum Ende geheim.`
+        : 'Die Abstimmung über die Ferne ist eröffnet. Deine Stimme wird ohne Namen gespeichert.');
 
     if (isOnlineModerator) {
       endVotingBtn.hidden = false;
@@ -887,20 +893,24 @@ async function refreshOnlineState() {
       isVotingClosed = Boolean(pollData.is_closed);
     }
 
-    if (isOnlineModerator) {
+    if (isOnlineModerator && isVotingClosed) {
       const { data: voteData, error: voteError } = await supabaseClient
         .from('votes')
-        .select('option, voter_name')
+        .select('option')
         .eq('poll_id', currentPollId);
 
       if (voteError) {
         throw voteError;
       }
 
-      votes = (voteData || []).map((vote) => ({ name: vote.voter_name, option: vote.option }));
+      votes = (voteData || []).map((vote) => ({ option: vote.option }));
       currentVoteCount = votes.length;
     } else {
+      // Solange die Online-Runde offen ist, werden keine Einzelstimmen aus der
+      // Datenbank in den Browser geladen. Auch die Moderationsansicht sieht
+      // bis zum Schliessen nur den Raumstatus, nicht die gewaehlten Optionen.
       votes = [];
+      currentVoteCount = 0;
     }
 
     saveState();
@@ -1151,7 +1161,6 @@ voteBtn.addEventListener('click', async () => {
       const { error } = await supabaseClient.from('votes').insert({
         poll_id: currentPollId,
         option: selectedOption,
-        voter_name: name || 'Anonym',
         browser_key: currentBrowserVoteKey,
       });
 
