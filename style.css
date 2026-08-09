@@ -952,20 +952,6 @@ body.vr-walking .card {
   text-wrap: balance;
 }
 
-
-.welcome-subtitle {
-  margin: -18px auto 28px;
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-size: 0.98rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #6f4f2e;
-  background: rgba(243, 226, 187, 0.72);
-  border: 1px solid rgba(137, 99, 55, 0.18);
-  box-shadow: 0 8px 18px rgba(101, 66, 29, 0.08);
-}
-
 .welcome-actions {
   display: flex;
   justify-content: center;
@@ -1114,5 +1100,119 @@ body.vr-walking .card {
 
   .results-data {
     grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   GLÜCKSHAFEN FAIR v1
+   Late-medieval fair / shooting-festival atmosphere.
+   Intentionally light: no extra image assets or heavy effects.
+   ========================================================= */
+
+:root {
+  --market-blue: #2e5f91;
+  --market-blue-deep: #244a70;
+  --market-gold: #d4a850;
+  --market-green: #5f8250;
+  --market-red: #8a4b45;
+  --market-parchment: #fff3d5;
+}
+
+body {
+  background:
+    radial-gradient(circle at 50% 5%, rgba(255, 244, 204, 0.34), transparent 28%),
+    linear-gradient(180deg, #dcecff 0%, #f0f6ef 50%, #dadcc1 100%);
+}
+
+.card {
+  background:
+    linear-gradient(180deg, rgba(255, 250, 236, 0.99), rgba(247, 233, 201, 0.985)) padding-box,
+    linear-gradient(
+      100deg,
+      #70441f 0%,
+      #9a6337 22%,
+      #c08b4e 50%,
+      #915d32 78%,
+      #643b1d 100%
+    ) border-box;
+}
+
+.card::after {
+  content: "⚜";
+  color: #f6df9f;
+  background: linear-gradient(180deg, var(--market-blue), var(--market-blue-deep));
+}
+
+.market-welcome {
+  margin: 4px 0 9px;
+  color: var(--market-blue-deep);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.05rem, 2.4vw, 1.32rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.welcome-motto {
+  margin: -2px 0 22px;
+  color: #705b42;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.05rem;
+  font-style: italic;
+}
+
+.screen-eyebrow {
+  margin: 0 0 7px;
+  color: var(--market-blue-deep);
+  font-size: 0.76rem;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.primary-action,
+#show-create-btn,
+#vote-btn,
+#start-btn,
+#join-online-btn,
+#spin-btn {
+  background: linear-gradient(180deg, #3d72a5, #28537d);
+  border-color: rgba(226, 188, 105, 0.76);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.24),
+    0 0 0 1px rgba(133, 88, 42, 0.48),
+    0 10px 20px rgba(45, 79, 111, 0.17);
+}
+
+.choice-icon {
+  color: #e9c96f;
+}
+
+.mode-option.is-selected {
+  border-color: rgba(46, 95, 145, 0.56);
+  background: linear-gradient(180deg, rgba(244, 249, 253, 0.96), rgba(228, 238, 244, 0.92));
+}
+
+/* Give the wheel the feel of a fairground prize wheel without changing its logic. */
+.wheel {
+  border-color: #74491f;
+  box-shadow:
+    inset 0 0 0 6px #d3a85e,
+    inset 0 0 0 12px #54331b,
+    0 22px 36px rgba(57, 35, 17, 0.23),
+    0 0 34px rgba(229, 190, 104, 0.12);
+}
+
+.winner-ceremony-kicker {
+  color: var(--market-blue-deep);
+}
+
+.winner-ceremony-name {
+  color: var(--market-blue);
+}
+
+@media (max-width: 700px) {
+  .market-welcome {
+    letter-spacing: 0.06em;
   }
 }
