@@ -14,8 +14,9 @@ Folgende Inhalte werden durch den Projektcode erzeugt:
 - Himmel- und Atmosphärenverläufe,
 - Gebäude, Marktstände, Brunnen, Stadtmauer, Tor, Stadtmobiliar, Publikum und Glücksräder aus Three.js-Grundgeometrien,
 - UI-Farbflächen und Antwort-/Rad-Zuordnung aus CSS und JavaScript,
-- Wind-, Markt- und Stoffrauschen aus der Web Audio API,
-- Holzklappern, Glocken, kurze Rufe, Vogelklänge und UI-Signale aus Oszillatoren und synthetischem Rauschen.
+- ein ruhiges, eigens für die App definiertes Instrumentalmotiv aus Oszillatoren der Web Audio API,
+- ein dezenter synthetischer Bordun,
+- Holzklappern, Glocken und UI-Signale aus Oszillatoren sowie sehr kurzen, nur für einzelne Transienten erzeugten Rauschimpulsen.
 
 ## Webfonts
 

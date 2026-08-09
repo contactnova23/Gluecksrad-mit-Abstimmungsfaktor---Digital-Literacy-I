@@ -120,18 +120,17 @@ Das digitale Rad ist eine moderne Visualisierung der gewichteten Auswahl und kei
 
 ## Klangkulisse
 
-Die Klangkulisse wird vollständig mit der Web Audio API erzeugt. Es werden keine Audioaufnahmen geladen.
+Die Klangkulisse wird vollständig mit der Web Audio API erzeugt. Es werden keine externen Musik- oder Geräuschaufnahmen geladen.
 
-Enthalten sind unter anderem:
+Die frühere kontinuierliche Wind-, Stoff- und Markt-Rauschkulisse wurde entfernt. Stattdessen verwendet die App ein ruhiges, eigens für diese Anwendung definiertes und zur Laufzeit synthetisiertes Instrumentalmotiv mit gezupften Klangfarben und einem sehr dezenten Bordun. Die Tonfolge ist keine übernommene historische oder moderne Komposition.
 
-- Wind- und Stoffrauschen,
-- abstrahiertes Marktgemurmel,
-- Holzklappern,
-- Glocken-/Klangsignale,
-- dezente Ruf- und Vogelklänge,
-- eigene Feedbacksignale für Stimmabgabe und Radphase.
+Hinzu kommen gezielte akustische Rückmeldungen:
 
-Browser erlauben Audio normalerweise erst nach einer Nutzerinteraktion; deshalb wird die Klangkulisse beim ersten geeigneten Klick oder Tastendruck freigeschaltet. Der Sound-Schalter oben rechts speichert die Auswahl lokal. Bei einem inaktiven Browser-Tab wird die Audioverarbeitung angehalten beziehungsweise abgesenkt.
+- Holzklappern und Klicks für Bedienelemente und Glücksrad,
+- Glocken- und Dreiklangsignale für Etappen und Gewinnerverkündung,
+- kurze synthetische Akzente für das Hinzufügen einer Antwort und die Stimmabgabe.
+
+Die Musik wird während der Stimmabgabe zurückgenommen und während des laufenden Glücksrads deutlich abgesenkt, damit die wichtigen Interaktionsgeräusche klar bleiben. Browser erlauben Audio normalerweise erst nach einer Nutzerinteraktion; deshalb wird die Klangkulisse beim ersten geeigneten Klick oder Tastendruck freigeschaltet. Der Klang-Schalter oben rechts speichert die Auswahl lokal. Bei einem inaktiven Browser-Tab wird die Audioverarbeitung pausiert.
 
 ## Performance und Fallbacks
 
@@ -180,7 +179,7 @@ Details stehen in `ASSET-NACHWEISE.md` und `THIRD-PARTY-NOTICES.md`.
 | `script.js` | Abstimmungsablauf, Raum-/Online-Modus, Ergebnisliste, Farbzuordnung, gewichtete Zufallsauswahl und UI-Radanimation |
 | `effects.js` | dezente, auf 30 FPS begrenzte Mausneigung/Schwebe-Bewegung der Oberfläche auf Geräten mit feinem Zeiger |
 | `vr-scene.js` | Three.js-Marktszene, Szenenwechsel, adaptive Qualität und atmosphärisches 3D-Glücksrad |
-| `medieval-atmosphere.js` | prozedurale Web-Audio-Klangkulisse und Sound-Feedback |
+| `medieval-atmosphere.js` | prozedurale Instrumentalmusik, Glücksrad-Klicks und Web-Audio-Feedback |
 | `config.js` | lokale Supabase-Konfiguration; im Repository mit Platzhaltern |
 | `config.example.js` | Vorlage für die Supabase-Konfiguration |
 | `HISTORISCHE-GRUNDLAGE.md` | historische Einordnung und Quellen |
