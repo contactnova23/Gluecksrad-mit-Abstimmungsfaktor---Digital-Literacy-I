@@ -3854,3 +3854,166 @@ h1 {
     margin-top: 34px;
   }
 }
+
+/* --- v11: sorgfältige Neuplatzierung auf der Startseite --- */
+.card {
+  width: min(900px, calc(100% - 120px));
+}
+
+.wizard-screen,
+#vote-section,
+#results-section {
+  min-height: 650px;
+  padding: 72px 64px 76px;
+}
+
+.welcome-hero {
+  position: relative;
+  grid-template-columns: minmax(0, 1fr) 338px;
+  grid-template-areas:
+    "copy display"
+    "copy actions";
+  align-items: start;
+  column-gap: 34px;
+  row-gap: 6px;
+}
+
+.welcome-copy {
+  grid-area: copy;
+  max-width: 32ch;
+}
+
+.welcome-copy h1 {
+  margin-bottom: 38px;
+  font-size: clamp(2.95rem, 5.1vw, 4.45rem);
+}
+
+.welcome-proclamation-sequence {
+  margin-top: 0;
+  gap: 18px;
+  max-width: 18ch;
+}
+
+.welcome-signature-block {
+  margin-top: 46px;
+  margin-left: 0;
+  max-width: 18ch;
+  text-align: left;
+}
+
+.welcome-signoff,
+.welcome-signature {
+  text-align: left;
+}
+
+.welcome-display {
+  grid-area: display;
+  width: 338px;
+  justify-self: center;
+  align-self: start;
+  margin-top: -10px;
+}
+
+.welcome-wheel-sign {
+  width: 300px;
+  margin-inline: auto;
+}
+
+.show-wheel {
+  width: 338px;
+  min-height: 404px;
+  --wheel-size: 248px;
+  --wheel-top: 72px;
+  --ground-y: 372px;
+  --wheel-mid: calc(var(--wheel-top) + (var(--wheel-size) / 2));
+}
+
+.show-wheel__crossbar {
+  top: calc(var(--wheel-mid) - 6px);
+}
+
+.show-wheel__post {
+  bottom: calc(404px - var(--ground-y));
+  height: calc(var(--wheel-mid) - (404px - var(--ground-y)));
+}
+
+.show-wheel__leg {
+  bottom: calc(404px - var(--ground-y));
+  height: 212px;
+}
+
+.show-wheel__base {
+  bottom: calc(404px - var(--ground-y) - 4px);
+}
+
+.show-wheel__spoke {
+  display: none !important;
+}
+
+.welcome-actions {
+  grid-area: actions;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: -2px;
+}
+
+.welcome-start-btn {
+  min-width: 320px;
+}
+
+@media (max-width: 1100px) {
+  .card {
+    width: min(900px, calc(100% - 72px));
+  }
+}
+
+@media (max-width: 900px) {
+  .card {
+    width: min(100%, calc(100% - 28px));
+  }
+
+  .wizard-screen,
+  #vote-section,
+  #results-section {
+    min-height: 640px;
+    padding: 62px 38px 68px;
+  }
+
+  .welcome-hero {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "copy"
+      "display"
+      "actions";
+    row-gap: 16px;
+  }
+
+  .welcome-copy {
+    max-width: 100%;
+  }
+
+  .welcome-copy h1 {
+    margin-bottom: 28px;
+    font-size: clamp(2.4rem, 7vw, 3.8rem);
+    white-space: normal;
+  }
+
+  .welcome-proclamation-sequence,
+  .welcome-signature-block {
+    max-width: 20ch;
+  }
+
+  .welcome-display {
+    margin-top: 0;
+  }
+
+  .welcome-actions {
+    justify-content: flex-start;
+    margin-top: 4px;
+  }
+
+  .welcome-start-btn {
+    min-width: 280px;
+  }
+}

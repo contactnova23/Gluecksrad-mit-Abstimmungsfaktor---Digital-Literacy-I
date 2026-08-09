@@ -17,7 +17,7 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;500;700&family=Cormorant+Garamond:wght@500;600;700&family=Parisienne&display=swap"
     />
-    <link rel="stylesheet" href="style.css?v=pergament-v10" />
+    <link rel="stylesheet" href="style.css?v=pergament-v11" />
   </head>
   <body>
     <canvas id="vr-world-canvas" aria-hidden="true"></canvas>
@@ -65,11 +65,6 @@
                   <p class="welcome-signoff">Mit Federgruß</p>
                   <p class="welcome-signature">Olga Nova</p>
                 </div>
-                <div class="welcome-actions">
-                  <button id="experience-start-btn" type="button" class="primary-action welcome-start-btn">
-                    Den Glückshafen betreten
-                  </button>
-                </div>
               </div>
 
               <aside class="welcome-display" aria-hidden="true">
@@ -90,19 +85,17 @@
                     <span class="show-wheel__sector" style="--wheel-sector-start: 225deg"></span>
                     <span class="show-wheel__sector" style="--wheel-sector-start: 270deg"></span>
                     <span class="show-wheel__sector" style="--wheel-sector-start: 315deg"></span>
-                    <span class="show-wheel__spoke" style="--wheel-spoke-rotation: 0deg"></span>
-                    <span class="show-wheel__spoke" style="--wheel-spoke-rotation: 22.5deg"></span>
-                    <span class="show-wheel__spoke" style="--wheel-spoke-rotation: 45deg"></span>
-                    <span class="show-wheel__spoke" style="--wheel-spoke-rotation: 67.5deg"></span>
-                    <span class="show-wheel__spoke" style="--wheel-spoke-rotation: 90deg"></span>
-                    <span class="show-wheel__spoke" style="--wheel-spoke-rotation: 112.5deg"></span>
-                    <span class="show-wheel__spoke" style="--wheel-spoke-rotation: 135deg"></span>
-                    <span class="show-wheel__spoke" style="--wheel-spoke-rotation: 157.5deg"></span>
                     <span class="show-wheel__hub"></span>
                   </div>
                   <span class="show-wheel__pointer"></span>
                 </div>
               </aside>
+
+              <div class="welcome-actions">
+                <button id="experience-start-btn" type="button" class="primary-action welcome-start-btn">
+                  Den Glückshafen betreten
+                </button>
+              </div>
             </div>
           </section>
 
@@ -291,7 +284,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
-    <script src="medieval-atmosphere.js?v=10"></script>
+    <script src="medieval-atmosphere.js?v=11"></script>
     <script src="script.js?v=26"></script>
     <script src="effects.js?v=light-medieval-1"></script>
     <script src="vr-scene.js?v=light-medieval-1"></script>
