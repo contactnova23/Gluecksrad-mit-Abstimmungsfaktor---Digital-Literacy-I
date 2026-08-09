@@ -4017,3 +4017,145 @@ h1 {
     min-width: 280px;
   }
 }
+
+/* --- v12: präzisere Startseitenbalance --- */
+.card {
+  width: min(860px, calc(100% - 148px));
+}
+
+.wizard-screen,
+#vote-section,
+#results-section {
+  min-height: 620px;
+  padding: 58px 56px 62px;
+}
+
+.welcome-hero {
+  grid-template-columns: minmax(0, 1fr) 320px;
+  column-gap: 28px;
+  row-gap: 4px;
+}
+
+.welcome-copy {
+  max-width: 30ch;
+}
+
+.welcome-copy h1 {
+  margin-bottom: 34px;
+  font-size: clamp(2.45rem, 4.15vw, 3.9rem);
+  line-height: 1.02;
+  position: relative;
+  z-index: 2;
+}
+
+.welcome-proclamation-sequence {
+  gap: 17px;
+  max-width: 16ch;
+}
+
+.welcome-signature-block {
+  width: 16ch;
+  max-width: 16ch;
+  margin-top: 38px;
+  margin-left: 0 !important;
+  padding-left: 0;
+  text-align: left;
+}
+
+.welcome-signoff,
+.welcome-signature {
+  width: 100%;
+  text-align: left;
+}
+
+.welcome-display {
+  width: 320px;
+  justify-self: center;
+  align-self: start;
+  margin-top: 62px;
+}
+
+.welcome-wheel-sign {
+  width: 286px;
+  margin-inline: auto;
+}
+
+.show-wheel {
+  width: 320px;
+  min-height: 386px;
+  --wheel-size: 238px;
+  --wheel-top: 76px;
+  --ground-y: 360px;
+  --wheel-mid: calc(var(--wheel-top) + (var(--wheel-size) / 2));
+}
+
+.show-wheel__crossbar {
+  width: 168px;
+}
+
+.show-wheel__post {
+  bottom: calc(386px - var(--ground-y));
+  height: calc(var(--wheel-mid) - (386px - var(--ground-y)));
+}
+
+.show-wheel__leg {
+  bottom: calc(386px - var(--ground-y));
+  height: 198px;
+}
+
+.show-wheel__base {
+  bottom: calc(386px - var(--ground-y) - 4px);
+}
+
+.welcome-actions {
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: -10px;
+}
+
+.welcome-start-btn {
+  min-width: 300px;
+}
+
+@media (max-width: 1100px) {
+  .card {
+    width: min(860px, calc(100% - 88px));
+  }
+}
+
+@media (max-width: 900px) {
+  .card {
+    width: min(100%, calc(100% - 28px));
+  }
+
+  .wizard-screen,
+  #vote-section,
+  #results-section {
+    min-height: 620px;
+    padding: 56px 34px 62px;
+  }
+
+  .welcome-hero {
+    grid-template-columns: 1fr;
+    column-gap: 0;
+    row-gap: 16px;
+  }
+
+  .welcome-copy {
+    max-width: 100%;
+  }
+
+  .welcome-copy h1 {
+    font-size: clamp(2.3rem, 6.7vw, 3.55rem);
+    white-space: normal;
+  }
+
+  .welcome-display {
+    margin-top: 8px;
+  }
+
+  .welcome-actions {
+    justify-content: flex-start;
+    margin-top: 0;
+  }
+}
