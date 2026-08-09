@@ -286,12 +286,12 @@ function celebrateWinner() {
   const message = document.createElement('p');
   message.id = 'winner-proclamation-note';
   message.className = 'winner-ceremony-message';
-  message.textContent = 'Eure Stimmen bestimmten die Größe der Felder und damit die Gewinnchancen. Das Rad entschied innerhalb dieser Gewichtung zufallsbasiert.';
+  message.textContent = 'Eure Stimmen bestimmten, wie viel Raum jede Antwort auf dem Rad erhielt. Welches Feld schließlich zum Stehen kam, entschied der Zufall.';
 
   const closeButton = document.createElement('button');
   closeButton.type = 'button';
   closeButton.className = 'winner-ceremony-close';
-  closeButton.textContent = 'Zurück zum Glücksrad';
+  closeButton.textContent = 'Zurück zum Rad des Glücks';
 
   const flourish = document.createElement('div');
   flourish.className = 'winner-proclamation-flourish';
