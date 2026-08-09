@@ -1,9 +1,13 @@
 /*
   Supabase-Konfiguration
-*/
+  ----------------------
+  Trage hier dieselbe Project URL und denselben Publishable Key ein,
+  die in der bisherigen, funktionierenden Version der App verwendet werden.
 
-const SUPABASE_URL = 'https://ftdxqlcnyaarwszpflla.supabase.co/rest/v1/';
-const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_WUPutvjUKKMWaV8sWu70Xg_bfeuP3Sp';
+  Wichtig: Niemals einen service_role- oder Secret-Key im Browser veröffentlichen.
+*/
+const SUPABASE_URL = 'HIER_DEINE_SUPABASE_PROJECT_URL_EINTRAGEN';
+const SUPABASE_PUBLISHABLE_KEY = 'HIER_DEINEN_SUPABASE_PUBLISHABLE_KEY_EINTRAGEN';
 
 const hasSupabaseConfiguration = (
   /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(SUPABASE_URL)
@@ -13,10 +17,7 @@ const hasSupabaseConfiguration = (
 
 window.supabaseClient = (
   window.supabase && hasSupabaseConfiguration
-    ? window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_PUBLISHABLE_KEY
-      )
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
     : null
 );
 
