@@ -1,8 +1,9 @@
 /*
   Supabase-Konfiguration
   ----------------------
-  Trage hier dieselbe Project URL und denselben Publishable Key ein,
-  die in der bisherigen, funktionierenden Version der App verwendet werden.
+  Trage hier die Project URL und den Publishable Key eines aktiven
+  Supabase-Projekts ein. Fuer ein neues Projekt siehe README.md und
+  SUPABASE-SETUP.sql.
 
   Wichtig: Niemals einen service_role- oder Secret-Key im Browser veröffentlichen.
 */

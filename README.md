@@ -52,14 +52,14 @@ Beim Eröffnen einer Online-Runde:
 - können Teilnehmende mit dem Raumcode über eigene Geräte beitreten,
 - wird pro Browser/Gerät eine bereits abgegebene Stimme zusätzlich über `localStorage` erkannt,
 - aktualisiert die Moderationsansicht den Stimmenstand während der Abstimmung ungefähr alle drei Sekunden,
-- kann nur die ausrufende Person die Online-Abstimmung schließen und das Rad bedienen.
+- kann in der Oberfläche nur die ausrufende Person die Online-Abstimmung schließen und das Rad bedienen; mit den Policies aus `SUPABASE-SETUP.sql` wird das Schließen zusätzlich serverseitig auf die erstellende anonyme Sitzung begrenzt.
 
-Die App erwartet im Supabase-Projekt mindestens folgende Datenstruktur:
+Für den Online-Modus benötigt die App die Tabellen `polls` und `votes`. Die mitgelieferte Datei `SUPABASE-SETUP.sql` richtet für ein neues Projekt die zur aktuellen Implementierung passenden Felder und Sicherheitsregeln ein, unter anderem:
 
-- `polls`: `id`, `question`, `options`, `room_code`, `is_closed`
-- `votes`: `poll_id`, `option`, `voter_name`, `browser_key`
+- `polls`: `id`, `question`, `options`, `room_code`, `is_closed`, `created_by`, `created_at`
+- `votes`: `id`, `poll_id`, `option`, `voter_name`, `browser_key`, `voter_id`, `created_at`
 
-Die konkrete Datenbankdefinition, Constraints und Row-Level-Security-Regeln werden **nicht** von diesem Repository eingerichtet. Sie müssen im verwendeten Supabase-Projekt bereits passend konfiguriert sein.
+Die SQL-Datei wird **nicht automatisch** ausgeführt. Sie muss einmal manuell im Supabase SQL Editor gestartet werden. Die enthaltenen Unique-Constraints begrenzen Mehrfachstimmen pro anonymer Sitzung beziehungsweise Browser-Schlüssel; die Row-Level-Security-Policies erlauben das Schließen einer Runde nur der Sitzung, die sie erstellt hat.
 
 ### Supabase-Konfiguration
 
@@ -67,7 +67,21 @@ Die konkrete Datenbankdefinition, Constraints und Row-Level-Security-Regeln werd
 
 Ein `service_role`- oder anderer Secret-Key darf nicht in einer öffentlich ausgelieferten GitHub-Pages-Datei stehen.
 
-Ohne gültige Supabase-Konfiguration bleibt der Raum-Modus nutzbar; beim Versuch, den Online-Modus zu verwenden, zeigt die App eine entsprechende Fehlermeldung.
+Ohne gültige Supabase-Konfiguration bleibt der Raum-Modus vollständig nutzbar. Die Online-Auswahl wird in diesem Fall automatisch deaktiviert und als nicht eingerichtet gekennzeichnet; dadurch führt die Oberfläche nicht mehr in einen funktionslosen Online-Pfad.
+
+### Wenn das bisherige Supabase-Projekt nicht mehr erreichbar ist
+
+Der Online-Modus ist optional. Der Raum-Modus und das Rad des Glücks funktionieren ohne Supabase weiter.
+
+1. **Zuerst den Projektstatus prüfen.** Bei einem pausierten Projekt im Supabase-Dashboard das Projekt öffnen und **Resume project** wählen.
+2. **Falls das alte Projekt nicht wiederhergestellt werden kann:** ein neues Supabase-Projekt anlegen.
+3. Unter **Authentication** die **Anonymous Sign-Ins** aktivieren. Die App verwendet `signInAnonymously()`, damit Teilnehmende ohne Konto abstimmen können.
+4. Im **SQL Editor** die Datei `SUPABASE-SETUP.sql` aus diesem Repository ausführen. Sie legt die von der App benötigten Tabellen, Eindeutigkeitsregeln und Row-Level-Security-Policies an.
+5. Im Supabase-Dashboard die **Project URL** und den **Publishable Key** kopieren. Im Browser darf nur der Publishable-/öffentliche Key verwendet werden, niemals ein Secret-/`service_role`-Key.
+6. Diese beiden Werte in `config.js` eintragen und die Datei zusammen mit der App veröffentlichen.
+7. Danach in zwei unterschiedlichen Browsern oder Geräten testen: Online-Runde eröffnen → Raumcode eingeben → Stimme abgeben → Runde durch die ausrufende Person schließen → Rad starten und anhalten.
+
+Wenn der Online-Modus nicht benötigt wird, kann `config.js` bei den Platzhaltern bleiben. Die App kennzeichnet die Online-Funktionen dann automatisch als nicht eingerichtet.
 
 ## Gestaltung und Typografie
 
@@ -182,6 +196,7 @@ Details stehen in `ASSET-NACHWEISE.md` und `THIRD-PARTY-NOTICES.md`.
 | `medieval-atmosphere.js` | prozedurale Instrumentalmusik, Glücksrad-Klicks und Web-Audio-Feedback |
 | `config.js` | lokale Supabase-Konfiguration; im Repository mit Platzhaltern |
 | `config.example.js` | Vorlage für die Supabase-Konfiguration |
+| `SUPABASE-SETUP.sql` | optionale Tabellen-, Constraint- und RLS-Einrichtung für einen neuen Supabase-Online-Modus |
 | `HISTORISCHE-GRUNDLAGE.md` | historische Einordnung und Quellen |
 | `ASSET-NACHWEISE.md` | Übersicht über eigene/prozedurale Inhalte und externe Medienressourcen |
 | `THIRD-PARTY-NOTICES.md` | Bibliotheken, Fonts und Lizenzhinweise |
@@ -191,7 +206,7 @@ Details stehen in `ASSET-NACHWEISE.md` und `THIRD-PARTY-NOTICES.md`.
 1. Falls der Online-Modus genutzt werden soll, `config.js` mit der gültigen Project URL und einem öffentlichen Supabase-Key konfigurieren.
 2. Die Projektdateien in das Stammverzeichnis des GitHub-Repositories hochladen.
 3. Unter **Settings → Pages** die Veröffentlichung aus dem Branch `main` und `/ (root)` aktivieren.
-4. Nach Änderungen an CSS oder JavaScript die Seite mit geleertem Cache oder in einem privaten Fenster prüfen.
+4. Nach Änderungen an CSS oder JavaScript die Seite mit geleertem Cache oder in einem privaten Fenster prüfen. Die lokalen Ressourcen tragen Versionsparameter, damit neue Deployments nicht versehentlich alte Browser-Caches weiterverwenden.
 5. Den vollständigen Ablauf testen: Start → Erstellung/Beitritt → Modus → Stimme → Abstimmung schließen → Rad starten → Rad anhalten → Gewinnerproklamation.
 
 ## Lokaler Test

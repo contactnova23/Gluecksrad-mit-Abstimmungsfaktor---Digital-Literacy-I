@@ -50,6 +50,12 @@ const journeySteps = Array.from(document.querySelectorAll('.journey-step'));
 const gameFxLayer = document.getElementById('game-fx-layer');
 const reducedGameMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+const onlineModeOption = onlineModeToggle?.closest('.mode-option');
+const onlineModeDescription = onlineModeOption?.querySelector('small');
+const joinOnlineDescription = showJoinBtn?.querySelector('small');
+const ONLINE_MODE_DESCRIPTION = onlineModeDescription?.textContent || '';
+const JOIN_ONLINE_DESCRIPTION = joinOnlineDescription?.textContent || '';
+
 const STORAGE_KEY = 'gluecksrad-room-voting-state';
 
 let options = [];
@@ -188,6 +194,40 @@ function hasOnlineBackend() {
     && typeof supabaseClient !== 'undefined'
     && supabaseClient
   );
+}
+
+function updateOnlineAvailability() {
+  const available = hasOnlineBackend();
+
+  if (showJoinBtn) {
+    showJoinBtn.disabled = !available;
+    showJoinBtn.setAttribute('aria-disabled', String(!available));
+  }
+
+  if (joinOnlineDescription) {
+    joinOnlineDescription.textContent = available
+      ? JOIN_ONLINE_DESCRIPTION
+      : 'Online-Teilnahme derzeit nicht eingerichtet';
+  }
+
+  if (onlineModeToggle) {
+    onlineModeToggle.disabled = !available;
+    if (!available) onlineModeToggle.checked = false;
+  }
+
+  if (onlineModeOption) {
+    onlineModeOption.classList.toggle('is-unavailable', !available);
+    onlineModeOption.setAttribute('aria-disabled', String(!available));
+  }
+
+  if (onlineModeDescription) {
+    onlineModeDescription.textContent = available
+      ? ONLINE_MODE_DESCRIPTION
+      : 'Der Online-Modus ist derzeit nicht eingerichtet.';
+  }
+
+  updateModeCards();
+  return available;
 }
 
 function getSetupData() {
@@ -472,6 +512,14 @@ function updateRemoveButtons() {
 
 function fillVoteOptions() {
   voteSelect.innerHTML = '';
+
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = 'Bitte eine Antwort wählen';
+  placeholder.disabled = true;
+  placeholder.selected = true;
+  voteSelect.appendChild(placeholder);
+
   options.forEach((option) => {
     const optionElement = document.createElement('option');
     optionElement.value = option;
@@ -853,6 +901,16 @@ function restoreSavedState() {
     roomMode = Boolean(parsedState.roomMode);
     onlineMode = Boolean(parsedState.onlineMode);
 
+    if (currentPhase !== 'setup' && (!Array.isArray(options) || options.length < 2)) {
+      clearSavedState();
+      return;
+    }
+
+    if (onlineMode && !hasOnlineBackend()) {
+      clearSavedState();
+      return;
+    }
+
     // Ungültige gespeicherte Sitzungen ohne Abstimmungsmodus nicht wiederherstellen.
     if (currentPhase !== 'setup' && !roomMode && !onlineMode) {
       clearSavedState();
@@ -880,6 +938,10 @@ function restoreSavedState() {
       const summary = computeSummary();
       buildResultsList(summary);
       buildWheel(summary);
+      wheel.style.transition = 'none';
+      wheel.style.transform = `rotate(${currentRotation}deg)`;
+      void wheel.offsetHeight;
+      wheel.style.transition = 'transform 0.8s ease-out';
       showResultsScreen();
       winnerDisplay.textContent = 'Der Glückshafen ist bereit. Das Rad kann in Gang gesetzt werden.';
     }
@@ -951,8 +1013,23 @@ startBtn.addEventListener('click', async () => {
   }
 
   const { question, answers } = setupData;
-  roomMode = roomModeToggle.checked;
-  onlineMode = onlineModeToggle.checked;
+  const requestedRoomMode = roomModeToggle.checked;
+  const requestedOnlineMode = onlineModeToggle.checked;
+
+  if (requestedOnlineMode && !hasOnlineBackend()) {
+    updateOnlineAvailability();
+    setupError.textContent = 'Der Online-Modus ist derzeit nicht eingerichtet. Bitte nutzt den Raum-Modus oder richtet Supabase neu ein.';
+    return;
+  }
+
+  roomMode = requestedRoomMode;
+  onlineMode = requestedOnlineMode;
+  isOnlineModerator = false;
+  currentPollId = null;
+  currentRoomCode = '';
+  currentVoteCount = 0;
+  isVotingClosed = false;
+  currentBrowserVoteKey = '';
 
   options = answers;
   votes = [];
@@ -969,11 +1046,6 @@ startBtn.addEventListener('click', async () => {
   currentPhase = 'vote';
 
   if (onlineMode) {
-    if (!hasOnlineBackend()) {
-      setupError.textContent = 'Supabase ist nicht verfügbar. Bitte prüfe die Konfiguration.';
-      return;
-    }
-
     isOnlineModerator = true;
     try {
       await ensureAnonymousUser();
@@ -1001,7 +1073,7 @@ startBtn.addEventListener('click', async () => {
       showVoteScreen(question);
       return;
     } catch (error) {
-      setupError.textContent = 'Der Glückshafen über die Ferne konnte nicht eröffnet werden.';
+      setupError.textContent = 'Der Online-Dienst konnte nicht erreicht werden. Bitte nutzt vorerst den Raum-Modus oder prüft das Supabase-Projekt.';
       console.error(error);
       return;
     }
@@ -1260,7 +1332,7 @@ joinOnlineBtn.addEventListener('click', async () => {
   }
 
   if (!hasOnlineBackend()) {
-    joinError.textContent = 'Supabase ist nicht verfügbar. Bitte prüfe die Konfiguration.';
+    joinError.textContent = 'Der Online-Modus ist derzeit nicht eingerichtet.';
     return;
   }
 
@@ -1328,6 +1400,6 @@ document.addEventListener('pointerdown', (event) => {
 createAnswerRow('');
 createAnswerRow('');
 updateRemoveButtons();
-updateModeCards();
+updateOnlineAvailability();
 showWelcome();
 restoreSavedState();

@@ -6118,3 +6118,28 @@ button:disabled {
     white-space: normal !important;
   }
 }
+
+
+/* =========================================================
+   v29 · Sicherer Fallback, wenn der optionale Online-Dienst fehlt
+   Keine Regeln fuer Rad, Gestell, Zeiger oder Radgeometrie.
+   ========================================================= */
+#entry-choice .choice-card-button:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.62 !important;
+  transform: none !important;
+  box-shadow: 0 7px 16px rgba(46, 72, 69, 0.045) !important;
+}
+
+.mode-option.is-unavailable {
+  cursor: not-allowed !important;
+  opacity: 0.58 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.mode-option.is-unavailable:hover {
+  transform: none !important;
+  border-color: rgba(119, 151, 142, 0.24) !important;
+  box-shadow: none !important;
+}
