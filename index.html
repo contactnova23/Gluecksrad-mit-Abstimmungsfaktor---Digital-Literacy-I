@@ -11,34 +11,59 @@
       href="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
       crossorigin
     />
-    <link rel="stylesheet" href="style.css?v=fairytale14" />
+    <link rel="stylesheet" href="style.css?v=sixscreens1" />
   </head>
   <body>
     <canvas id="vr-world-canvas" aria-hidden="true"></canvas>
-<main class="app">
+
+    <main class="app">
       <section class="card">
-        <h1>Glücksrad mit Abstimmungsfaktor</h1>
-        <p class="intro">
-          Erstelle eine Abstimmung und lasse das Glücksrad gewichtet nach den abgegebenen Stimmen entscheiden.
-        </p>
-
         <section id="setup-section">
-          <div id="entry-choice" class="entry-choice wizard-screen">
-            <h2>Was möchtest du tun?</h2>
-            <p class="info">
-              Erstelle eine neue Abstimmung oder tritt mit einem Raumcode einer Online-Abstimmung bei.
-            </p>
-            <div class="entry-actions">
-              <button id="show-create-btn" type="button">Neue Abstimmung erstellen</button>
-              <button id="show-join-btn" type="button" class="secondary-choice-btn">Mit Raumcode teilnehmen</button>
+          <!-- Fenster 1: Willkommen -->
+          <section id="welcome-panel" class="wizard-screen welcome-screen">
+            <h1>Glücksrad mit Abstimmungsfaktor</h1>
+            <div class="welcome-actions">
+              <button id="experience-start-btn" type="button" class="primary-action welcome-start-btn">
+                Start
+              </button>
             </div>
-          </div>
+          </section>
 
+          <!-- Fenster 2: Auswahl -->
+          <section id="entry-choice" class="entry-choice wizard-screen" hidden>
+            <div class="panel-header compact-header">
+              <div>
+                <h2>Was möchtest du tun?</h2>
+                <p class="info">Wähle, wie du fortfahren möchtest.</p>
+              </div>
+              <button id="back-to-welcome-btn" type="button" class="back-btn">← Zurück</button>
+            </div>
+
+            <div class="entry-actions choice-actions">
+              <button id="show-create-btn" type="button" class="choice-card-button">
+                <span class="choice-icon" aria-hidden="true">✦</span>
+                <span>
+                  <strong>Neue Abstimmung erstellen</strong>
+                  <small>Frage und Antworten festlegen</small>
+                </span>
+              </button>
+
+              <button id="show-join-btn" type="button" class="choice-card-button secondary-choice-btn">
+                <span class="choice-icon" aria-hidden="true">⌘</span>
+                <span>
+                  <strong>Mit Raumcode teilnehmen</strong>
+                  <small>Online-Abstimmung beitreten</small>
+                </span>
+              </button>
+            </div>
+          </section>
+
+          <!-- Fenster 3: Frage + Antworten -->
           <section id="create-panel" class="setup-panel wizard-screen" hidden>
             <div class="panel-header">
               <div>
                 <h2>Abstimmung vorbereiten</h2>
-                <p class="info">Formuliere die Frage und lege mindestens zwei Antwortmöglichkeiten fest.</p>
+                <p class="info">Formuliere eine klare Frage und lege mindestens zwei Antwortmöglichkeiten fest.</p>
               </div>
               <button id="back-from-create-btn" type="button" class="back-btn">← Zurück</button>
             </div>
@@ -51,55 +76,57 @@
             <div class="answers-box setup-block">
               <h3>Antwortmöglichkeiten</h3>
               <div id="answers-container"></div>
-              <button id="add-answer-btn" type="button">+ Weitere Antwort</button>
+              <button id="add-answer-btn" type="button" class="subtle-action">+ Weitere Antwort</button>
             </div>
 
-            <p id="create-error" class="error"></p>
+            <p id="create-error" class="error" aria-live="polite"></p>
             <div class="wizard-nav">
-              <button id="continue-to-mode-btn" type="button" class="primary-action">Weiter zur Abstimmungsart</button>
+              <button id="continue-to-mode-btn" type="button" class="primary-action">Weiter</button>
             </div>
           </section>
 
+          <!-- Fenster 4: Abstimmungsort -->
           <section id="mode-panel" class="setup-panel wizard-screen" hidden>
             <div class="panel-header">
               <div>
-                <h2>Abstimmungsart wählen</h2>
-                <p class="info">Wähle die passende Abstimmungsart.</p>
+                <h2>Wo wird abgestimmt?</h2>
+                <p class="info">Wähle genau eine Abstimmungsart.</p>
               </div>
               <button id="back-to-create-btn" type="button" class="back-btn">← Zurück</button>
             </div>
 
             <fieldset class="mode-fieldset mode-choice-grid">
-              <legend>Wie soll abgestimmt werden?</legend>
+              <legend class="sr-only">Abstimmungsort wählen</legend>
 
               <label class="mode-option">
                 <input id="room-mode-toggle" type="radio" name="voting-mode" value="room" />
                 <span class="mode-copy">
-                  <strong>Raum-Modus – ein gemeinsames Gerät</strong>
-                  <small>Mehrere Personen stimmen nacheinander ab. Ergebnisse werden erst am Ende angezeigt.</small>
+                  <strong>Raum-Modus</strong>
+                  <small>Alle stimmen nacheinander auf einem gemeinsamen Gerät ab.</small>
                 </span>
               </label>
 
               <label class="mode-option">
                 <input id="online-mode-toggle" type="radio" name="voting-mode" value="online" />
                 <span class="mode-copy">
-                  <strong>Online-Modus – mehrere Geräte</strong>
+                  <strong>Online-Modus</strong>
                   <small>Teilnehmende stimmen mit ihrem eigenen Gerät über einen Raumcode ab.</small>
                 </span>
               </label>
             </fieldset>
 
-            <p id="setup-error" class="error"></p>
+            <p id="setup-error" class="error" aria-live="polite"></p>
             <div class="wizard-nav">
               <button id="start-btn" type="button" class="primary-action">Abstimmung starten</button>
             </div>
           </section>
 
+          <!-- Seitenweg ab Fenster 2: Raumcode -->
           <section id="join-panel" class="setup-panel wizard-screen" hidden>
             <div class="panel-header">
               <div>
                 <h2>Mit Raumcode teilnehmen</h2>
-                <p class="info">Gib den Raumcode ein, den du von der moderierenden Person erhalten hast.</p>
+                <p class="info">Gib den Raumcode der moderierenden Person ein.</p>
               </div>
               <button id="back-from-join-btn" type="button" class="back-btn">← Zurück</button>
             </div>
@@ -108,29 +135,36 @@
               <span>Raumcode</span>
               <input id="join-room-code-input" type="text" placeholder="Zum Beispiel: AB12CD" autocomplete="off" />
             </label>
-            <button id="join-online-btn" type="button" class="primary-action">Online-Abstimmung beitreten</button>
-            <p id="join-error" class="error"></p>
+            <div class="wizard-nav">
+              <button id="join-online-btn" type="button" class="primary-action">Beitreten</button>
+            </div>
+            <p id="join-error" class="error" aria-live="polite"></p>
           </section>
         </section>
 
-        <section id="vote-section" hidden>
-          <h2 id="question-display"></h2>
-          <p class="info" id="vote-info">Die Ergebnisse bleiben bis zum Ende verborgen.</p>
+        <!-- Fenster 5: Stimmen -->
+        <section id="vote-section" class="wizard-screen" hidden>
+          <div class="vote-heading">
+            <p class="screen-eyebrow">Abstimmung</p>
+            <h2 id="question-display"></h2>
+            <p class="info" id="vote-info">Die Ergebnisse bleiben bis zum Ende verborgen.</p>
+          </div>
+
           <p id="room-status" class="room-status" hidden></p>
           <p id="online-status" class="room-status" hidden></p>
 
           <label class="field">
-            <span>Dein Name (optional)</span>
-            <input id="voter-name" type="text" placeholder="Optional, zum Beispiel Mia" />
+            <span>Dein Name <small>(optional)</small></span>
+            <input id="voter-name" type="text" placeholder="Zum Beispiel: Mia" />
           </label>
 
           <label class="field">
-            <span>Wähle eine Antwort</span>
+            <span>Deine Stimme</span>
             <select id="vote-select"></select>
           </label>
 
           <div class="action-row">
-            <button id="vote-btn" type="button">Stimme abgeben</button>
+            <button id="vote-btn" type="button" class="primary-action">Stimme abgeben</button>
             <button id="next-person-btn" type="button" hidden>Nächste Person</button>
             <button id="end-voting-btn" type="button">Abstimmung beenden</button>
           </div>
@@ -139,9 +173,15 @@
           <button id="new-voting-btn-vote" type="button" class="secondary-btn">Neue Abstimmung</button>
         </section>
 
-        <section id="results-section" hidden>
-          <h2>Ergebnis der Abstimmung</h2>
-          <ul id="results-list" class="results-list"></ul>
+        <!-- Fenster 6: Glücksrad -->
+        <section id="results-section" class="wizard-screen wheel-screen" hidden>
+          <div class="wheel-heading">
+            <p class="screen-eyebrow">Entscheidung</p>
+            <h2>Das Glücksrad</h2>
+            <p class="info wheel-note">Die Größe der Felder entspricht der abgegebenen Stimmenverteilung.</p>
+          </div>
+
+          <ul id="results-list" class="results-list results-data" aria-label="Stimmenverteilung"></ul>
 
           <div class="wheel-area">
             <div class="wheel-pointer"></div>
@@ -149,7 +189,7 @@
           </div>
 
           <div class="wheel-controls">
-            <button id="spin-btn" type="button">Glücksrad drehen</button>
+            <button id="spin-btn" type="button" class="primary-action">Glücksrad drehen</button>
             <button id="stop-btn" type="button">Glücksrad stoppen</button>
           </div>
 
@@ -161,8 +201,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
-    <script src="script.js?v=21"></script>
-    <script src="effects.js?v=fairytale14"></script>
-    <script src="vr-scene.js?v=fairytale14"></script>
+    <script src="script.js?v=22"></script>
+    <script src="effects.js?v=fairytalelight1"></script>
+    <script src="vr-scene.js?v=sixscreens1"></script>
   </body>
 </html>

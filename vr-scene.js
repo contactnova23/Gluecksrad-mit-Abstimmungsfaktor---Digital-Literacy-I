@@ -575,6 +575,7 @@
     }
 
     // ---------- App progress detection ----------
+    const welcomePanel = document.getElementById('welcome-panel');
     const entryChoice = document.getElementById('entry-choice');
     const createPanel = document.getElementById('create-panel');
     const modePanel = document.getElementById('mode-panel');
@@ -591,13 +592,15 @@
     function detectStep() {
       if (isVisible(resultsSection)) {
         if ((winnerDisplay?.textContent || '').includes('Gewinner:')) return 6;
-        return spinBtn?.disabled ? 6 : 5;
+        return 5;
       }
 
       if (isVisible(voteSection)) return 4;
       if (isVisible(modePanel)) return 3;
       if (isVisible(createPanel)) return 2;
-      if (isVisible(joinPanel)) return 1;
+      if (isVisible(joinPanel)) return 2;
+      if (isVisible(entryChoice)) return 1;
+      if (isVisible(welcomePanel)) return 0;
 
       return 0;
     }
@@ -607,6 +610,7 @@
     }
 
     const watchedElements = [
+      welcomePanel,
       entryChoice,
       createPanel,
       modePanel,

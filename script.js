@@ -13,10 +13,13 @@ const joinRoomCodeInput = document.getElementById('join-room-code-input');
 const joinOnlineBtn = document.getElementById('join-online-btn');
 const joinError = document.getElementById('join-error');
 
+const welcomePanel = document.getElementById('welcome-panel');
 const entryChoice = document.getElementById('entry-choice');
 const createPanel = document.getElementById('create-panel');
 const modePanel = document.getElementById('mode-panel');
 const joinPanel = document.getElementById('join-panel');
+const experienceStartBtn = document.getElementById('experience-start-btn');
+const backToWelcomeBtn = document.getElementById('back-to-welcome-btn');
 const showCreateBtn = document.getElementById('show-create-btn');
 const showJoinBtn = document.getElementById('show-join-btn');
 const backFromCreateBtn = document.getElementById('back-from-create-btn');
@@ -250,46 +253,62 @@ function celebrateWinner() {
   }, 1150);
 }
 
-function showSetupHome() {
-  entryChoice.hidden = false;
+function hideSetupPanels() {
+  welcomePanel.hidden = true;
+  entryChoice.hidden = true;
   createPanel.hidden = true;
   modePanel.hidden = true;
   joinPanel.hidden = true;
-  createError.textContent = '';
+  voteSection.hidden = true;
+  resultsSection.hidden = true;
+}
+
+function showWelcome() {
+  setupSection.hidden = false;
+  hideSetupPanels();
+  welcomePanel.hidden = false;
   createError.textContent = '';
   setupError.textContent = '';
   joinError.textContent = '';
+  window.setTimeout(() => experienceStartBtn.focus(), 120);
+}
+
+function showSetupHome() {
+  setupSection.hidden = false;
+  hideSetupPanels();
+  entryChoice.hidden = false;
+  createError.textContent = '';
+  setupError.textContent = '';
+  joinError.textContent = '';
+  window.setTimeout(() => showCreateBtn.focus(), 120);
 }
 
 function showCreatePanel() {
-  entryChoice.hidden = true;
+  setupSection.hidden = false;
+  hideSetupPanels();
   createPanel.hidden = false;
-  modePanel.hidden = true;
-  joinPanel.hidden = true;
   createError.textContent = '';
   setupError.textContent = '';
-  questionInput.focus();
+  window.setTimeout(() => questionInput.focus(), 120);
 }
 
 function showModePanel() {
-  entryChoice.hidden = true;
-  createPanel.hidden = true;
+  setupSection.hidden = false;
+  hideSetupPanels();
   modePanel.hidden = false;
-  joinPanel.hidden = true;
   setupError.textContent = '';
   updateModeCards();
 
   const selectedMode = document.querySelector('input[name="voting-mode"]:checked');
-  (selectedMode || roomModeToggle).focus();
+  window.setTimeout(() => (selectedMode || roomModeToggle).focus(), 120);
 }
 
 function showJoinPanel() {
-  entryChoice.hidden = true;
-  createPanel.hidden = true;
-  modePanel.hidden = true;
+  setupSection.hidden = false;
+  hideSetupPanels();
   joinPanel.hidden = false;
   joinError.textContent = '';
-  joinRoomCodeInput.focus();
+  window.setTimeout(() => joinRoomCodeInput.focus(), 120);
 }
 
 function generateRoomCode() {
@@ -436,6 +455,7 @@ function stopOnlineRefreshLoop() {
 }
 
 function showResultsScreen() {
+  setupSection.hidden = true;
   voteSection.hidden = true;
   resultsSection.hidden = false;
 }
@@ -574,7 +594,7 @@ function resetApp() {
   winnerDisplay.textContent = '';
   winnerDisplay.classList.remove('winner-announced');
   setupSection.hidden = false;
-  showSetupHome();
+  showWelcome();
   voteSection.hidden = true;
   resultsSection.hidden = true;
   roomStatus.hidden = true;
@@ -725,6 +745,8 @@ function restoreSavedState() {
   }
 }
 
+experienceStartBtn.addEventListener('click', showSetupHome);
+backToWelcomeBtn.addEventListener('click', showWelcome);
 showCreateBtn.addEventListener('click', showCreatePanel);
 showJoinBtn.addEventListener('click', showJoinPanel);
 backFromCreateBtn.addEventListener('click', showSetupHome);
@@ -1136,4 +1158,5 @@ createAnswerRow('');
 createAnswerRow('');
 updateRemoveButtons();
 updateModeCards();
+showWelcome();
 restoreSavedState();

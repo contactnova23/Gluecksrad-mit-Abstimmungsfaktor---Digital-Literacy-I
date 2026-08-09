@@ -16,7 +16,7 @@ Die meistgewählte Antwort gewinnt jedoch nicht automatisch – das Ergebnis ble
 
 ## Funktionen
 
-- Schrittweise Einrichtung: Frage & Antworten zuerst, Abstimmungsart anschließend
+- Klarer 6-Fenster-Ablauf: Start → Auswahl → Frage & Antworten → Abstimmungsort → Stimmen → Glücksrad
 - Eigene Abstimmungsfrage erstellen
 - Beliebig viele Antwortmöglichkeiten hinzufügen
 - Doppelte Antwortmöglichkeiten werden verhindert
@@ -30,12 +30,24 @@ Die meistgewählte Antwort gewinnt jedoch nicht automatisch – das Ergebnis ble
 
 Die App nutzt bewusst nur wenige spielerische Elemente, damit die Abstimmung einfach und verständlich bleibt:
 
-- eine 3-Schritt-Fortschrittsanzeige beim Erstellen einer Abstimmung
 - direktes visuelles Feedback nach einer abgegebenen Stimme
 - eine deutlich hervorgehobene Auswahl des Abstimmungsmodus
-- eine kurze Gewinner-Animation mit dezentem Konfetti
+- eine inszenierte Gewinnerverkündung mit animierter Zeremonie
 
 Auf Punkte, Badges, Streaks oder Leaderboards wird bewusst verzichtet. Die geheime Abstimmung und die eigentliche Entscheidung durch das gewichtete Glücksrad bleiben im Mittelpunkt.
+
+## Benutzerführung
+
+Die Oberfläche ist bewusst in einzelne, klar abgegrenzte Fenster aufgeteilt:
+
+1. Start mit Titel und Start-Button
+2. Auswahl zwischen neuer Abstimmung und Teilnahme per Raumcode
+3. Eingabe von Abstimmungsfrage und Antwortmöglichkeiten
+4. Auswahl zwischen Raum-Modus und Online-Modus
+5. Abgabe der Stimmen
+6. Glücksrad mit gewichteten Segmenten und anschließender Gewinnerverkündung
+
+Die 3D-Fairytale-Stadt bewegt sich passend zum Fortschritt der Nutzerinnen und Nutzer weiter.
 
 ## Abstimmungsarten
 

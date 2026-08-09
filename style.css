@@ -917,3 +917,188 @@ body.vr-walking .card {
     transform: none !important;
   }
 }
+
+/* =========================================================
+   SIX-SCREEN FLOW
+   Ein Bildschirm = eine klare Aufgabe.
+   ========================================================= */
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.welcome-screen {
+  min-height: 390px;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  text-align: center;
+  padding: 42px 24px 34px;
+}
+
+.welcome-screen h1 {
+  max-width: 720px;
+  margin: 0 auto 38px;
+  font-size: clamp(2.55rem, 6vw, 4.25rem);
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+.welcome-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.welcome-start-btn {
+  min-width: 190px;
+  min-height: 56px;
+  padding-inline: 38px;
+  font-size: 1.05rem;
+}
+
+.compact-header {
+  margin-bottom: 18px;
+}
+
+.choice-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  width: 100%;
+}
+
+.choice-card-button {
+  min-height: 116px;
+  padding: 18px;
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  border-radius: 12px;
+}
+
+.choice-card-button .choice-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #f9e9b8;
+  background: rgba(29, 69, 108, 0.92);
+  border: 1px solid rgba(236, 201, 127, 0.62);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.choice-card-button strong,
+.choice-card-button small {
+  display: block;
+}
+
+.choice-card-button strong {
+  margin-bottom: 4px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.04rem;
+}
+
+.choice-card-button small {
+  line-height: 1.4;
+  opacity: 0.84;
+  font-weight: 570;
+}
+
+.subtle-action {
+  min-height: 40px;
+  padding: 8px 13px;
+}
+
+.vote-heading,
+.wheel-heading {
+  margin-bottom: 24px;
+}
+
+.screen-eyebrow {
+  margin: 0 0 7px;
+  color: #416e98;
+  font-size: 0.76rem;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+#question-display {
+  margin-bottom: 8px;
+}
+
+.field > span small {
+  color: #7b6a58;
+  font-weight: 600;
+}
+
+.wheel-screen {
+  text-align: center;
+}
+
+.wheel-screen .wheel-heading {
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+.wheel-note {
+  max-width: 590px;
+  margin-inline: auto;
+}
+
+.results-data {
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  max-width: 700px;
+  margin: 16px auto 0;
+  text-align: left;
+}
+
+.wheel-controls {
+  justify-content: center;
+}
+
+.wheel-screen > .secondary-btn {
+  margin-top: 8px;
+}
+
+/* The card stays visually stable while content changes. */
+.wizard-screen:not([hidden]),
+#vote-section:not([hidden]),
+#results-section:not([hidden]) {
+  animation: screenIn 0.46s cubic-bezier(0.2, 0.76, 0.26, 1) both;
+}
+
+@media (max-width: 720px) {
+  .welcome-screen {
+    min-height: 330px;
+    padding: 32px 4px 20px;
+  }
+
+  .welcome-screen h1 {
+    margin-bottom: 30px;
+    font-size: clamp(2.3rem, 12vw, 3.3rem);
+  }
+
+  .choice-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .choice-card-button {
+    min-height: 96px;
+  }
+
+  .results-data {
+    grid-template-columns: 1fr;
+  }
+}
