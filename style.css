@@ -4299,3 +4299,159 @@ button:disabled span {
   background: linear-gradient(180deg, var(--button-bg-top-v16) 0%, var(--button-bg-bottom-v16) 100%) !important;
   border-color: var(--button-border-v16) !important;
 }
+
+/* =========================================================
+   v17 TYPOGRAPHY SYSTEM
+   Eine klare visuelle Hierarchie ohne zufaellige Fontwechsel:
+   - Cormorant Garamond: Ueberschriften / zeremonielle Titel
+   - Alegreya: Fliesstext, Formulare, Status, ALLE UI-Buttons
+   - Parisienne: ausschliesslich die persoenliche Unterschrift
+   ========================================================= */
+:root {
+  --font-display-v17: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-text-v17: "Alegreya", Georgia, "Times New Roman", serif;
+  --font-ui-v17: "Alegreya", Georgia, "Times New Roman", serif;
+  --font-signature-v17: "Parisienne", "Brush Script MT", cursive;
+}
+
+/* Grundschrift: Lesetext und funktionale Inhalte */
+html,
+body,
+input,
+select,
+textarea,
+label,
+.info,
+.field,
+.field > span,
+.step-label,
+.mode-copy,
+.mode-copy small,
+.choice-card-button small,
+.results-list,
+.results-list li,
+.confirm,
+.error,
+.room-status,
+.winner,
+.wheel-note,
+.winner-ceremony-message,
+.welcome-proclamation,
+.welcome-proclamation-sequence,
+.welcome-proclamation-sequence .welcome-line {
+  font-family: var(--font-text-v17) !important;
+  font-style: normal;
+}
+
+/* Ueberschriften: bewusst eine eigene, historisch elegante Rolle */
+h1,
+h2,
+h3,
+#question-display,
+.mode-fieldset legend,
+.choice-card-button strong,
+.mode-copy strong,
+.winner-ceremony-title,
+.winner-ceremony-name {
+  font-family: var(--font-display-v17) !important;
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* Kleine Orientierungstexte: funktional statt dekorativ */
+.market-welcome,
+.screen-eyebrow,
+.winner-ceremony-kicker,
+.journey-step,
+.journey-sigil {
+  font-family: var(--font-ui-v17) !important;
+  font-style: normal;
+  font-weight: 700;
+}
+
+/* Holztafel/Slogan darf wie eine kurze Ueberschrift wirken. */
+.welcome-wheel-sign {
+  font-family: var(--font-display-v17) !important;
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* Formularfelder und Platzhalter bleiben klar und konsistent. */
+input,
+select,
+textarea {
+  font-family: var(--font-ui-v17) !important;
+  font-weight: 500;
+}
+
+input::placeholder,
+textarea::placeholder {
+  font-family: var(--font-ui-v17) !important;
+  font-style: italic;
+  font-weight: 400;
+}
+
+/*
+   Wichtig: ALLE echten Buttons verwenden exakt dieselbe Schriftfamilie.
+   Das schliesst dynamisch erzeugte Buttons sowie strong/small/span-Inhalte ein.
+*/
+button,
+button *,
+button strong,
+button small,
+button span,
+.primary-action,
+.secondary-choice-btn,
+.secondary-btn,
+.back-btn,
+.subtle-action,
+.remove-answer-btn,
+.moderator-action,
+.winner-ceremony-close,
+.sound-toggle,
+#experience-start-btn,
+#show-create-btn,
+#show-join-btn,
+#back-to-welcome-btn,
+#back-from-create-btn,
+#add-answer-btn,
+#continue-to-mode-btn,
+#back-to-create-btn,
+#start-btn,
+#back-from-join-btn,
+#join-online-btn,
+#vote-btn,
+#next-person-btn,
+#end-voting-btn,
+#new-voting-btn-vote,
+#spin-btn,
+#stop-btn,
+#new-voting-btn-results {
+  font-family: var(--font-ui-v17) !important;
+  font-style: normal !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.005em;
+}
+
+/* Signatur: einzige bewusst handschriftliche Ausnahme. */
+.welcome-signoff {
+  font-family: var(--font-text-v17) !important;
+  font-style: italic;
+  font-weight: 500;
+}
+
+.welcome-signature {
+  font-family: var(--font-signature-v17) !important;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+/* Gewinneranzeige: Ergebnistext bleibt Lesetext, Name darf zeremoniell sein. */
+.winner {
+  font-weight: 500;
+}
+
+.winner-ceremony-name {
+  font-weight: 600;
+}
