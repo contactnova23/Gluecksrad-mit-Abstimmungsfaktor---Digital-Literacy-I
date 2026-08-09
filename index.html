@@ -6,12 +6,18 @@
     <title>Glücksrad mit Abstimmungsfaktor</title>
     <meta name="theme-color" content="#dceff5" />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="modulepreload"
       href="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
       crossorigin
     />
-    <link rel="stylesheet" href="style.css?v=light-medieval-1" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Marck+Script&display=swap"
+    />
+    <link rel="stylesheet" href="style.css?v=pergament-v3" />
   </head>
   <body>
     <canvas id="vr-world-canvas" aria-hidden="true"></canvas>
@@ -42,9 +48,40 @@
         <section id="setup-section">
           <!-- Fenster 1: Willkommen -->
           <section id="welcome-panel" class="wizard-screen welcome-screen">
-            <p class="market-welcome">Willkommen zum Glückshafen</p>
-            <h1>Glücksrad mit Abstimmungsfaktor</h1>
-            <p class="welcome-motto">Tretet ein – die Runde ist eröffnet.</p>
+            <div class="welcome-letterhead">
+              <p class="market-welcome">Willkommen zum Glückshafen</p>
+              <h1>Glücksrad mit Abstimmungsfaktor</h1>
+            </div>
+
+            <div class="welcome-scroll">
+              <article class="welcome-letter">
+                <p class="welcome-letter-copy">
+                  Edle Reisende, tretet näher und versucht Eure Fortuna am „Rad des Glücks“.
+                  Ein beherzter Dreh, ein günstiges Los – und die Gunst der Stunde könnte die Eure sein.
+                </p>
+                <p class="welcome-letter-copy">
+                  So zögert nicht: Gebt Eure Stimme, wagt den Versuch und lasst das Rad über Euer Glück entscheiden.
+                </p>
+                <p class="welcome-signoff">Mit Federgruß</p>
+                <p class="welcome-signature">Olga Nova</p>
+              </article>
+
+              <div class="welcome-wheel-crest" aria-hidden="true">
+                <div class="welcome-wheel-sign">Wagt den Dreh – versucht Eure Fortuna!</div>
+                <div class="welcome-wheel" role="presentation">
+                  <span class="wheel-spoke" style="--spoke-rotation: 0deg"></span>
+                  <span class="wheel-spoke" style="--spoke-rotation: 45deg"></span>
+                  <span class="wheel-spoke" style="--spoke-rotation: 90deg"></span>
+                  <span class="wheel-spoke" style="--spoke-rotation: 135deg"></span>
+                  <span class="wheel-spoke" style="--spoke-rotation: 22.5deg"></span>
+                  <span class="wheel-spoke" style="--spoke-rotation: 67.5deg"></span>
+                  <span class="wheel-spoke" style="--spoke-rotation: 112.5deg"></span>
+                  <span class="wheel-spoke" style="--spoke-rotation: 157.5deg"></span>
+                  <span class="wheel-hub"></span>
+                </div>
+              </div>
+            </div>
+
             <div class="welcome-actions">
               <button id="experience-start-btn" type="button" class="primary-action welcome-start-btn">
                 Den Glückshafen betreten
@@ -228,7 +265,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
-    <script src="medieval-atmosphere.js?v=3"></script>
+    <script src="medieval-atmosphere.js?v=4"></script>
     <script src="script.js?v=26"></script>
     <script src="effects.js?v=light-medieval-1"></script>
     <script src="vr-scene.js?v=light-medieval-1"></script>

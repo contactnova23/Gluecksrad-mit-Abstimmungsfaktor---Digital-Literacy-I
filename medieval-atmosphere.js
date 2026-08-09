@@ -72,13 +72,13 @@
 
     masterGain.gain.value = 0.0001;
     ambientBus.gain.value = 1;
-    effectsBus.gain.value = 0.92;
+    effectsBus.gain.value = 1.18;
 
-    compressor.threshold.value = -18;
-    compressor.knee.value = 18;
-    compressor.ratio.value = 5;
+    compressor.threshold.value = -20;
+    compressor.knee.value = 20;
+    compressor.ratio.value = 5.8;
     compressor.attack.value = 0.004;
-    compressor.release.value = 0.24;
+    compressor.release.value = 0.20;
 
     ambientBus.connect(masterGain);
     effectsBus.connect(masterGain);
@@ -86,15 +86,15 @@
     compressor.connect(context.destination);
 
     const noise = createNoiseBuffer();
-    windGain = createNoiseLayer(noise, 'lowpass', 720, 0.24, 0.080);
-    crowdGain = createNoiseLayer(noise, 'bandpass', 860, 0.68, 0.067);
-    clothGain = createNoiseLayer(noise, 'highpass', 1450, 0.36, 0.018);
+    windGain = createNoiseLayer(noise, 'lowpass', 720, 0.24, 0.112);
+    crowdGain = createNoiseLayer(noise, 'bandpass', 860, 0.68, 0.098);
+    clothGain = createNoiseLayer(noise, 'highpass', 1450, 0.36, 0.030);
 
     const crowdLfo = context.createOscillator();
     const crowdLfoGain = context.createGain();
     crowdLfo.type = 'sine';
     crowdLfo.frequency.value = 0.082;
-    crowdLfoGain.gain.value = 0.024;
+    crowdLfoGain.gain.value = 0.032;
     crowdLfo.connect(crowdLfoGain);
     crowdLfoGain.connect(crowdGain.gain);
     crowdLfo.start();
@@ -103,7 +103,7 @@
     const windLfoGain = context.createGain();
     windLfo.type = 'sine';
     windLfo.frequency.value = 0.052;
-    windLfoGain.gain.value = 0.018;
+    windLfoGain.gain.value = 0.024;
     windLfo.connect(windLfoGain);
     windLfoGain.connect(windGain.gain);
     windLfo.start();
@@ -112,7 +112,7 @@
     const clothLfoGain = context.createGain();
     clothLfo.type = 'sine';
     clothLfo.frequency.value = 0.17;
-    clothLfoGain.gain.value = 0.008;
+    clothLfoGain.gain.value = 0.012;
     clothLfo.connect(clothLfoGain);
     clothLfoGain.connect(clothGain.gain);
     clothLfo.start();
@@ -130,16 +130,16 @@
 
   function getStageMix(stage) {
     const mixes = {
-      welcome: { master: 0.92, wind: 0.082, crowd: 0.046, cloth: 0.014 },
-      'market-entry': { master: 0.98, wind: 0.072, crowd: 0.104, cloth: 0.023 },
-      'scribe-stall': { master: 0.95, wind: 0.064, crowd: 0.078, cloth: 0.020 },
-      assembly: { master: 1.0, wind: 0.062, crowd: 0.112, cloth: 0.024 },
-      'town-caller': { master: 0.98, wind: 0.067, crowd: 0.092, cloth: 0.020 },
-      voting: { master: 0.94, wind: 0.056, crowd: 0.064, cloth: 0.015 },
-      results: { master: 1.0, wind: 0.061, crowd: 0.096, cloth: 0.020 },
-      'wheel-spin': { master: 1.0, wind: 0.068, crowd: 0.116, cloth: 0.027 },
-      'wheel-stop': { master: 0.98, wind: 0.060, crowd: 0.082, cloth: 0.018 },
-      winner: { master: 1.0, wind: 0.056, crowd: 0.126, cloth: 0.024 },
+      welcome: { master: 1.14, wind: 0.118, crowd: 0.068, cloth: 0.024 },
+      'market-entry': { master: 1.18, wind: 0.104, crowd: 0.144, cloth: 0.034 },
+      'scribe-stall': { master: 1.12, wind: 0.092, crowd: 0.112, cloth: 0.030 },
+      assembly: { master: 1.20, wind: 0.094, crowd: 0.156, cloth: 0.036 },
+      'town-caller': { master: 1.16, wind: 0.098, crowd: 0.128, cloth: 0.030 },
+      voting: { master: 1.10, wind: 0.084, crowd: 0.094, cloth: 0.024 },
+      results: { master: 1.18, wind: 0.092, crowd: 0.138, cloth: 0.030 },
+      'wheel-spin': { master: 1.22, wind: 0.102, crowd: 0.170, cloth: 0.040 },
+      'wheel-stop': { master: 1.18, wind: 0.090, crowd: 0.120, cloth: 0.028 },
+      winner: { master: 1.24, wind: 0.086, crowd: 0.182, cloth: 0.036 },
     };
     return mixes[stage] || mixes.welcome;
   }
@@ -188,7 +188,7 @@
     oscillator.type = type;
     oscillator.frequency.setValueAtTime(frequency, now);
     gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak), now + 0.012);
+    gain.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak * 1.18), now + 0.012);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
     oscillator.connect(gain);
@@ -209,7 +209,7 @@
     filter.type = type;
     filter.frequency.value = frequency;
     filter.Q.value = 0.5;
-    gain.gain.setValueAtTime(Math.max(0.0002, peak), now);
+    gain.gain.setValueAtTime(Math.max(0.0002, peak * 1.16), now);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
     source.connect(filter);
@@ -283,14 +283,14 @@
     window.clearTimeout(eventTimer);
     if (!isUnlocked || !enabled || document.hidden) return;
 
-    const delay = 4800 + Math.random() * 5200;
+    const delay = 3200 + Math.random() * 3600;
     eventTimer = window.setTimeout(() => {
       const random = Math.random();
       if (random < 0.20) {
-        playBell(0.38);
+        playBell(0.52);
       } else if (random < 0.52) {
-        playWoodClick(0.40);
-        window.setTimeout(() => playWoodClick(0.28), 180 + Math.random() * 220);
+        playWoodClick(0.56);
+        window.setTimeout(() => playWoodClick(0.42), 180 + Math.random() * 220);
       } else if (random < 0.78) {
         playDistantCall();
       } else {
@@ -309,7 +309,7 @@
     stopWheelTicks();
     if (!isUnlocked || !enabled || document.hidden || currentStage !== 'wheel-spin') return;
 
-    playWoodClick(0.62);
+    playWoodClick(0.88);
     wheelTimer = window.setTimeout(scheduleWheelTick, 88 + Math.random() * 18);
   }
 
@@ -323,14 +323,14 @@
     }
 
     if (currentStage === 'wheel-stop') {
-      playWoodClick(1.0);
-      window.setTimeout(() => playWoodClick(0.78), 145);
-      window.setTimeout(() => playWoodClick(0.58), 315);
+      playWoodClick(1.18);
+      window.setTimeout(() => playWoodClick(0.96), 145);
+      window.setTimeout(() => playWoodClick(0.76), 315);
     }
 
     if (currentStage === 'winner') {
-      playBell(1.0);
-      window.setTimeout(() => playBell(0.62), 390);
+      playBell(1.18);
+      window.setTimeout(() => playBell(0.82), 390);
     }
 
     applyStageMix();
@@ -371,7 +371,7 @@
 
     if (enabled) {
       await unlockAudio();
-      playStageChime(0.62);
+      playStageChime(0.76);
     } else {
       stopWheelTicks();
       window.clearTimeout(eventTimer);
