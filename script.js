@@ -47,6 +47,9 @@ const stopBtn = document.getElementById('stop-btn');
 const winnerDisplay = document.getElementById('winner-display');
 const newVotingBtnVote = document.getElementById('new-voting-btn-vote');
 const newVotingBtnResults = document.getElementById('new-voting-btn-results');
+const journeySteps = Array.from(document.querySelectorAll('.journey-step'));
+const gameFxLayer = document.getElementById('game-fx-layer');
+const reducedGameMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const STORAGE_KEY = 'gluecksrad-room-voting-state';
 
@@ -74,6 +77,110 @@ function emitAtmosphere(stage, detail = {}) {
   document.dispatchEvent(new CustomEvent('glueckshafen:stage', {
     detail: { stage, ...detail },
   }));
+}
+
+function setQuestStep(step) {
+  const maxStep = Math.max(1, journeySteps.length - 1);
+  const normalizedStep = Math.max(0, Math.min(maxStep, Number(step) || 0));
+  const progress = (normalizedStep / maxStep) * 83.2;
+
+  document.documentElement.style.setProperty('--quest-progress', `${progress.toFixed(2)}%`);
+  document.body.dataset.questStep = String(normalizedStep);
+  document.body.classList.remove('quest-complete');
+
+  journeySteps.forEach((item, index) => {
+    item.classList.toggle('is-complete', index < normalizedStep);
+    item.classList.toggle('is-active', index === normalizedStep);
+    if (index === normalizedStep) {
+      item.setAttribute('aria-current', 'step');
+    } else {
+      item.removeAttribute('aria-current');
+    }
+  });
+}
+
+function completeQuest() {
+  document.documentElement.style.setProperty('--quest-progress', '83.2%');
+  document.body.classList.add('quest-complete');
+  journeySteps.forEach((item, index) => {
+    item.classList.add('is-complete');
+    item.classList.toggle('is-active', index === journeySteps.length - 1);
+    if (index === journeySteps.length - 1) {
+      item.setAttribute('aria-current', 'step');
+    } else {
+      item.removeAttribute('aria-current');
+    }
+  });
+}
+
+function getFxPoint(anchor) {
+  if (anchor instanceof Element) {
+    const rect = anchor.getBoundingClientRect();
+    return {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+    };
+  }
+
+  return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+}
+
+function spawnGameBurst(kind, anchor) {
+  if (!gameFxLayer || reducedGameMotion) return;
+
+  const point = getFxPoint(anchor);
+  const burst = document.createElement('span');
+  const colors = ['#f1d98d', '#8fb9a3', '#7fa8bf', '#e19b84', '#b3a4cf'];
+  const count = kind === 'winner' ? 18 : kind === 'vote' ? 14 : 10;
+
+  burst.className = `game-burst game-burst--${kind}`;
+  burst.style.setProperty('--fx-x', `${point.x}px`);
+  burst.style.setProperty('--fx-y', `${point.y}px`);
+
+  for (let index = 0; index < count; index += 1) {
+    const particle = document.createElement('i');
+    particle.className = 'game-particle';
+    particle.style.setProperty('--particle-angle', `${(360 / count) * index + Math.random() * 12}deg`);
+    particle.style.setProperty('--particle-distance', `${54 + Math.random() * (kind === 'winner' ? 96 : 54)}px`);
+    particle.style.setProperty('--particle-size', `${5 + Math.random() * 6}px`);
+    particle.style.setProperty('--particle-delay', `${Math.random() * 0.12}s`);
+    particle.style.setProperty('--particle-color', colors[index % colors.length]);
+    burst.appendChild(particle);
+  }
+
+  gameFxLayer.appendChild(burst);
+
+  if (kind === 'vote') {
+    const seal = document.createElement('span');
+    seal.className = 'game-seal';
+    seal.textContent = '✓';
+    seal.style.setProperty('--fx-x', `${point.x}px`);
+    seal.style.setProperty('--fx-y', `${point.y}px`);
+    gameFxLayer.appendChild(seal);
+    window.setTimeout(() => seal.remove(), 1100);
+  }
+
+  window.setTimeout(() => burst.remove(), 1250);
+}
+
+function gameFeedback(type, anchor, visualType = type) {
+  document.dispatchEvent(new CustomEvent('glueckshafen:feedback', {
+    detail: { type },
+  }));
+
+  if (anchor instanceof Element) {
+    anchor.classList.remove('is-game-pulsing');
+    void anchor.offsetWidth;
+    anchor.classList.add('is-game-pulsing');
+    window.setTimeout(() => anchor.classList.remove('is-game-pulsing'), 620);
+  }
+
+  if (visualType) spawnGameBurst(visualType, anchor);
+}
+
+function setWheelGameState(state = '') {
+  document.body.classList.remove('is-wheel-spinning', 'is-wheel-settling', 'is-winner');
+  if (state) document.body.classList.add(state);
 }
 
 function hasOnlineBackend() {
@@ -217,7 +324,7 @@ function celebrateWinner() {
     ornamentBottom,
   );
 
-  const particleColors = ['#f7e2a1', '#d6ad59', '#fff4ce', '#8aa66d', '#8b4b43'];
+  const particleColors = ['#f4d88a', '#9fc5ad', '#fef7df', '#8fb3c4', '#e29b87', '#c7add3'];
   const particleLayer = document.createElement('div');
   particleLayer.className = 'winner-ceremony-particles';
   particleLayer.setAttribute('aria-hidden', 'true');
@@ -285,6 +392,8 @@ function showWelcome() {
   createError.textContent = '';
   setupError.textContent = '';
   joinError.textContent = '';
+  setQuestStep(0);
+  setWheelGameState();
   emitAtmosphere('welcome');
   window.setTimeout(() => experienceStartBtn.focus(), 120);
 }
@@ -296,6 +405,7 @@ function showSetupHome() {
   createError.textContent = '';
   setupError.textContent = '';
   joinError.textContent = '';
+  setQuestStep(1);
   emitAtmosphere('market-entry');
   window.setTimeout(() => showCreateBtn.focus(), 120);
 }
@@ -306,6 +416,7 @@ function showCreatePanel() {
   createPanel.hidden = false;
   createError.textContent = '';
   setupError.textContent = '';
+  setQuestStep(2);
   emitAtmosphere('scribe-stall');
   window.setTimeout(() => questionInput.focus(), 120);
 }
@@ -316,6 +427,7 @@ function showModePanel() {
   modePanel.hidden = false;
   setupError.textContent = '';
   updateModeCards();
+  setQuestStep(3);
   emitAtmosphere('assembly');
 
   const selectedMode = document.querySelector('input[name="voting-mode"]:checked');
@@ -327,6 +439,7 @@ function showJoinPanel() {
   hideSetupPanels();
   joinPanel.hidden = false;
   joinError.textContent = '';
+  setQuestStep(2);
   emitAtmosphere('town-caller');
   window.setTimeout(() => joinRoomCodeInput.focus(), 120);
 }
@@ -418,6 +531,7 @@ function showVoteScreen(question) {
   onlineStatus.textContent = '';
   voteBtn.hidden = false;
   nextPersonBtn.hidden = true;
+  setQuestStep(4);
   emitAtmosphere('voting');
 
   if (roomMode) {
@@ -479,6 +593,7 @@ function showResultsScreen() {
   setupSection.hidden = true;
   voteSection.hidden = true;
   resultsSection.hidden = false;
+  setQuestStep(5);
   emitAtmosphere('results');
 }
 
@@ -495,14 +610,14 @@ function buildWheel(summary) {
   const totalVotes = summary.reduce((sum, item) => sum + item.votes, 0);
   const gradientParts = [];
   const palette = [
-    '#804337',
-    '#6f7d3d',
-    '#8d6a37',
-    '#546e79',
-    '#785277',
-    '#a55f36',
-    '#4e6a55',
-    '#934851',
+    '#e19b84',
+    '#8fb9a3',
+    '#e3c16f',
+    '#7fa8bf',
+    '#b3a4cf',
+    '#e2aa72',
+    '#86b4b3',
+    '#d892a4',
   ];
   let startAngle = 0;
 
@@ -648,6 +763,8 @@ newVotingBtnVote.hidden = false;
   isVotingClosed = false;
   currentBrowserVoteKey = '';
   currentWinnerOption = '';
+  setWheelGameState();
+  setQuestStep(0);
   wheel.style.transform = 'rotate(0deg)';
   wheel.style.transition = 'transform 0.8s ease-out';
   spinBtn.disabled = false;
@@ -767,16 +884,31 @@ function restoreSavedState() {
   }
 }
 
-experienceStartBtn.addEventListener('click', showSetupHome);
+experienceStartBtn.addEventListener('click', () => {
+  gameFeedback('step', experienceStartBtn, 'step');
+  showSetupHome();
+});
 backToWelcomeBtn.addEventListener('click', showWelcome);
-showCreateBtn.addEventListener('click', showCreatePanel);
-showJoinBtn.addEventListener('click', showJoinPanel);
+showCreateBtn.addEventListener('click', () => {
+  gameFeedback('step', showCreateBtn, 'step');
+  showCreatePanel();
+});
+showJoinBtn.addEventListener('click', () => {
+  gameFeedback('step', showJoinBtn, 'step');
+  showJoinPanel();
+});
 backFromCreateBtn.addEventListener('click', showSetupHome);
 backToCreateBtn.addEventListener('click', showCreatePanel);
 backFromJoinBtn.addEventListener('click', showSetupHome);
 
 addAnswerBtn.addEventListener('click', () => {
   createAnswerRow('');
+  const addedRow = answersContainer.lastElementChild;
+  if (addedRow) {
+    addedRow.classList.add('is-game-added');
+    window.setTimeout(() => addedRow.classList.remove('is-game-added'), 620);
+  }
+  gameFeedback('add', addAnswerBtn, 'add');
 });
 
 continueToModeBtn.addEventListener('click', () => {
@@ -785,11 +917,18 @@ continueToModeBtn.addEventListener('click', () => {
     return;
   }
 
+  gameFeedback('step', continueToModeBtn, 'step');
   showModePanel();
 });
 
 roomModeToggle.addEventListener('change', updateModeCards);
 onlineModeToggle.addEventListener('change', updateModeCards);
+
+[roomModeToggle, onlineModeToggle].forEach((input) => {
+  input.addEventListener('change', () => {
+    gameFeedback('mode', input.closest('.mode-option'), 'mode');
+  });
+});
 
 startBtn.addEventListener('click', async () => {
   setupError.textContent = '';
@@ -853,6 +992,7 @@ startBtn.addEventListener('click', async () => {
       saveState();
       await refreshOnlineState();
       startOnlineRefreshLoop();
+      gameFeedback('step', startBtn, 'step');
       showVoteScreen(question);
       return;
     } catch (error) {
@@ -863,6 +1003,7 @@ startBtn.addEventListener('click', async () => {
   }
 
   saveState();
+  gameFeedback('step', startBtn, 'step');
   showVoteScreen(question);
 });
 
@@ -912,6 +1053,7 @@ await refreshOnlineState();
 
 voteConfirmation.textContent = `✓ Eure Stimme ist vermerkt: „${selectedOption}“.`;
 animateFeedback(voteConfirmation);
+gameFeedback('vote', voteBtn, 'vote');
 
 saveState();
 return;
@@ -947,6 +1089,7 @@ return;
   }
 
   animateFeedback(voteConfirmation);
+  gameFeedback('vote', voteBtn, 'vote');
 
   voterNameInput.value = '';
   voteSelect.selectedIndex = 0;
@@ -1008,6 +1151,7 @@ if (onlineMode && !isOnlineModerator) {
   currentPhase = 'results';
   currentWinnerOption = '';
   saveState();
+  gameFeedback('reveal', endVotingBtn, 'reveal');
   showResultsScreen();
   winnerDisplay.textContent = 'Der Glückshafen ist bereit. Das Rad kann in Gang gesetzt werden.';
 });
@@ -1036,6 +1180,8 @@ spinBtn.addEventListener('click', () => {
 
   winnerDisplay.classList.remove('winner-announced');
   winnerDisplay.textContent = '🎡 Das Rad läuft. Haltet es an, wenn das Los fallen soll.';
+  setWheelGameState('is-wheel-spinning');
+  gameFeedback('wheel-start', spinBtn, 'wheel-start');
   emitAtmosphere('wheel-spin');
 
   wheelSpinAnimation = wheel.animate(
@@ -1061,6 +1207,8 @@ stopBtn.addEventListener('click', () => {
   }
 
   const visibleAngle = getCurrentWheelAngle();
+  setWheelGameState('is-wheel-settling');
+  gameFeedback('tap', stopBtn, null);
   emitAtmosphere('wheel-stop');
 
   if (wheelSpinAnimation) {
@@ -1107,6 +1255,9 @@ wheel.addEventListener('transitionend', () => {
   stopBtn.disabled = true;
   winnerDisplay.textContent = `Das Los fällt auf: ${currentWinnerOption}`;
   winnerDisplay.classList.add('winner-announced');
+  setWheelGameState('is-winner');
+  completeQuest();
+  gameFeedback('winner', wheel, 'winner');
   celebrateWinner();
   emitAtmosphere('winner', { winner: currentWinnerOption });
   saveState();
@@ -1171,6 +1322,7 @@ joinOnlineBtn.addEventListener('click', async () => {
     saveState();
     await refreshOnlineState();
     startOnlineRefreshLoop();
+    gameFeedback('step', joinOnlineBtn, 'step');
     showVoteScreen(currentQuestion);
     voteConfirmation.textContent = 'Ihr seid der Runde beigetreten und könnt nun Eure Stimme abgeben.';
   } catch (error) {
@@ -1178,6 +1330,21 @@ joinOnlineBtn.addEventListener('click', async () => {
     console.error('Fehler beim Beitritt zur Online-Abstimmung:', error);
   }
 });
+
+document.addEventListener('pointerdown', (event) => {
+  const button = event.target.closest('button:not(:disabled)');
+  if (!button || button.id === 'sound-toggle') return;
+
+  gameFeedback('tap', button, null);
+  if (reducedGameMotion || !gameFxLayer) return;
+
+  const ripple = document.createElement('span');
+  ripple.className = 'game-ripple';
+  ripple.style.left = `${event.clientX}px`;
+  ripple.style.top = `${event.clientY}px`;
+  gameFxLayer.appendChild(ripple);
+  window.setTimeout(() => ripple.remove(), 700);
+}, { passive: true });
 
 createAnswerRow('');
 createAnswerRow('');

@@ -28,6 +28,29 @@ Geändert wurden ausschließlich Gestaltung, 3D-Szenerie, Inszenierung, Performa
 
 ## Inhalt dieser Version
 
+### Heller, reduzierter Stil
+
+- luftige Leinen-/Pergamentflächen statt eines schweren Holzrahmens
+- helle Palette aus Himmelblau, Salbei, warmem Elfenbein und gedämpftem Terrakotta
+- feine mittelalterliche Formen, Serifenschrift und Siegelmotive ohne dunkle Casino-Optik
+- weiterhin eine helle spätmittelalterliche Markt- und Festplatzszene
+
+### Stärkere, aber nicht-kompetitive Gamification
+
+- sechs sichtbare Etappen-Siegel für den unveränderten Ablauf
+- Partikel- und Impulsfeedback bei Etappenwechseln, neuen Antworten und Moduswahl
+- sichtbarer Siegelmoment nach einer abgegebenen Stimme
+- stärker inszenierte Radphase mit Zeigerbewegung, Halo und Holzklappern
+- klarere Gewinnerzeremonie ohne Punkte, Ranglisten oder Eingriff in die geheime Abstimmung
+
+### Hörbarere Klangkulisse
+
+- deutlich angehobene Markt-, Wind- und Stoffgeräusche
+- eigene akustische Signale für Etappen, Stimmabgabe, Radlauf und Gewinnerverkündung
+- Dynamikkompressor gegen unangenehme Lautstärkespitzen
+- weiterhin vollständig prozedural und ohne fremde Audiodateien
+
+
 - spätmittelalterlich inspirierter Basler Markt- und Festplatz
 - Marktbuden, Pflaster, Brunnen, Banner, Waren, Schießscheiben und Publikum
 - Glückshafen-Stand mit Lostopf und ausgestellten Gaben
@@ -85,7 +108,7 @@ Weitere Hinweise stehen in `ASSET-NACHWEISE.md` und `THIRD-PARTY-NOTICES.md`.
 | Datei | Aufgabe |
 |---|---|
 | `index.html` | Struktur der App; sichtbare Fenstertexte unverändert |
-| `style.css` | Oberfläche, Holz-/Pergamentgestaltung und realistischeres UI-Rad |
+| `style.css` | helle Leinen-/Pergamentoberfläche, Gamification und realistisches UI-Rad |
 | `script.js` | Abstimmungslogik, gewichtete Ziehung und Szenenereignisse |
 | `effects.js` | ressourcenschonende Mausneigung der Tafel |
 | `vr-scene.js` | prozedurale 3D-Welt, Szenenwechsel und 3D-Glücksrad |

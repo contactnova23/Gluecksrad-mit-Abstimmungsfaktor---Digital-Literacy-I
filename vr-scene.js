@@ -37,7 +37,7 @@
 
     // ---------- Renderer, Szene, Kamera ----------
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0xb8b19c, quality === 'low' ? 0.0165 : 0.0138);
+    scene.fog = new THREE.FogExp2(0xd9ece8, quality === 'low' ? 0.0158 : 0.0129);
 
     const renderer = new THREE.WebGLRenderer({
       canvas,
@@ -54,7 +54,7 @@
     applyRendererSize();
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.06;
+    renderer.toneMappingExposure = 1.24;
     renderer.shadowMap.enabled = shadowsEnabled;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.shadowMap.autoUpdate = false;
@@ -74,53 +74,53 @@
 
     const materials = {
       plaster: [
-        new THREE.MeshStandardMaterial({ color: 0xd8c29b, roughness: 0.95 }),
-        new THREE.MeshStandardMaterial({ color: 0xe4d1aa, roughness: 0.94 }),
-        new THREE.MeshStandardMaterial({ color: 0xcdb486, roughness: 0.96 }),
-        new THREE.MeshStandardMaterial({ color: 0xe8d7b6, roughness: 0.94 }),
+        new THREE.MeshStandardMaterial({ color: 0xf4e8d4, roughness: 0.95 }),
+        new THREE.MeshStandardMaterial({ color: 0xfff4e2, roughness: 0.94 }),
+        new THREE.MeshStandardMaterial({ color: 0xe8d7ba, roughness: 0.96 }),
+        new THREE.MeshStandardMaterial({ color: 0xf6ead7, roughness: 0.94 }),
       ],
-      sandstone: new THREE.MeshStandardMaterial({ color: 0xb26d4a, roughness: 0.91 }),
-      paleStone: new THREE.MeshStandardMaterial({ color: 0xcbbd9e, roughness: 0.94 }),
-      darkStone: new THREE.MeshStandardMaterial({ color: 0x61594b, roughness: 0.96 }),
-      timber: new THREE.MeshStandardMaterial({ color: 0x5a351d, roughness: 0.96 }),
-      wood: new THREE.MeshStandardMaterial({ color: 0x83552d, roughness: 0.91 }),
-      lightWood: new THREE.MeshStandardMaterial({ color: 0xa87843, roughness: 0.90 }),
-      darkWood: new THREE.MeshStandardMaterial({ color: 0x462716, roughness: 0.96 }),
-      iron: new THREE.MeshStandardMaterial({ color: 0x4e4b45, roughness: 0.64, metalness: 0.28 }),
-      bronze: new THREE.MeshStandardMaterial({ color: 0xad8246, roughness: 0.58, metalness: 0.18 }),
-      grass: new THREE.MeshStandardMaterial({ color: 0x657451, roughness: 1 }),
-      mud: new THREE.MeshStandardMaterial({ color: 0x76644c, roughness: 1 }),
+      sandstone: new THREE.MeshStandardMaterial({ color: 0xd79778, roughness: 0.91 }),
+      paleStone: new THREE.MeshStandardMaterial({ color: 0xe5dcc7, roughness: 0.94 }),
+      darkStone: new THREE.MeshStandardMaterial({ color: 0x8f8b7d, roughness: 0.96 }),
+      timber: new THREE.MeshStandardMaterial({ color: 0x8a6647, roughness: 0.96 }),
+      wood: new THREE.MeshStandardMaterial({ color: 0xa97d54, roughness: 0.91 }),
+      lightWood: new THREE.MeshStandardMaterial({ color: 0xc9a475, roughness: 0.90 }),
+      darkWood: new THREE.MeshStandardMaterial({ color: 0x795238, roughness: 0.96 }),
+      iron: new THREE.MeshStandardMaterial({ color: 0x747974, roughness: 0.64, metalness: 0.24 }),
+      bronze: new THREE.MeshStandardMaterial({ color: 0xc4a45f, roughness: 0.58, metalness: 0.16 }),
+      grass: new THREE.MeshStandardMaterial({ color: 0x98b690, roughness: 1 }),
+      mud: new THREE.MeshStandardMaterial({ color: 0xb4a68d, roughness: 1 }),
       water: new THREE.MeshStandardMaterial({
-        color: 0x6f9ca3,
+        color: 0x86bcc5,
         roughness: 0.28,
         metalness: 0.03,
         transparent: true,
         opacity: 0.78,
       }),
       window: new THREE.MeshStandardMaterial({
-        color: 0x8fa7aa,
-        emissive: 0x3f4d4a,
-        emissiveIntensity: 0.12,
+        color: 0xb7d5d9,
+        emissive: 0x6e9293,
+        emissiveIntensity: 0.10,
         roughness: 0.42,
       }),
       warmWindow: new THREE.MeshStandardMaterial({
-        color: 0xe1b96f,
-        emissive: 0x8e5c24,
-        emissiveIntensity: 0.25,
+        color: 0xf1d597,
+        emissive: 0xb7853f,
+        emissiveIntensity: 0.18,
         roughness: 0.48,
       }),
       roof: [
-        new THREE.MeshStandardMaterial({ color: 0x7c4936, roughness: 0.96 }),
-        new THREE.MeshStandardMaterial({ color: 0x5c6260, roughness: 0.96 }),
-        new THREE.MeshStandardMaterial({ color: 0x90553b, roughness: 0.96 }),
-        new THREE.MeshStandardMaterial({ color: 0x6f4937, roughness: 0.96 }),
+        new THREE.MeshStandardMaterial({ color: 0xc47d68, roughness: 0.96 }),
+        new THREE.MeshStandardMaterial({ color: 0x829ca3, roughness: 0.96 }),
+        new THREE.MeshStandardMaterial({ color: 0xd08b6e, roughness: 0.96 }),
+        new THREE.MeshStandardMaterial({ color: 0xa98b73, roughness: 0.96 }),
       ],
       cloth: [
-        new THREE.MeshStandardMaterial({ color: 0x315a72, roughness: 0.90, side: THREE.DoubleSide }),
-        new THREE.MeshStandardMaterial({ color: 0x774139, roughness: 0.92, side: THREE.DoubleSide }),
-        new THREE.MeshStandardMaterial({ color: 0x5f7143, roughness: 0.92, side: THREE.DoubleSide }),
-        new THREE.MeshStandardMaterial({ color: 0xa3783f, roughness: 0.91, side: THREE.DoubleSide }),
-        new THREE.MeshStandardMaterial({ color: 0xd8c18c, roughness: 0.94, side: THREE.DoubleSide }),
+        new THREE.MeshStandardMaterial({ color: 0x6f9eaa, roughness: 0.90, side: THREE.DoubleSide }),
+        new THREE.MeshStandardMaterial({ color: 0xd69a7d, roughness: 0.92, side: THREE.DoubleSide }),
+        new THREE.MeshStandardMaterial({ color: 0x91b79c, roughness: 0.92, side: THREE.DoubleSide }),
+        new THREE.MeshStandardMaterial({ color: 0xd9bf79, roughness: 0.91, side: THREE.DoubleSide }),
+        new THREE.MeshStandardMaterial({ color: 0xf4e9cf, roughness: 0.94, side: THREE.DoubleSide }),
       ],
     };
 
@@ -180,9 +180,9 @@
       new THREE.ShaderMaterial({
         side: THREE.BackSide,
         uniforms: {
-          topColor: { value: new THREE.Color(0x738e9b) },
-          middleColor: { value: new THREE.Color(0xb8c6bd) },
-          horizonColor: { value: new THREE.Color(0xe2c99a) },
+          topColor: { value: new THREE.Color(0x8cc9df) },
+          middleColor: { value: new THREE.Color(0xe2f1ee) },
+          horizonColor: { value: new THREE.Color(0xf7e6c3) },
         },
         vertexShader: `
           varying vec3 vWorldPosition;
@@ -209,9 +209,9 @@
     scene.add(sky);
 
     // ---------- Licht ----------
-    scene.add(new THREE.HemisphereLight(0xd9e0d4, 0x504630, 1.72));
+    scene.add(new THREE.HemisphereLight(0xf4fbf7, 0x8fa384, 2.05));
 
-    const sun = new THREE.DirectionalLight(0xf4ca83, 2.62);
+    const sun = new THREE.DirectionalLight(0xffedc0, 3.15);
     sun.position.set(13, 22, 8);
     sun.castShadow = shadowsEnabled;
 
@@ -228,7 +228,7 @@
 
     scene.add(sun);
 
-    const fill = new THREE.DirectionalLight(0xaac1c8, 0.56);
+    const fill = new THREE.DirectionalLight(0xd9eef1, 0.82);
     fill.position.set(-12, 8, 5);
     scene.add(fill);
 
@@ -242,8 +242,8 @@
       const scale = size / 256;
 
       const gradient = context.createLinearGradient(0, 0, 0, size);
-      gradient.addColorStop(0, '#a39278');
-      gradient.addColorStop(1, '#786d5c');
+      gradient.addColorStop(0, '#d4c7b0');
+      gradient.addColorStop(1, '#b7aa96');
       context.fillStyle = gradient;
       context.fillRect(0, 0, size, size);
 
@@ -256,7 +256,7 @@
           const x = column * stoneWidth + offset;
           const y = row * stoneHeight - 5 * scale;
           const tone = (row * 7 + column * 3) % 4;
-          const colors = ['#a5957d', '#94836c', '#ae9c81', '#887966'];
+          const colors = ['#d4c7b1', '#c4b7a2', '#ddd0b9', '#b9ad9b'];
 
           context.beginPath();
           context.roundRect(
@@ -268,11 +268,11 @@
           );
           context.fillStyle = colors[tone];
           context.fill();
-          context.strokeStyle = 'rgba(52,42,31,0.33)';
+          context.strokeStyle = 'rgba(76,68,57,0.19)';
           context.lineWidth = 1.15 * scale;
           context.stroke();
 
-          context.fillStyle = 'rgba(255,238,199,0.06)';
+          context.fillStyle = 'rgba(255,250,226,0.18)';
           context.fillRect(x + 7 * scale, y + 5 * scale, stoneWidth * 0.42, 1.2 * scale);
         }
       }
@@ -543,7 +543,7 @@
         const good = new THREE.Mesh(
           new THREE.SphereGeometry(0.11 + (index % 2) * 0.025, 7, 5),
           new THREE.MeshStandardMaterial({
-            color: [0x8b4635, 0x6a7543, 0xb18842, 0x7e5937, 0x9a6d43][index],
+            color: [0xd88472, 0x7fae8e, 0xd5b45f, 0xa77b5b, 0xc28f68][index],
             roughness: 1,
           })
         );
@@ -598,7 +598,7 @@
     function createSack(x, z, scale = 1, parent = approachScene) {
       const sack = new THREE.Mesh(
         new THREE.SphereGeometry(0.34, 9, 7),
-        new THREE.MeshStandardMaterial({ color: 0xb29a70, roughness: 1 })
+        new THREE.MeshStandardMaterial({ color: 0xd3c29f, roughness: 1 })
       );
       sack.scale.set(0.82 * scale, 1.08 * scale, 0.72 * scale);
       sack.position.set(x, 0.32 * scale, z);
@@ -675,11 +675,11 @@
       const bodyGeometry = new THREE.CylinderGeometry(0.15, 0.24, 0.82, 8);
       const headGeometry = new THREE.SphereGeometry(0.16, 8, 6);
       const bodyMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.96 });
-      const headMaterial = new THREE.MeshStandardMaterial({ color: 0xb98965, roughness: 0.98 });
+      const headMaterial = new THREE.MeshStandardMaterial({ color: 0xd5a77e, roughness: 0.98 });
       const bodies = new THREE.InstancedMesh(bodyGeometry, bodyMaterial, entries.length);
       const heads = new THREE.InstancedMesh(headGeometry, headMaterial, entries.length);
       const dummy = new THREE.Object3D();
-      const colors = [0x6f4035, 0x546342, 0x7f6336, 0x445c67, 0x69506a, 0x8a593c, 0x565042];
+      const colors = [0xc78170, 0x7ca68a, 0xd0ad5e, 0x7299aa, 0xa49abb, 0xc99368, 0x8c988d];
 
       entries.forEach((entry, index) => {
         dummy.position.set(entry[0], 0.48, entry[1]);
@@ -767,7 +767,7 @@
 
     function createHeraldStage(parent) {
       const stage = new THREE.Group();
-      const platform = makeBox(2.7, 0.26, 1.75, materials.darkWood);
+      const platform = makeBox(2.7, 0.26, 1.75, materials.wood);
       platform.position.y = 0.13;
       stage.add(platform);
 
@@ -803,7 +803,7 @@
       const centerY = 2.72;
       const wheelRadius = 1.42;
 
-      const base = makeBox(3.6, 0.16, 1.52, materials.darkWood);
+      const base = makeBox(3.6, 0.16, 1.52, materials.wood);
       base.position.y = 0.08;
       frame.add(base);
 
@@ -839,16 +839,16 @@
 
       const backDisk = new THREE.Mesh(
         new THREE.CylinderGeometry(1.20, 1.20, 0.08, 32),
-        materials.darkWood
+        materials.lightWood
       );
       backDisk.rotation.x = Math.PI / 2;
       backDisk.position.z = -0.03;
       rotor.add(backDisk);
 
       const wedgeColors = [
-        0x76413a, 0x667746, 0x9b743e, 0x4f6874,
-        0x72566f, 0x9d633d, 0x536955, 0x864b4f,
-        0x5b6b76, 0x82673c, 0x6c4a35, 0x4f6f66,
+        0xe19b84, 0x8fb9a3, 0xe3c16f, 0x7fa8bf,
+        0xb3a4cf, 0xe2aa72, 0x86b4b3, 0xd892a4,
+        0x94aabd, 0xd3bc75, 0xc98e74, 0x7daaa0,
       ];
 
       wedgeColors.forEach((color, index) => {
@@ -870,7 +870,7 @@
         rotor.add(wedge);
       });
 
-      const outerRim = new THREE.Mesh(new THREE.TorusGeometry(wheelRadius, 0.14, 12, 44), materials.darkWood);
+      const outerRim = new THREE.Mesh(new THREE.TorusGeometry(wheelRadius, 0.14, 12, 44), materials.wood);
       outerRim.position.z = 0.08;
       rotor.add(outerRim);
 
@@ -909,7 +909,7 @@
 
       const clackerPivot = new THREE.Group();
       clackerPivot.position.set(0, centerY + wheelRadius + 0.24, 0.27);
-      const clackerMount = makeBox(0.44, 0.15, 0.20, materials.darkWood);
+      const clackerMount = makeBox(0.44, 0.15, 0.20, materials.wood);
       clackerMount.position.y = 0.06;
       clackerPivot.add(clackerMount);
       const clacker = makeBox(0.10, 0.52, 0.10, materials.iron);
@@ -1009,9 +1009,9 @@
         const cloudContext = cloudCanvas.getContext('2d');
         [[50, 55, 32], [86, 42, 40], [125, 57, 34], [101, 64, 43]].forEach(([x, y, radius]) => {
           const gradient = cloudContext.createRadialGradient(x, y, 0, x, y, radius);
-          gradient.addColorStop(0, 'rgba(244,239,220,0.74)');
-          gradient.addColorStop(0.58, 'rgba(238,235,219,0.38)');
-          gradient.addColorStop(1, 'rgba(238,235,219,0)');
+          gradient.addColorStop(0, 'rgba(255,255,252,0.86)');
+          gradient.addColorStop(0.58, 'rgba(245,251,248,0.48)');
+          gradient.addColorStop(1, 'rgba(245,251,248,0)');
           cloudContext.fillStyle = gradient;
           cloudContext.beginPath();
           cloudContext.arc(x, y, radius, 0, Math.PI * 2);
