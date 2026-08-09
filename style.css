@@ -3472,3 +3472,243 @@ h1 {
     width: 96px;
   }
 }
+
+/* --- v6 Radreparatur: korrektes Speichenrad und saubere Gestellanbindung --- */
+.welcome-hero {
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 42px;
+  align-items: center;
+}
+
+.welcome-copy {
+  max-width: 470px;
+}
+
+.welcome-display {
+  width: 330px;
+  justify-self: end;
+}
+
+.show-wheel {
+  width: 330px;
+  min-height: 430px;
+  --wheel-size: 250px;
+  --wheel-top: 92px;
+  --ground-y: 390px;
+  --wheel-mid: calc(var(--wheel-top) + (var(--wheel-size) / 2));
+}
+
+.show-wheel__wheel,
+.wheel {
+  transform: translateX(-50%) rotate(0deg);
+}
+
+.show-wheel__wheel {
+  box-shadow: inset 0 0 0 5px #ead6ab, inset 0 0 0 18px rgba(65, 48, 32, 0.16), 0 12px 22px rgba(81, 63, 39, 0.12);
+}
+
+.show-wheel__spoke {
+  z-index: 2;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 44%;
+  border-radius: 999px;
+  transform-origin: 50% 0%;
+  transform: translateX(-50%) rotate(var(--wheel-spoke-rotation));
+  background: linear-gradient(180deg, #68482f 0%, #8b6344 100%);
+}
+
+.show-wheel__hub {
+  z-index: 3;
+}
+
+.show-wheel__crossbar {
+  top: calc(var(--wheel-mid) - 6px);
+  width: 176px;
+  z-index: 1;
+}
+
+.show-wheel__post {
+  bottom: calc(430px - var(--ground-y));
+  height: calc(var(--wheel-mid) - (430px - var(--ground-y)));
+  z-index: 1;
+}
+
+.show-wheel__leg {
+  bottom: calc(430px - var(--ground-y));
+  height: 220px;
+}
+
+.show-wheel__leg--left {
+  left: calc(50% - 74px);
+}
+
+.show-wheel__leg--right {
+  right: calc(50% - 74px);
+}
+
+.show-wheel__base {
+  bottom: calc(430px - var(--ground-y) - 5px);
+  width: 104px;
+}
+
+.show-wheel__base--left {
+  left: calc(50% - 102px);
+}
+
+.show-wheel__base--right {
+  right: calc(50% - 102px);
+}
+
+.welcome-wheel-sign {
+  width: 290px;
+}
+
+.wheel-area {
+  width: min(100%, 470px);
+  min-height: 452px;
+  --wheel-size: 300px;
+  --wheel-top: 58px;
+  --ground-y: 435px;
+  --wheel-mid: calc(var(--wheel-top) + (var(--wheel-size) / 2));
+}
+
+.wheel-crossbar {
+  top: calc(var(--wheel-mid) - 7px);
+  width: 184px;
+}
+
+.wheel-post {
+  bottom: calc(452px - var(--ground-y));
+  height: calc(var(--wheel-mid) - (452px - var(--ground-y)));
+}
+
+.wheel-leg {
+  bottom: calc(452px - var(--ground-y));
+  height: 252px;
+}
+
+.wheel-base {
+  bottom: calc(452px - var(--ground-y) - 6px);
+}
+
+.wheel-floor {
+  width: 420px;
+}
+
+@media (max-width: 900px) {
+  .welcome-hero {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .welcome-display {
+    width: min(100%, 330px);
+    justify-self: center;
+  }
+}
+
+@media (max-width: 720px) {
+  .show-wheel {
+    width: min(100%, 290px);
+    min-height: 390px;
+    --wheel-size: 220px;
+    --wheel-top: 86px;
+    --ground-y: 352px;
+  }
+
+  .show-wheel__post {
+    bottom: calc(390px - var(--ground-y));
+    height: calc(var(--wheel-mid) - (390px - var(--ground-y)));
+  }
+
+  .show-wheel__leg {
+    bottom: calc(390px - var(--ground-y));
+    height: 192px;
+  }
+
+  .show-wheel__base {
+    bottom: calc(390px - var(--ground-y) - 4px);
+    width: 90px;
+  }
+
+  .show-wheel__base--left {
+    left: calc(50% - 90px);
+  }
+
+  .show-wheel__base--right {
+    right: calc(50% - 90px);
+  }
+
+  .wheel-area {
+    min-height: 410px;
+    --wheel-size: 260px;
+    --wheel-top: 54px;
+    --ground-y: 395px;
+  }
+
+  .wheel-post {
+    bottom: calc(410px - var(--ground-y));
+    height: calc(var(--wheel-mid) - (410px - var(--ground-y)));
+  }
+
+  .wheel-leg {
+    bottom: calc(410px - var(--ground-y));
+    height: 222px;
+  }
+
+  .wheel-base {
+    bottom: calc(410px - var(--ground-y) - 5px);
+  }
+}
+
+@media (max-width: 520px) {
+  .show-wheel {
+    width: min(100%, 268px);
+    min-height: 364px;
+    --wheel-size: 205px;
+    --wheel-top: 86px;
+    --ground-y: 336px;
+  }
+
+  .show-wheel__crossbar {
+    width: 156px;
+  }
+
+  .show-wheel__post {
+    bottom: calc(364px - var(--ground-y));
+    height: calc(var(--wheel-mid) - (364px - var(--ground-y)));
+  }
+
+  .show-wheel__leg {
+    bottom: calc(364px - var(--ground-y));
+    height: 176px;
+  }
+
+  .show-wheel__base {
+    bottom: calc(364px - var(--ground-y) - 4px);
+    width: 82px;
+  }
+
+  .wheel-area {
+    min-height: 378px;
+    --wheel-size: 228px;
+    --wheel-top: 56px;
+    --ground-y: 364px;
+  }
+
+  .wheel-crossbar {
+    width: 160px;
+  }
+
+  .wheel-post {
+    bottom: calc(378px - var(--ground-y));
+    height: calc(var(--wheel-mid) - (378px - var(--ground-y)));
+  }
+
+  .wheel-leg {
+    bottom: calc(378px - var(--ground-y));
+    height: 198px;
+  }
+}
