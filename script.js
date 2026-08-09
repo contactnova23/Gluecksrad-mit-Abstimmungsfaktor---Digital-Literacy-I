@@ -564,11 +564,43 @@ function showResultsScreen() {
   emitAtmosphere('results');
 }
 
+const WHEEL_PALETTE = [
+  '#e19b84',
+  '#8fb9a3',
+  '#e3c16f',
+  '#7fa8bf',
+  '#b3a4cf',
+  '#e2aa72',
+  '#86b4b3',
+  '#d892a4',
+];
+
+function hexToRgba(hex, alpha) {
+  const value = hex.replace('#', '');
+  const red = parseInt(value.slice(0, 2), 16);
+  const green = parseInt(value.slice(2, 4), 16);
+  const blue = parseInt(value.slice(4, 6), 16);
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+}
+
 function buildResultsList(summary) {
   resultsList.innerHTML = '';
-  summary.forEach((item) => {
+  summary.forEach((item, index) => {
+    const color = WHEEL_PALETTE[index % WHEEL_PALETTE.length];
     const listItem = document.createElement('li');
-    listItem.textContent = `${item.option}: ${item.votes} Stimmen (${item.percent}%)`;
+    listItem.classList.add('result-option-key');
+    listItem.style.setProperty('--option-color', color);
+    listItem.style.setProperty('--option-tint', hexToRgba(color, 0.20));
+
+    const marker = document.createElement('span');
+    marker.className = 'result-option-marker';
+    marker.setAttribute('aria-hidden', 'true');
+
+    const label = document.createElement('span');
+    label.className = 'result-option-label';
+    label.textContent = `${item.option}: ${item.votes} Stimmen (${item.percent}%)`;
+
+    listItem.append(marker, label);
     resultsList.appendChild(listItem);
   });
 }
@@ -576,22 +608,12 @@ function buildResultsList(summary) {
 function buildWheel(summary) {
   const totalVotes = summary.reduce((sum, item) => sum + item.votes, 0);
   const gradientParts = [];
-  const palette = [
-    '#e19b84',
-    '#8fb9a3',
-    '#e3c16f',
-    '#7fa8bf',
-    '#b3a4cf',
-    '#e2aa72',
-    '#86b4b3',
-    '#d892a4',
-  ];
   let startAngle = 0;
 
   summary.forEach((item, index) => {
     const size = totalVotes > 0 ? (item.votes / totalVotes) * 360 : 360 / summary.length;
     const endAngle = startAngle + size;
-    const color = palette[index % palette.length];
+    const color = WHEEL_PALETTE[index % WHEEL_PALETTE.length];
     gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
     startAngle = endAngle;
   });

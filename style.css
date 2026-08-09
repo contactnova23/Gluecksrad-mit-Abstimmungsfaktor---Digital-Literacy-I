@@ -4659,3 +4659,70 @@ button span,
   .winner-ceremony-name,
   .winner-ceremony-particle { animation: none !important; }
 }
+
+/* --- v20: eindeutige Farbzuordnung zwischen Antworten und Glücksrad --- */
+.results-list .result-option-key {
+  position: relative;
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  align-items: center;
+  gap: 11px;
+  min-height: 52px;
+  padding: 12px 15px;
+  color: #2f4f4b;
+  border: 1px solid color-mix(in srgb, var(--option-color) 46%, #bcae8f 54%) !important;
+  border-left: 5px solid var(--option-color) !important;
+  background:
+    linear-gradient(90deg, var(--option-tint), rgba(255, 252, 242, 0.72) 42%, rgba(255, 252, 242, 0.72)) !important;
+  box-shadow: 0 7px 18px rgba(74, 80, 67, 0.055);
+}
+
+.results-list .result-option-marker {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--option-color);
+  border: 2px solid rgba(255, 252, 240, 0.92);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--option-color) 72%, #776c56 28%),
+    0 2px 5px rgba(66, 61, 49, 0.12);
+}
+
+.results-list .result-option-label {
+  min-width: 0;
+  font-family: var(--font-ui-v17) !important;
+  font-size: 1.04rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #2f4f4b;
+  overflow-wrap: anywhere;
+}
+
+@supports not (color: color-mix(in srgb, #000 50%, #fff 50%)) {
+  .results-list .result-option-key {
+    border-color: rgba(139, 130, 105, 0.30) !important;
+  }
+
+  .results-list .result-option-marker {
+    box-shadow: 0 0 0 1px rgba(104, 96, 77, 0.38), 0 2px 5px rgba(66, 61, 49, 0.12);
+  }
+}
+
+@media (max-width: 720px) {
+  .results-list .result-option-key {
+    grid-template-columns: 16px minmax(0, 1fr);
+    gap: 9px;
+    min-height: 48px;
+    padding: 10px 12px;
+  }
+
+  .results-list .result-option-marker {
+    width: 12px;
+    height: 12px;
+  }
+
+  .results-list .result-option-label {
+    font-size: 1rem;
+  }
+}
