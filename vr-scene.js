@@ -949,62 +949,45 @@
       canopyMesh.instanceMatrix.needsUpdate = true;
       scene.add(trunkMesh, canopyMesh);
 
-      // ----- Market well: more period-appropriate than a modern fountain -----
-      const marketWell = new THREE.Group();
+      // ----- Fountain near destination -----
+      const fountain = new THREE.Group();
 
-      const wellBase = new THREE.Mesh(
-        new THREE.CylinderGeometry(1.22, 1.38, 0.68, 24),
+      const base = new THREE.Mesh(
+        new THREE.CylinderGeometry(1.55, 1.70, 0.32, 24),
         stoneMaterial
       );
-      wellBase.position.y = 0.34;
-      marketWell.add(wellBase);
+      base.position.y = 0.16;
+      fountain.add(base);
 
-      const wellRim = new THREE.Mesh(
-        new THREE.TorusGeometry(1.04, 0.09, 10, 28),
-        new THREE.MeshStandardMaterial({ color: 0xc7b08b, roughness: 0.86 })
+      const bowl = new THREE.Mesh(
+        new THREE.CylinderGeometry(1.1, 1.28, 0.28, 24),
+        stoneMaterial
       );
-      wellRim.rotation.x = Math.PI / 2;
-      wellRim.position.y = 0.70;
-      marketWell.add(wellRim);
+      bowl.position.y = 0.52;
+      fountain.add(bowl);
 
-      for (const x of [-0.72, 0.72]) {
-        const post = new THREE.Mesh(
-          new THREE.BoxGeometry(0.14, 1.95, 0.14),
-          timberMaterial
-        );
-        post.position.set(x, 1.45, 0);
-        marketWell.add(post);
-      }
-
-      const crossBar = new THREE.Mesh(
-        new THREE.BoxGeometry(1.75, 0.13, 0.13),
-        timberMaterial
+      const water = new THREE.Mesh(
+        new THREE.CylinderGeometry(1.04, 1.04, 0.03, 24),
+        new THREE.MeshStandardMaterial({
+          color: 0x8dccdd,
+          roughness: 0.20,
+          metalness: 0.02,
+          transparent: true,
+          opacity: 0.84,
+        })
       );
-      crossBar.position.y = 2.32;
-      marketWell.add(crossBar);
+      water.position.y = 0.68;
+      fountain.add(water);
 
-      const roofLeft = new THREE.Mesh(
-        new THREE.BoxGeometry(1.9, 0.09, 0.72),
-        roofMaterials[1]
+      const pillar = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.18, 0.25, 1.25, 14),
+        stoneMaterial
       );
-      roofLeft.position.set(0, 2.60, -0.18);
-      roofLeft.rotation.z = 0.38;
-      marketWell.add(roofLeft);
+      pillar.position.y = 1.14;
+      fountain.add(pillar);
 
-      const roofRight = roofLeft.clone();
-      roofRight.position.z = 0.18;
-      roofRight.rotation.z = -0.38;
-      marketWell.add(roofRight);
-
-      const bucket = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.14, 0.17, 0.25, 12),
-        new THREE.MeshStandardMaterial({ color: 0x8b5e34, roughness: 0.86 })
-      );
-      bucket.position.set(0, 0.86, 0);
-      marketWell.add(bucket);
-
-      marketWell.position.set(0, 0, -25.0);
-      scene.add(marketWell);
+      fountain.position.set(0, 0, -25.0);
+      scene.add(fountain);
 
       // ----- Medieval plaza details -----
       function createBanner(colorHex, accentHex) {
@@ -1069,64 +1052,25 @@
         });
       });
 
-      function createPennantGarland(z, y, colors) {
-        const group = new THREE.Group();
-
-        const rope = new THREE.Mesh(
-          new THREE.BoxGeometry(9.4, 0.03, 0.03),
-          new THREE.MeshStandardMaterial({ color: 0x9d7b52, roughness: 0.92 })
-        );
-        rope.position.y = y;
-        group.add(rope);
-
-        for (let i = 0; i < 10; i += 1) {
-          const pennant = new THREE.Mesh(
-            new THREE.PlaneGeometry(0.38, 0.50),
-            new THREE.MeshStandardMaterial({
-              color: colors[i % colors.length],
-              roughness: 0.88,
-              side: THREE.DoubleSide,
-            })
-          );
-          pennant.position.set(-4.0 + i * 0.88, y - 0.29, 0.02);
-          pennant.rotation.z = ((i % 2) - 0.5) * 0.10;
-          group.add(pennant);
-
-          animatedDecorations.push({
-            mesh: pennant,
-            baseRotationZ: pennant.rotation.z,
-            amplitude: 0.045 + (i % 3) * 0.008,
-            speed: 0.85 + i * 0.035,
-            axis: 'z',
-          });
-        }
-
-        group.position.z = z;
-        scene.add(group);
-      }
-
-      createPennantGarland(-8.0, 4.18, [0x315f93, 0xe2bd68, 0xf6ead0]);
-      createPennantGarland(-15.5, 4.08, [0x5f7aa4, 0xe5c479, 0xf7ecd6]);
-      createPennantGarland(-23.1, 4.16, [0x9a6651, 0xe0b867, 0xf7ecd6]);
-
       function createMarketStall(x, z, mainColor, canopyColor) {
         const stall = new THREE.Group();
 
         const top = new THREE.Mesh(
-          new THREE.BoxGeometry(1.78, 0.10, 1.18),
+          new THREE.BoxGeometry(1.65, 0.1, 1.12),
           new THREE.MeshStandardMaterial({ color: canopyColor, roughness: 0.82 })
         );
-        top.position.y = 1.92;
+        top.position.y = 1.9;
         stall.add(top);
 
-        for (const pz of [-0.38, 0, 0.38]) {
-          const fabricStripe = new THREE.Mesh(
-            new THREE.BoxGeometry(1.78, 0.035, 0.13),
-            new THREE.MeshStandardMaterial({ color: 0xf4e4bf, roughness: 0.7 })
-          );
-          fabricStripe.position.set(0, 1.96, pz);
-          stall.add(fabricStripe);
-        }
+        const fabricStripe = new THREE.Mesh(
+          new THREE.BoxGeometry(1.65, 0.03, 0.18),
+          new THREE.MeshStandardMaterial({ color: 0xf4e4bf, roughness: 0.7 })
+        );
+        fabricStripe.position.set(0, 1.92, 0.28);
+        stall.add(fabricStripe);
+        const fabricStripe2 = fabricStripe.clone();
+        fabricStripe2.position.z = -0.28;
+        stall.add(fabricStripe2);
 
         for (const px of [-0.65, 0.65]) {
           for (const pz of [-0.42, 0.42]) {
@@ -1154,8 +1098,6 @@
       createMarketStall(6.8, -22.8, 0xb07b50, 0x6f8a5e);
       createMarketStall(-6.45, -14.9, 0xc09462, 0x8b5d51);
       createMarketStall(6.55, -10.2, 0xa98457, 0x4f7197);
-      createMarketStall(-6.45, -8.9, 0xb98658, 0x66835a);
-      createMarketStall(6.45, -17.4, 0xc09a65, 0x567aa1);
 
       // ----- Shooting-festival targets: historically inspired, low-poly -----
       function createTargetStand(x, z, rotationY = 0) {
@@ -1242,151 +1184,89 @@
         luckBooth.add(cup);
       }
 
-      luckBooth.position.set(-3.65, 0, -25.4);
-      luckBooth.rotation.y = 0.18;
-      luckBooth.scale.set(1.16, 1.16, 1.16);
+      luckBooth.position.set(-4.55, 0, -25.2);
+      luckBooth.rotation.y = 0.10;
       scene.add(luckBooth);
 
-      // ----- Grounded wooden fortune wheel at the market square -----
+      // ----- Wooden fortune wheel at the town square -----
       const squareWheel = new THREE.Group();
 
-      const platform = new THREE.Mesh(
-        new THREE.BoxGeometry(4.0, 0.16, 2.5),
-        new THREE.MeshStandardMaterial({ color: 0x8d6038, roughness: 0.90 })
+      const wheelStand = new THREE.Mesh(
+        new THREE.BoxGeometry(0.32, 2.1, 0.32),
+        woodMaterial
       );
-      platform.position.set(0, 0.08, 0);
-      platform.castShadow = shadowsEnabled;
-      squareWheel.add(platform);
+      wheelStand.position.set(0, 1.05, 0);
+      squareWheel.add(wheelStand);
 
-      for (const x of [-1.45, 1.45]) {
-        const foot = new THREE.Mesh(
-          new THREE.BoxGeometry(0.23, 0.23, 2.0),
-          timberMaterial
-        );
-        foot.position.set(x, 0.12, 0);
-        squareWheel.add(foot);
+      const crossBeam = new THREE.Mesh(
+        new THREE.BoxGeometry(2.4, 0.22, 0.22),
+        woodMaterial
+      );
+      crossBeam.position.set(0, 2.15, 0);
+      squareWheel.add(crossBeam);
 
-        const post = new THREE.Mesh(
-          new THREE.BoxGeometry(0.19, 2.55, 0.19),
-          timberMaterial
-        );
-        post.position.set(x, 1.38, 0);
-        post.castShadow = shadowsEnabled;
-        squareWheel.add(post);
-
+      for (const offset of [-0.95, 0.95]) {
         const brace = new THREE.Mesh(
-          new THREE.BoxGeometry(0.15, 1.72, 0.15),
+          new THREE.BoxGeometry(0.18, 2.0, 0.18),
           woodMaterial
         );
-        brace.position.set(x * 0.82, 0.93, 0);
-        brace.rotation.z = x < 0 ? 0.72 : -0.72;
+        brace.position.set(offset, 1.0, 0);
+        brace.rotation.z = offset < 0 ? 0.44 : -0.44;
         squareWheel.add(brace);
       }
 
-      const topBeam = new THREE.Mesh(
-        new THREE.BoxGeometry(3.25, 0.18, 0.20),
-        timberMaterial
+      const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(1.25, 0.12, 12, 36),
+        new THREE.MeshStandardMaterial({ color: 0x704523, roughness: 0.86 })
       );
-      topBeam.position.set(0, 2.52, 0);
-      topBeam.castShadow = shadowsEnabled;
-      squareWheel.add(topBeam);
+      ring.position.set(0, 2.15, 0);
+      squareWheel.add(ring);
 
-      const axle = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.08, 0.08, 3.0, 12),
-        new THREE.MeshStandardMaterial({ color: 0x6e4a2b, roughness: 0.80 })
+      const hub = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.18, 0.18, 0.34, 18),
+        new THREE.MeshStandardMaterial({ color: 0xc7a068, roughness: 0.58, metalness: 0.08 })
       );
-      axle.rotation.z = Math.PI / 2;
-      axle.position.set(0, 2.12, 0);
-      squareWheel.add(axle);
+      hub.rotation.x = Math.PI / 2;
+      hub.position.set(0, 2.15, 0);
+      squareWheel.add(hub);
 
-      const outerRim = new THREE.Mesh(
-        new THREE.TorusGeometry(1.36, 0.13, 12, 42),
-        new THREE.MeshStandardMaterial({ color: 0x724724, roughness: 0.86 })
-      );
-      outerRim.position.set(0, 2.12, 0.02);
-      outerRim.castShadow = shadowsEnabled;
-      squareWheel.add(outerRim);
-
-      const innerRim = new THREE.Mesh(
-        new THREE.TorusGeometry(1.12, 0.075, 10, 40),
-        new THREE.MeshStandardMaterial({ color: 0x95683a, roughness: 0.86 })
-      );
-      innerRim.position.set(0, 2.12, 0.03);
-      squareWheel.add(innerRim);
-
-      const wheelColors = [0x9c7048, 0x88a165, 0xc19a5e, 0x7191b3, 0xbc8067, 0xe0d2ae];
-      wheelColors.forEach((color, index) => {
-        const wedge = new THREE.Mesh(
-          new THREE.CylinderGeometry(1.07, 1.07, 0.09, 28, 1, false, index * (Math.PI * 2 / wheelColors.length), (Math.PI * 2 / wheelColors.length) - 0.03),
-          new THREE.MeshStandardMaterial({ color, roughness: 0.90 })
-        );
-        wedge.rotation.x = Math.PI / 2;
-        wedge.position.set(0, 2.12, -0.02);
-        squareWheel.add(wedge);
-      });
-
-      const spokeMaterial = new THREE.MeshStandardMaterial({ color: 0x835a32, roughness: 0.86 });
-      for (let i = 0; i < 10; i += 1) {
+      const spokeMaterial = new THREE.MeshStandardMaterial({ color: 0x8c6235, roughness: 0.84 });
+      for (let i = 0; i < 8; i += 1) {
         const spoke = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.035, 0.035, 2.03, 8),
+          new THREE.CylinderGeometry(0.04, 0.04, 2.15, 8),
           spokeMaterial
         );
-        spoke.position.set(0, 2.12, 0.04);
-        spoke.rotation.z = i * (Math.PI / 5);
+        spoke.position.set(0, 2.15, 0);
+        spoke.rotation.z = (Math.PI / 8) + (i * Math.PI / 4);
         squareWheel.add(spoke);
       }
 
-      const hub = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.18, 0.18, 0.36, 18),
-        new THREE.MeshStandardMaterial({ color: 0xc8a168, roughness: 0.58, metalness: 0.06 })
-      );
-      hub.rotation.x = Math.PI / 2;
-      hub.position.set(0, 2.12, 0.08);
-      squareWheel.add(hub);
-
-      for (let i = 0; i < 12; i += 1) {
-        const peg = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.03, 0.03, 0.12, 8),
-          new THREE.MeshStandardMaterial({ color: 0xe2c27b, roughness: 0.52 })
+      const wedgeColors = [0x7f4d43, 0x708557, 0xa07a43, 0x5e7e9c, 0x806280, 0xae704b];
+      wedgeColors.forEach((color, index) => {
+        const wedge = new THREE.Mesh(
+          new THREE.CylinderGeometry(1.10, 1.10, 0.08, 24, 1, false, index * (Math.PI * 2 / wedgeColors.length), (Math.PI * 2 / wedgeColors.length) - 0.035),
+          new THREE.MeshStandardMaterial({ color, roughness: 0.9 })
         );
-        const a = i * (Math.PI * 2 / 12);
-        peg.position.set(Math.cos(a) * 1.34, 2.12 + Math.sin(a) * 1.34, 0.13);
-        peg.rotation.x = Math.PI / 2;
-        squareWheel.add(peg);
-      }
-
-      const pointerPost = new THREE.Mesh(
-        new THREE.BoxGeometry(0.14, 1.10, 0.14),
-        timberMaterial
-      );
-      pointerPost.position.set(0, 3.34, 0);
-      squareWheel.add(pointerPost);
+        wedge.rotation.x = Math.PI / 2;
+        wedge.position.set(0, 2.15, -0.02);
+        squareWheel.add(wedge);
+      });
 
       const pointer = new THREE.Mesh(
-        new THREE.ConeGeometry(0.13, 0.38, 5),
-        new THREE.MeshStandardMaterial({ color: 0xe6c680, roughness: 0.58 })
+        new THREE.ConeGeometry(0.12, 0.35, 5),
+        new THREE.MeshStandardMaterial({ color: 0xf0d291, roughness: 0.56, metalness: 0.08 })
       );
-      pointer.position.set(0, 3.83, 0.12);
+      pointer.position.set(0, 3.65, 0.08);
       pointer.rotation.z = Math.PI;
       squareWheel.add(pointer);
 
-      const wheelShadow = new THREE.Mesh(
-        new THREE.CircleGeometry(2.0, 24),
-        new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.075 })
-      );
-      wheelShadow.rotation.x = -Math.PI / 2;
-      wheelShadow.position.set(0, 0.02, 0);
-      squareWheel.add(wheelShadow);
-
       squareWheel.position.set(0, 0, -20.8);
-      squareWheel.rotation.y = 0.04;
       scene.add(squareWheel);
-
       animatedDecorations.push({
         mesh: squareWheel,
         baseRotationZ: 0,
-        amplitude: 0.008,
-        speed: 0.42,
+        amplitude: 0.012,
+        speed: 0.55,
         axis: 'y',
         originY: squareWheel.rotation.y,
       });
@@ -1423,7 +1303,7 @@
       }
 
       const cloudMap = cloudTexture();
-      const cloudCount = mobile ? 4 : 5;
+      const cloudCount = mobile ? 4 : 6;
 
       for (let index = 0; index < cloudCount; index += 1) {
         const sprite = new THREE.Sprite(
@@ -1448,7 +1328,7 @@
       }
 
       // ----- Tiny light particles -----
-      particleCount = mobile ? 24 : 42;
+      particleCount = mobile ? 30 : 50;
       const positions = new Float32Array(particleCount * 3);
       particlePhases = new Float32Array(particleCount);
 
