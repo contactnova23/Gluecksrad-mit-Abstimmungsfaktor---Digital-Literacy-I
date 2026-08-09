@@ -49,6 +49,14 @@ Die Oberfläche ist bewusst in einzelne, klar abgegrenzte Fenster aufgeteilt:
 
 Die 3D-Fairytale-Stadt bewegt sich passend zum Fortschritt der Nutzerinnen und Nutzer weiter.
 
+## Historisch inspirierte Atmosphäre
+
+Die visuelle Welt ist als helle, märchenhafte Interpretation einer spätmittelalterlichen Messe bzw. eines Schützenfestes gestaltet. Der Begriff **Glückshafen** bezeichnete historische Lotterie- bzw. Losveranstaltungen, die im Umfeld von Messen und Schützenfesten auftreten konnten.
+
+Für die App wird diese historische Idee bewusst modernisiert: Der Glückshafen bildet die erzählerische Rahmung, während das gewichtete Glücksrad die digitale Entscheidungsmechanik sichtbar macht. Die Sprache ist mittelalterlich angehaucht, bleibt aber absichtlich verständlich und benutzerfreundlich.
+
+Die 3D-Welt greift dazu Marktbuden, Banner, Schießscheiben, einen Glückshafen-Lostopf, ausgestellte Gaben und eine helle europäische Altstadt auf.
+
 ## Abstimmungsarten
 
 Die App bietet bewusst zwei klar getrennte Mehrpersonen-Modi:

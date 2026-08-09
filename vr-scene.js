@@ -18,7 +18,7 @@
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0xe8f0e8, mobile ? 0.0155 : 0.0128);
+    scene.fog = new THREE.FogExp2(0xf2eee0, mobile ? 0.0155 : 0.0128);
 
     const renderer = new THREE.WebGLRenderer({
       canvas,
@@ -36,7 +36,7 @@
     );
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.16;
+    renderer.toneMappingExposure = 1.18;
 
     const shadowsEnabled = !mobile && !lowPower;
     renderer.shadowMap.enabled = shadowsEnabled;
@@ -95,9 +95,9 @@
       new THREE.ShaderMaterial({
         side: THREE.BackSide,
         uniforms: {
-          topColor: { value: new THREE.Color(0x83c5ff) },
+          topColor: { value: new THREE.Color(0x87c7ff) },
           midColor: { value: new THREE.Color(0xeaf6ff) },
-          bottomColor: { value: new THREE.Color(0xffefd0) },
+          bottomColor: { value: new THREE.Color(0xfff0d3) },
         },
         vertexShader: `
           varying vec3 vPos;
@@ -1096,6 +1096,97 @@
 
       createMarketStall(-6.6, -23.6, 0xb78656, 0x5f7ea4);
       createMarketStall(6.8, -22.8, 0xb07b50, 0x6f8a5e);
+      createMarketStall(-6.45, -14.9, 0xc09462, 0x8b5d51);
+      createMarketStall(6.55, -10.2, 0xa98457, 0x4f7197);
+
+      // ----- Shooting-festival targets: historically inspired, low-poly -----
+      function createTargetStand(x, z, rotationY = 0) {
+        const group = new THREE.Group();
+
+        const targetWood = new THREE.MeshStandardMaterial({ color: 0x8d6238, roughness: 0.92 });
+        const targetCream = new THREE.MeshStandardMaterial({ color: 0xf3e4bf, roughness: 0.92 });
+        const targetBlue = new THREE.MeshStandardMaterial({ color: 0x3f6f9d, roughness: 0.84 });
+        const targetRed = new THREE.MeshStandardMaterial({ color: 0x8f4b45, roughness: 0.88 });
+
+        for (const px of [-0.42, 0.42]) {
+          const leg = new THREE.Mesh(new THREE.BoxGeometry(0.10, 1.7, 0.10), targetWood);
+          leg.position.set(px, 0.85, 0);
+          group.add(leg);
+        }
+
+        const crossbar = new THREE.Mesh(new THREE.BoxGeometry(1.12, 0.12, 0.12), targetWood);
+        crossbar.position.set(0, 1.55, 0);
+        group.add(crossbar);
+
+        const disk = new THREE.Mesh(new THREE.CylinderGeometry(0.46, 0.46, 0.08, 18), targetCream);
+        disk.rotation.x = Math.PI / 2;
+        disk.position.set(0, 1.52, 0.03);
+        group.add(disk);
+
+        const ring = new THREE.Mesh(new THREE.CylinderGeometry(0.29, 0.29, 0.085, 18), targetBlue);
+        ring.rotation.x = Math.PI / 2;
+        ring.position.set(0, 1.52, 0.075);
+        group.add(ring);
+
+        const center = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.09, 18), targetRed);
+        center.rotation.x = Math.PI / 2;
+        center.position.set(0, 1.52, 0.12);
+        group.add(center);
+
+        group.position.set(x, 0, z);
+        group.rotation.y = rotationY;
+        scene.add(group);
+      }
+
+      createTargetStand(-5.85, -18.2, 0.10);
+      createTargetStand(5.85, -18.2, -0.10);
+
+      // ----- The actual "Glückshafen": urn + prize table -----
+      const luckBooth = new THREE.Group();
+      const boothWood = new THREE.MeshStandardMaterial({ color: 0x8a5c32, roughness: 0.92 });
+      const boothBlue = new THREE.MeshStandardMaterial({ color: 0x315f93, roughness: 0.84 });
+      const boothGold = new THREE.MeshStandardMaterial({ color: 0xd7b363, roughness: 0.72 });
+      const silver = new THREE.MeshStandardMaterial({ color: 0xd5d9d7, roughness: 0.42, metalness: 0.22 });
+
+      const luckTable = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.18, 0.85), boothWood);
+      luckTable.position.set(0, 0.95, 0);
+      luckBooth.add(luckTable);
+
+      for (const x of [-0.82, 0.82]) {
+        const leg = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.0, 0.12), boothWood);
+        leg.position.set(x, 0.45, 0);
+        luckBooth.add(leg);
+      }
+
+      const sign = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.42, 0.10), boothBlue);
+      sign.position.set(0, 2.25, 0);
+      luckBooth.add(sign);
+
+      const signTrim = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.07, 0.13), boothGold);
+      signTrim.position.set(0, 2.49, 0);
+      luckBooth.add(signTrim);
+      const signTrim2 = signTrim.clone();
+      signTrim2.position.y = 2.01;
+      luckBooth.add(signTrim2);
+
+      const urnBody = new THREE.Mesh(new THREE.CylinderGeometry(0.30, 0.38, 0.62, 14), boothWood);
+      urnBody.position.set(0, 1.37, 0);
+      luckBooth.add(urnBody);
+
+      const urnRim = new THREE.Mesh(new THREE.TorusGeometry(0.31, 0.055, 8, 16), boothGold);
+      urnRim.rotation.x = Math.PI / 2;
+      urnRim.position.set(0, 1.70, 0);
+      luckBooth.add(urnRim);
+
+      for (let i = 0; i < 3; i += 1) {
+        const cup = new THREE.Mesh(new THREE.CylinderGeometry(0.10, 0.13, 0.26, 10), silver);
+        cup.position.set(-0.55 + i * 0.55, 1.18, -0.06);
+        luckBooth.add(cup);
+      }
+
+      luckBooth.position.set(-4.55, 0, -25.2);
+      luckBooth.rotation.y = 0.10;
+      scene.add(luckBooth);
 
       // ----- Wooden fortune wheel at the town square -----
       const squareWheel = new THREE.Group();
@@ -1212,7 +1303,7 @@
       }
 
       const cloudMap = cloudTexture();
-      const cloudCount = mobile ? 5 : 7;
+      const cloudCount = mobile ? 4 : 6;
 
       for (let index = 0; index < cloudCount; index += 1) {
         const sprite = new THREE.Sprite(
@@ -1237,7 +1328,7 @@
       }
 
       // ----- Tiny light particles -----
-      particleCount = mobile ? 38 : 64;
+      particleCount = mobile ? 30 : 50;
       const positions = new Float32Array(particleCount * 3);
       particlePhases = new Float32Array(particleCount);
 
