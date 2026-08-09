@@ -3768,3 +3768,39 @@ h1 {
     margin-top: 28px;
   }
 }
+
+/* --- v9: Startseiten-Ueberschrift in einer Zeile ausbalancieren --- */
+.welcome-hero {
+  grid-template-columns: minmax(0, 1.34fr) 330px;
+  gap: 34px;
+}
+
+.welcome-copy {
+  max-width: none;
+}
+
+.welcome-copy h1 {
+  max-width: none;
+  margin-right: 0;
+  font-size: clamp(2.75rem, 4.65vw, 4.7rem);
+  line-height: 0.98;
+  white-space: nowrap;
+}
+
+@media (max-width: 1100px) {
+  .welcome-copy h1 {
+    font-size: clamp(2.5rem, 4.2vw, 4.1rem);
+  }
+}
+
+@media (max-width: 900px) {
+  .welcome-hero {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .welcome-copy h1 {
+    white-space: normal;
+    font-size: clamp(2.35rem, 8vw, 3.8rem);
+  }
+}
