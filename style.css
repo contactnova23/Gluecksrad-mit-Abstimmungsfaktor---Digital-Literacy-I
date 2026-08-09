@@ -4455,3 +4455,207 @@ button span,
 .winner-ceremony-name {
   font-weight: 600;
 }
+
+/* =========================================================
+   v18 GEWINNERPROKLAMATION – gleiche Designlogik wie die App
+   ========================================================= */
+.winner-ceremony-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  overflow: auto;
+  background: rgba(213, 231, 226, 0.28) !important;
+  backdrop-filter: blur(7px) saturate(0.9) !important;
+  -webkit-backdrop-filter: blur(7px) saturate(0.9) !important;
+  animation: ceremonyBackdropIn 0.34s ease both;
+}
+
+.winner-ceremony-glow,
+.winner-ceremony-rays,
+.winner-ornament,
+.winner-crest { display: none !important; }
+
+.winner-ceremony,
+.winner-proclamation {
+  position: relative;
+  isolation: isolate;
+  width: min(680px, 92vw);
+  min-height: 500px;
+  padding: 86px 82px 70px;
+  border: 0 !important;
+  border-radius: 0 !important;
+  color: #334d47;
+  text-align: center;
+  background: #ead5ac !important;
+  box-shadow: 0 28px 70px rgba(68, 69, 51, 0.20) !important;
+  animation: winnerProclamationIn 0.62s cubic-bezier(0.18, 0.84, 0.24, 1) both !important;
+}
+
+.winner-ceremony::before {
+  display: block !important;
+  content: "" !important;
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: auto !important;
+  height: auto !important;
+  transform: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background:
+    linear-gradient(180deg, rgba(250, 241, 219, 0.20), rgba(236, 219, 180, 0.12)),
+    url('assets/parchment-window.png') center/100% 100% no-repeat !important;
+  box-shadow: none !important;
+}
+
+.winner-ceremony::after { display: none !important; }
+
+.winner-proclamation-seal {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 24px;
+  border: 1px solid rgba(177, 143, 83, 0.46);
+  border-radius: 50%;
+  color: #9a7b43;
+  font-family: var(--font-display-v17) !important;
+  font-size: 1.35rem;
+  background: radial-gradient(circle at 38% 35%, #fff7dc 0%, #ead49c 66%, #cfaf6d 100%);
+  box-shadow: 0 8px 18px rgba(111, 87, 46, 0.12);
+}
+
+.winner-ceremony-kicker {
+  margin: 0 0 12px;
+  color: #66806f !important;
+  font-family: var(--font-ui-v17) !important;
+  font-size: 0.92rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.11em !important;
+  text-transform: uppercase;
+}
+
+.winner-ceremony-title {
+  margin: 0;
+  color: #334d47 !important;
+  font-family: var(--font-display-v17) !important;
+  font-size: clamp(2rem, 4.5vw, 3rem) !important;
+  line-height: 1.04;
+  font-weight: 600 !important;
+}
+
+.winner-ceremony-name {
+  margin: 22px auto 18px;
+  max-width: 12ch;
+  color: #345650 !important;
+  font-family: var(--font-display-v17) !important;
+  font-size: clamp(3rem, 8vw, 5.2rem) !important;
+  line-height: 0.94;
+  font-weight: 600 !important;
+  overflow-wrap: anywhere;
+  text-shadow: none !important;
+  animation: winnerNameReveal 0.62s 0.24s cubic-bezier(0.18, 0.84, 0.25, 1.06) both !important;
+}
+
+.winner-ceremony-divider {
+  position: relative;
+  width: min(260px, 60%);
+  height: 1px;
+  margin: 28px auto 24px;
+  background: linear-gradient(90deg, transparent, rgba(175, 139, 74, 0.62), transparent) !important;
+}
+
+.winner-ceremony-divider::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  margin: 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+  background: #c6a35d !important;
+}
+
+.winner-ceremony-message {
+  max-width: 500px;
+  margin: 0 auto 30px;
+  color: #526c65 !important;
+  font-family: var(--font-text-v17) !important;
+  font-size: 1.08rem !important;
+  line-height: 1.58;
+  font-style: normal !important;
+}
+
+.winner-ceremony-close {
+  min-width: 230px;
+  min-height: 56px;
+  color: #2f4f4b !important;
+  font-family: var(--font-ui-v17) !important;
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+  border: 1px solid rgba(132, 166, 176, 0.34) !important;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #eef7f8 0%, #dcecf1 100%) !important;
+  box-shadow: 0 10px 22px rgba(96, 129, 138, 0.12), inset 0 1px 0 rgba(255,255,255,0.86) !important;
+}
+
+.winner-proclamation-flourish {
+  margin-top: 24px;
+  color: #b49556;
+  font-family: var(--font-display-v17) !important;
+  font-size: 1.25rem;
+}
+
+.winner-ceremony-particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.winner-ceremony-particle {
+  position: absolute;
+  top: -8vh;
+  width: var(--particle-size, 5px);
+  height: calc(var(--particle-size, 5px) * 1.35);
+  border-radius: 50% 0 50% 0;
+  opacity: 0;
+  animation: ceremonyParticle var(--particle-duration, 3.4s) linear var(--particle-delay, 0s) forwards;
+}
+
+.winner-ceremony-layer.is-leaving .winner-ceremony {
+  animation: winnerProclamationOut 0.32s ease forwards !important;
+}
+
+@keyframes winnerProclamationIn {
+  0% { opacity: 0; transform: translateY(26px) scale(0.975); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes winnerProclamationOut { to { opacity: 0; transform: translateY(14px) scale(0.985); } }
+@keyframes winnerNameReveal {
+  from { opacity: 0; transform: translateY(9px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 720px) {
+  .winner-ceremony-layer { padding: 14px; }
+  .winner-ceremony,
+  .winner-proclamation {
+    width: min(100%, 590px);
+    min-height: 460px;
+    padding: 70px 38px 58px;
+  }
+  .winner-ceremony-kicker { font-size: 0.82rem !important; }
+  .winner-ceremony-message { font-size: 1rem !important; }
+  .winner-ceremony-close { width: 100%; min-width: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .winner-ceremony,
+  .winner-ceremony-name,
+  .winner-ceremony-particle { animation: none !important; }
+}

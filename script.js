@@ -246,47 +246,32 @@ function animateFeedback(element) {
 
 function celebrateWinner() {
   const existingCeremony = document.querySelector('.winner-ceremony-layer');
-  if (existingCeremony) {
-    existingCeremony.remove();
-  }
+  if (existingCeremony) existingCeremony.remove();
 
   const oldConfetti = document.querySelector('.confetti-layer');
-  if (oldConfetti) {
-    oldConfetti.remove();
-  }
+  if (oldConfetti) oldConfetti.remove();
 
   const layer = document.createElement('div');
   layer.className = 'winner-ceremony-layer';
   layer.setAttribute('role', 'dialog');
   layer.setAttribute('aria-modal', 'true');
-  layer.setAttribute('aria-label', `Das Los fällt auf: ${currentWinnerOption}`);
-
-  const glow = document.createElement('div');
-  glow.className = 'winner-ceremony-glow';
-  glow.setAttribute('aria-hidden', 'true');
-
-  const rays = document.createElement('div');
-  rays.className = 'winner-ceremony-rays';
-  rays.setAttribute('aria-hidden', 'true');
+  layer.setAttribute('aria-labelledby', 'winner-proclamation-title');
+  layer.setAttribute('aria-describedby', 'winner-proclamation-note');
 
   const ceremony = document.createElement('section');
-  ceremony.className = 'winner-ceremony';
+  ceremony.className = 'winner-ceremony winner-proclamation';
 
-  const ornamentTop = document.createElement('div');
-  ornamentTop.className = 'winner-ornament winner-ornament-top';
-  ornamentTop.textContent = '✦  ⚜  ✦';
-  ornamentTop.setAttribute('aria-hidden', 'true');
-
-  const crest = document.createElement('div');
-  crest.className = 'winner-crest';
-  crest.textContent = '♛';
-  crest.setAttribute('aria-hidden', 'true');
+  const seal = document.createElement('div');
+  seal.className = 'winner-proclamation-seal';
+  seal.setAttribute('aria-hidden', 'true');
+  seal.textContent = '✦';
 
   const kicker = document.createElement('p');
   kicker.className = 'winner-ceremony-kicker';
   kicker.textContent = 'Der Glückshafen hat entschieden';
 
-  const title = document.createElement('p');
+  const title = document.createElement('h2');
+  title.id = 'winner-proclamation-title';
   title.className = 'winner-ceremony-title';
   title.textContent = 'Das Los fällt auf';
 
@@ -299,82 +284,64 @@ function celebrateWinner() {
   divider.setAttribute('aria-hidden', 'true');
 
   const message = document.createElement('p');
+  message.id = 'winner-proclamation-note';
   message.className = 'winner-ceremony-message';
-  message.textContent = 'Die gewichtete Ziehung ist vollendet.';
+  message.textContent = 'Eure Stimmen bestimmten die Größe der Felder und damit die Gewinnchancen. Das Rad entschied innerhalb dieser Gewichtung zufallsbasiert.';
 
   const closeButton = document.createElement('button');
   closeButton.type = 'button';
   closeButton.className = 'winner-ceremony-close';
-  closeButton.textContent = 'Zur Tafel zurück';
+  closeButton.textContent = 'Zurück zum Glücksrad';
 
-  const ornamentBottom = document.createElement('div');
-  ornamentBottom.className = 'winner-ornament winner-ornament-bottom';
-  ornamentBottom.textContent = '❦';
-  ornamentBottom.setAttribute('aria-hidden', 'true');
+  const flourish = document.createElement('div');
+  flourish.className = 'winner-proclamation-flourish';
+  flourish.setAttribute('aria-hidden', 'true');
+  flourish.textContent = '❦';
 
-  ceremony.append(
-    ornamentTop,
-    crest,
-    kicker,
-    title,
-    name,
-    divider,
-    message,
-    closeButton,
-    ornamentBottom,
-  );
+  ceremony.append(seal, kicker, title, name, divider, message, closeButton, flourish);
 
-  const particleColors = ['#f4d88a', '#9fc5ad', '#fef7df', '#8fb3c4', '#e29b87', '#c7add3'];
   const particleLayer = document.createElement('div');
   particleLayer.className = 'winner-ceremony-particles';
   particleLayer.setAttribute('aria-hidden', 'true');
 
-  for (let index = 0; index < 34; index += 1) {
+  const particleColors = ['#d8bf7a', '#adc8b4', '#d5e8ea', '#e5c2b5'];
+  for (let index = 0; index < 14; index += 1) {
     const particle = document.createElement('span');
     particle.className = 'winner-ceremony-particle';
-    particle.style.left = `${4 + Math.random() * 92}%`;
-    particle.style.setProperty('--particle-delay', `${Math.random() * 0.65}s`);
-    particle.style.setProperty('--particle-duration', `${2.2 + Math.random() * 1.5}s`);
-    particle.style.setProperty('--particle-drift', `${-65 + Math.random() * 130}px`);
-    particle.style.setProperty('--particle-size', `${4 + Math.random() * 6}px`);
+    particle.style.left = `${8 + Math.random() * 84}%`;
+    particle.style.setProperty('--particle-delay', `${Math.random() * 0.55}s`);
+    particle.style.setProperty('--particle-duration', `${2.7 + Math.random() * 1.5}s`);
+    particle.style.setProperty('--particle-drift', `${-42 + Math.random() * 84}px`);
+    particle.style.setProperty('--particle-size', `${3 + Math.random() * 4}px`);
     particle.style.backgroundColor = particleColors[index % particleColors.length];
     particleLayer.appendChild(particle);
   }
 
-  layer.append(glow, rays, particleLayer, ceremony);
+  layer.append(particleLayer, ceremony);
   document.body.appendChild(layer);
-
   document.body.classList.add('winner-ceremony-open');
 
-  const handleEscape = (event) => {
-    if (event.key === 'Escape') {
-      closeCeremony();
-    }
-  };
-
   const closeCeremony = () => {
-    if (!layer.isConnected) {
-      return;
-    }
-
+    if (!layer.isConnected) return;
     document.removeEventListener('keydown', handleEscape);
     document.body.classList.remove('winner-ceremony-open');
     layer.classList.add('is-leaving');
     window.setTimeout(() => {
       layer.remove();
       newVotingBtnResults?.focus();
-    }, 460);
+    }, 360);
+  };
+
+  const handleEscape = (event) => {
+    if (event.key === 'Escape') closeCeremony();
   };
 
   closeButton.addEventListener('click', closeCeremony, { once: true });
   document.addEventListener('keydown', handleEscape);
   window.setTimeout(() => {
-    if (layer.isConnected) {
-      closeButton.focus();
-    }
-  }, 1150);
+    if (layer.isConnected) closeButton.focus();
+  }, 620);
 }
-
 function hideSetupPanels() {
   welcomePanel.hidden = true;
   entryChoice.hidden = true;
